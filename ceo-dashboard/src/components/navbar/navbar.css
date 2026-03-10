@@ -1,13 +1,12 @@
 .navbar{
     width:260px;
-    height:100%;
     background:#f7f8f9;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
     padding:20px;
     border-right:1px solid #e4e4e4;
-    flex-shrink: 0;
+    height: calc(100vh - 70px); /* Full height minus header */
 }
 
 /* MENU */

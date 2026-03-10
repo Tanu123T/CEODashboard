@@ -13,16 +13,39 @@
   height: 100vh;
 }
 
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
 .body-wrapper {
   display: flex;
   flex: 1;
+  margin-top: 70px; /* Height of header */
   overflow: hidden;
+  width: 100vw;
+}
+
+.navbar {
+  position: fixed;
+  left: 0;
+  top: 70px; /* Below header */
+  bottom: 0;
+  width: 260px;
+  z-index: 999;
 }
 
 .main-content {
   flex: 1;
+  margin-left: 260px; /* Width of navbar */
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 20px;
+  width: calc(100vw - 260px);
+  box-sizing: border-box;
 }
 
 .logo {

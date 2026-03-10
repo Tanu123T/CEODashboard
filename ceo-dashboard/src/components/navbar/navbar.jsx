@@ -1,25 +1,28 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import "./Navbar.css";
 
-import { 
-  FiGrid, 
-  FiTrendingUp, 
-  FiUsers, 
-  FiDollarSign, 
-  FiUserCheck, 
-  FiSettings, 
-  FiLogOut 
+import {
+  FiGrid,
+  FiTrendingUp,
+  FiUsers,
+  FiDollarSign,
+  FiUserCheck,
+  FiSettings,
+  FiLogOut
 } from "react-icons/fi";
 
 const Navbar = () => {
+  const location = useLocation();
+
   return (
     <div className="navbar">
       <div className="nav-menu">
 
-        <div className="nav-item active">
+        <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
           <FiGrid className="icon"/>
           <span>Dashboard</span>
-        </div>
+        </Link>
 
         <div className="nav-item">
           <FiTrendingUp className="icon"/>
@@ -31,10 +34,10 @@ const Navbar = () => {
           <span>Team</span>
         </div>
 
-        <div className="nav-item">
+        <Link to="/projects" className={`nav-item ${location.pathname === '/projects' ? 'active' : ''}`}>
           <FiDollarSign className="icon"/>
           <span>Projects</span>
-        </div>
+        </Link>
 
         <div className="nav-item">
           <FiUserCheck className="icon"/>
