@@ -23,22 +23,22 @@ const Navbar = () => {
 
         <div className="nav-item">
           <FiTrendingUp className="icon"/>
-          <span>Analytics</span>
+          <span>Sprint</span>
         </div>
 
         <div className="nav-item">
           <FiUsers className="icon"/>
-          <span>Customers</span>
+          <span>Team</span>
         </div>
 
         <div className="nav-item">
           <FiDollarSign className="icon"/>
-          <span>Financials</span>
+          <span>Projects</span>
         </div>
 
         <div className="nav-item">
           <FiUserCheck className="icon"/>
-          <span>Team</span>
+          <span>Clients</span>
         </div>
 
       </div>
