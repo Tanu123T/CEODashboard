@@ -3,7 +3,7 @@ import './App.css'
 import Navbar from './components/Navbar/Navbar'
 import Header from './components/Header/Header'
 import Home from './components/Home/Home'
-import Project from './pages/project/project'
+import Project from './pages/Project/Project'
 
 function App() {
   return (
