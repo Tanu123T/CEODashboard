@@ -1,0 +1,145 @@
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.action-btn:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+.primary-btn {
+  background-color: var(--primary, #0f3d2e);
+  color: white;
+}
+
+.primary-btn:hover {
+  background-color: var(--secondary, #145a42);
+}
+
+.success-btn {
+  background-color: #27ae60;
+  color: white;
+}
+
+.success-btn:hover {
+  background-color: #219653;
+}
+
+.cancel-btn {
+  background-color: #f1f5f9;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-right: 8px;
+  font-size: 16px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+tr:hover .icon-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.icon-btn:hover {
+  transform: scale(1.15) !important;
+}
+
+.icon-btn:active {
+  transform: scale(0.9) !important;
+}
+
+.edit-btn {
+  color: #3498db;
+}
+
+.delete-btn {
+  color: #e74c3c;
+}
+
+.form-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  margin-bottom: 24px;
+}
+
+.form-card h3 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #333;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: #1fa37a;
+  box-shadow: 0 0 0 4px rgba(31, 163, 122, 0.15);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  background: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  max-width: 400px;
+}
+
+.search-icon {
+  color: #888;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
