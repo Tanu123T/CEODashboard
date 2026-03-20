@@ -7,6 +7,7 @@
     padding:20px;
     border-right:1px solid #e4e4e4;
     height: calc(100vh - 70px); /* Full height minus header */
+    box-sizing:border-box;
 }
 
 /* MENU */
@@ -29,6 +30,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    text-decoration:none;
 }
 
 .nav-item:hover{
@@ -38,6 +40,7 @@
 
 .icon{
     font-size:18px;
+    flex-shrink:0;
 }
 
 /* ACTIVE MENU */
@@ -56,4 +59,38 @@
     flex-direction:column;
     gap:10px;
     margin-bottom: 50px;
+}
+
+@media (max-width: 1024px) {
+    .navbar{
+        width:280px;
+        max-width:85vw;
+        height: calc(100vh - 70px);
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index:999;
+        overflow-y:auto;
+    }
+
+    .navbar.open{
+        transform: translateX(0);
+    }
+
+    .bottom-menu{
+        margin-bottom:20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar{
+        top:64px;
+        height: calc(100vh - 64px);
+        width:260px;
+        padding:16px;
+    }
+
+    .nav-item{
+        padding:11px 12px;
+        font-size:13px;
+    }
 }

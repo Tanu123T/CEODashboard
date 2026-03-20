@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 
-import { Bell, Settings, LogOut, ChevronDown } from "lucide-react";
+import { Bell, Settings, LogOut, ChevronDown, Menu } from "lucide-react";
 
-const Header = () => {
+const Header = ({ onToggleSidebar }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const navigate = useNavigate();
@@ -20,6 +20,14 @@ const Header = () => {
 
       {/* LEFT SIDE */}
       <div className="header-left">
+        <button
+          type="button"
+          className="menu-toggle"
+          onClick={onToggleSidebar}
+          aria-label="Toggle navigation"
+        >
+          <Menu size={20} />
+        </button>
         <div className="logo-box">VG</div>
         <h2 className="title">
           Vishwaguru Infotech Pvt Ltd <span>CEO Dashboard</span>

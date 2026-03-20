@@ -194,7 +194,7 @@ const Projects = () => {
       {/* --- 3. TABLE & SIDEBAR --- */}
       <motion.div className="main-content-grid" variants={containerVariants}>
         <motion.div className="table-container" variants={itemVariants}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div className="table-header-row">
             <h2 className="section-title" style={{ margin: 0 }}>Delivery Pipeline</h2>
             <button className="action-btn primary-btn" onClick={handleAddClick}>
               <Plus size={16} /> Add Project
@@ -232,60 +232,62 @@ const Projects = () => {
           )}
           </AnimatePresence>
 
-          <table className="projects-table">
-            <thead>
-              <tr>
-                <th>Project Name</th>
-                <th>Client</th>
-                <th>Team Lead</th>
-                <th>Status</th>
-                <th>Progress</th>
-                <th>Deadline</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((project) => (
-                <tr key={project.id}>
-                  <td className="font-bold">{project.name}</td>
-                  <td className="client-cell"><Building className="row-icon" size={16} />{project.client}</td>
-                  <td className="team-lead-cell"><User className="row-icon" size={16} />{project.lead}</td>
-                  <td>
-                    <span className={`status-badge status-${project.status.toLowerCase().replace(" ", "-")}`}>
-                      {project.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="prog-bar-bg">
-                      <motion.div 
-                        className="prog-bar-fill" 
-                        initial={{ width: 0 }} 
-                        animate={{ width: `${project.progress}%` }} 
-                        style={{ backgroundColor: project.status === 'Completed' ? THEME.status.blue : THEME.secondary }}
-                      />
-                    </div>
-                  </td>
-                  <td className="date-cell">{project.deadline}</td>
-                  <td>
-                    <button className="icon-btn edit-btn" onClick={() => handleEditClick(project)}>
-                      <Edit2 size={16} />
-                    </button>
-                    <button className="icon-btn delete-btn" onClick={() => handleDelete(project.id)}>
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {projects.length === 0 && (
+          <div className="table-scroll">
+            <table className="projects-table">
+              <thead>
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
-                    <FolderX size={48} style={{ color: '#ccc', marginBottom: '10px' }} />
-                    <p style={{ margin: 0, fontWeight: 500, color: '#555' }}>No projects found</p>
-                  </td>
+                  <th>Project Name</th>
+                  <th>Client</th>
+                  <th>Team Lead</th>
+                  <th>Status</th>
+                  <th>Progress</th>
+                  <th>Deadline</th>
+                  <th>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {projects.map((project) => (
+                  <tr key={project.id}>
+                    <td className="font-bold">{project.name}</td>
+                    <td className="client-cell"><Building className="row-icon" size={16} />{project.client}</td>
+                    <td className="team-lead-cell"><User className="row-icon" size={16} />{project.lead}</td>
+                    <td>
+                      <span className={`status-badge status-${project.status.toLowerCase().replace(" ", "-")}`}>
+                        {project.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="prog-bar-bg">
+                        <motion.div 
+                          className="prog-bar-fill" 
+                          initial={{ width: 0 }} 
+                          animate={{ width: `${project.progress}%` }} 
+                          style={{ backgroundColor: project.status === 'Completed' ? THEME.status.blue : THEME.secondary }}
+                        />
+                      </div>
+                    </td>
+                    <td className="date-cell">{project.deadline}</td>
+                    <td>
+                      <button className="icon-btn edit-btn" onClick={() => handleEditClick(project)}>
+                        <Edit2 size={16} />
+                      </button>
+                      <button className="icon-btn delete-btn" onClick={() => handleDelete(project.id)}>
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {projects.length === 0 && (
+                  <tr>
+                    <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+                      <FolderX size={48} style={{ color: '#ccc', marginBottom: '10px' }} />
+                      <p style={{ margin: 0, fontWeight: 500, color: '#555' }}>No projects found</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </motion.div>
 
         <div className="sidebar-info">

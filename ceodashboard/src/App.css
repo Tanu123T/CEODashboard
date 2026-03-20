@@ -24,15 +24,15 @@
 .body-wrapper {
   display: flex;
   flex: 1;
-  margin-top: 70px; /* Height of header */
+  margin-top: 70px;
   overflow: hidden;
-  width: 100vw;
+  width: 100%;
 }
 
 .navbar {
   position: fixed;
   left: 0;
-  top: 70px; /* Below header */
+  top: 70px;
   bottom: 0;
   width: 260px;
   z-index: 999;
@@ -40,12 +40,16 @@
 
 .main-content {
   flex: 1;
-  margin-left: 260px; /* Width of navbar */
+  margin-left: 260px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 20px;
-  width: calc(100vw - 260px);
+  width: calc(100% - 260px);
   box-sizing: border-box;
+}
+
+.sidebar-overlay {
+  display: none;
 }
 
 .logo {
@@ -82,4 +86,45 @@
 
 .read-the-docs {
   color: #888;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 16px;
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    display: block;
+  }
+
+  .app-container.sidebar-open .sidebar-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@media (max-width: 480px) {
+  .body-wrapper {
+    margin-top: 64px;
+  }
+
+  .main-content {
+    padding: 12px;
+  }
+
+  .sidebar-overlay {
+    top: 64px;
+  }
 }

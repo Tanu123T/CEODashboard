@@ -4,7 +4,6 @@ import "./Navbar.css";
 
 import {
   LayoutDashboard,
-  TrendingUp,
   Users,
   DollarSign,
   Settings,
@@ -13,40 +12,45 @@ import {
   BarChart2
 } from "lucide-react";
 
-const Navbar = () => {
+const Navbar = ({ isOpen, onCloseSidebar }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     alert("Successfully logged out!");
+    onCloseSidebar();
     navigate("/");
   };
 
+  const handleNavClick = () => {
+    onCloseSidebar();
+  };
+
   return (
-    <div className="navbar">
+    <div className={`navbar ${isOpen ? "open" : ""}`}>
       <div className="nav-menu">
 
-        <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
+        <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`} onClick={handleNavClick}>
           <LayoutDashboard className="icon"/>
           <span>Dashboard</span>
         </Link>
 
-        <Link to="/tasks" className={`nav-item ${location.pathname === '/tasks' ? 'active' : ''}`}>
+        <Link to="/tasks" className={`nav-item ${location.pathname === '/tasks' ? 'active' : ''}`} onClick={handleNavClick}>
           <CheckSquare className="icon"/>
           <span>Tasks</span>
         </Link>
 
-        <Link to="/employees" className={`nav-item ${location.pathname === '/employees' ? 'active' : ''}`}>
+        <Link to="/employees" className={`nav-item ${location.pathname === '/employees' ? 'active' : ''}`} onClick={handleNavClick}>
           <Users className="icon"/>
           <span>Employees</span>
         </Link>
 
-        <Link to="/projects" className={`nav-item ${location.pathname === '/projects' ? 'active' : ''}`}>
+        <Link to="/projects" className={`nav-item ${location.pathname === '/projects' ? 'active' : ''}`} onClick={handleNavClick}>
           <DollarSign className="icon"/>
           <span>Projects</span>
         </Link>
 
-        <Link to="/analytics" className={`nav-item ${location.pathname === '/analytics' ? 'active' : ''}`}>
+        <Link to="/analytics" className={`nav-item ${location.pathname === '/analytics' ? 'active' : ''}`} onClick={handleNavClick}>
           <BarChart2 className="icon"/>
           <span>Analytics</span>
         </Link>
@@ -55,7 +59,7 @@ const Navbar = () => {
 
       <div className="bottom-menu">
 
-        <Link to="/settings" className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`}>
+        <Link to="/settings" className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`} onClick={handleNavClick}>
           <Settings className="icon"/>
           <span>Settings</span>
         </Link>
