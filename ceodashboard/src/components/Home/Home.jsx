@@ -7,11 +7,15 @@ import {
   Calendar,
   Users,
   DollarSign,
-  CheckCircle,
   Clock,
   AlertCircle,
   TrendingUp,
-  LayoutDashboard
+  LayoutDashboard,
+  ArrowUpRight,
+  CheckCircle2,
+  TriangleAlert,
+  CircleDashed,
+  Briefcase
 } from "lucide-react";
 
 const revenueData = [
@@ -27,6 +31,72 @@ const projectStatus = [
   { name: 'Completed', value: 45, color: '#27ae60' },
   { name: 'Active', value: 35, color: '#3498db' },
   { name: 'Delayed', value: 20, color: '#e74c3c' },
+];
+
+const statsData = [
+  {
+    label: 'Total Revenue',
+    value: '₹3.4Cr',
+    meta: '+8.2% vs last month',
+    icon: DollarSign,
+  },
+  {
+    label: 'Total Employees',
+    value: '148',
+    meta: '+6 new hires this month',
+    icon: Users,
+  },
+  {
+    label: 'Active Projects',
+    value: '12',
+    meta: '3 nearing delivery',
+    icon: LayoutDashboard,
+  },
+  {
+    label: 'Growth %',
+    value: '+24%',
+    meta: 'Strong QoQ momentum',
+    icon: TrendingUp,
+  },
+];
+
+const meetings = [
+  {
+    time: '10:30 AM',
+    title: 'Client Meeting',
+    details: 'Medical Tourism Platform',
+  },
+  {
+    time: '12:00 PM',
+    title: 'Team Standup',
+    details: 'Development Team',
+  },
+  {
+    time: '03:00 PM',
+    title: 'Investor Call',
+    details: 'Quarterly Review',
+  },
+];
+
+const alerts = [
+  {
+    tone: 'warning',
+    icon: TriangleAlert,
+    title: 'Delayed Project',
+    details: 'CRM System requires milestone realignment',
+  },
+  {
+    tone: 'success',
+    icon: CheckCircle2,
+    title: 'Pending Payment Cleared',
+    details: '₹1.5L received from enterprise client',
+  },
+  {
+    tone: 'danger',
+    icon: CircleDashed,
+    title: 'Critical Bugs',
+    details: '5 high-priority issues need engineering attention',
+  },
 ];
 
 const Home = () => {
@@ -45,53 +115,52 @@ const Home = () => {
       {/* Welcome Section */}
 
       <div className="welcome-section">
-        <h2>Welcome, CEO</h2>
-        <p>{date}</p>
+        <div>
+          <p className="welcome-eyebrow">Executive overview</p>
+          <h2>Welcome, CEO</h2>
+          <p className="welcome-date">{date}</p>
+        </div>
+
+        <div className="welcome-pill">
+          <Calendar size={16} />
+          <span>Board review in 2 days</span>
+        </div>
       </div>
 
 
       {/* Stats Cards */}
 
       <div className="stats-grid">
+        {statsData.map((item) => {
+          const Icon = item.icon;
 
-        <div className="stat-card">
-          <DollarSign className="stat-icon"/>
-          <div>
-            <p>Total Revenue</p>
-            <h3>₹3.4Cr</h3>
-          </div>
-        </div>
+          return (
+            <div className="stat-card" key={item.label}>
+              <div className="stat-icon-wrap">
+                <Icon className="stat-icon" />
+              </div>
 
-        <div className="stat-card">
-          <Users className="stat-icon"/>
-          <div>
-            <p>Total Employees</p>
-            <h3>148</h3>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <LayoutDashboard className="stat-icon"/>
-          <div>
-            <p>Active Projects</p>
-            <h3>12</h3>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <TrendingUp className="stat-icon"/>
-          <div>
-            <p>Growth %</p>
-            <h3>+24%</h3>
-          </div>
-        </div>
+              <div className="stat-copy">
+                <p className="stat-label">{item.label}</p>
+                <h3>{item.value}</h3>
+                <p className="stat-meta">
+                  <ArrowUpRight size={14} />
+                  <span>{item.meta}</span>
+                </p>
+              </div>
+            </div>
+          );
+        })}
 
       </div>
 
       {/* Charts Section */}
       <div className="home-charts-grid">
         <div className="chart-card">
-          <h3>Revenue Growth</h3>
+          <div className="card-head">
+            <h3>Revenue Growth</h3>
+            <span className="head-chip">Last 6 months</span>
+          </div>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={revenueData}>
               <defs>
@@ -110,7 +179,10 @@ const Home = () => {
         </div>
 
         <div className="chart-card">
-          <h3>Project Status Distribution</h3>
+          <div className="card-head">
+            <h3>Project Status Distribution</h3>
+            <span className="head-chip head-chip-neutral">Live split</span>
+          </div>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie data={projectStatus} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none">
@@ -119,6 +191,16 @@ const Home = () => {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
+
+          <div className="status-legend">
+            {projectStatus.map((item) => (
+              <div key={item.name} className="legend-item">
+                <span className="legend-dot" style={{ backgroundColor: item.color }} />
+                <span>{item.name}</span>
+                <strong>{item.value}%</strong>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -126,37 +208,18 @@ const Home = () => {
       {/* Main Grid */}
 
       <div className="dashboard-grid">
-
-
-        {/* Schedule */}
-
         <div className="schedule-card">
           <h3><Clock /> Today's Schedule</h3>
 
-          <div className="meeting">
-            <span>10:30 AM</span>
-            <div>
-              <h4>Client Meeting</h4>
-              <p>Medical Tourism Platform</p>
+          {meetings.map((meeting) => (
+            <div className="meeting" key={meeting.time}>
+              <span className="meeting-time">{meeting.time}</span>
+              <div className="meeting-content">
+                <h4>{meeting.title}</h4>
+                <p>{meeting.details}</p>
+              </div>
             </div>
-          </div>
-
-          <div className="meeting">
-            <span>12:00 PM</span>
-            <div>
-              <h4>Team Standup</h4>
-              <p>Development Team</p>
-            </div>
-          </div>
-
-          <div className="meeting">
-            <span>03:00 PM</span>
-            <div>
-              <h4>Investor Call</h4>
-              <p>Quarterly Review</p>
-            </div>
-          </div>
-
+          ))}
         </div>
 
 
@@ -165,9 +228,26 @@ const Home = () => {
         <div className="alerts-card">
           <h3><AlertCircle /> Important Alerts</h3>
 
-          <p>⚠ Delayed Project: CRM System</p>
-          <p>💰 Payment Pending: ₹1.5L</p>
-          <p>🐞 5 Critical Bugs Reported</p>
+          {alerts.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <div className={`alert-item ${item.tone}`} key={item.title}>
+                <div className="alert-icon-wrap">
+                  <Icon size={16} />
+                </div>
+                <div>
+                  <h4>{item.title}</h4>
+                  <p>{item.details}</p>
+                </div>
+              </div>
+            );
+          })}
+
+          <button type="button" className="view-all-btn">
+            <Briefcase size={16} />
+            View all priority items
+          </button>
         </div>
 
       </div>
