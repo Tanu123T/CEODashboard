@@ -28,8 +28,8 @@ const revenueData = [
 ];
 
 const projectStatus = [
-  { name: 'Completed', value: 45, color: '#27ae60' },
-  { name: 'Active', value: 35, color: '#3498db' },
+  { name: 'Completed', value: 45, color: '#22c55e' },
+  { name: 'Active', value: 35, color: '#38bdf8' },
   { name: 'Delayed', value: 20, color: '#e74c3c' },
 ];
 
@@ -165,15 +165,15 @@ const Home = () => {
             <AreaChart data={revenueData}>
               <defs>
                 <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#1fa37a" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#1fa37a" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.35}/>
+                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
               <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
               <YAxis hide />
               <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }} />
-              <Area type="monotone" dataKey="value" stroke="#1fa37a" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+              <Area type="monotone" dataKey="value" stroke="#18b7a6" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>

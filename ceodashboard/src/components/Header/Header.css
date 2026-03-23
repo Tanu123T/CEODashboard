@@ -1,7 +1,7 @@
 .header{
     height:70px;
     width:100%;
-    background:linear-gradient(90deg,#0f7a5c,#1fa37a);
+    background:var(--accent-gradient);
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -42,7 +42,7 @@
     width:40px;
     height:40px;
     background:white;
-    color:#1fa37a;
+    color:var(--accent-mix);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -173,7 +173,7 @@
 
 .dropdown-item:hover {
     background: #f8fafc;
-    color: #1fa37a;
+    color: var(--accent-mix);
 }
 @media (max-width: 1024px) {
     .header {

@@ -81,11 +81,11 @@ const Tasks = () => {
         </div>
 
         {/* Completed */}
-        <div className="info-card timeline-card" style={{ borderTop: '4px solid #27ae60' }}>
+        <div className="info-card timeline-card" style={{ borderTop: '4px solid #22c55e' }}>
           <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#333' }}>
-            <CheckCircle style={{ color: '#27ae60' }} size={18} /> Completed ({completed.length})
+            <CheckCircle style={{ color: '#22c55e' }} size={18} /> Completed ({completed.length})
           </h3>
-          {renderTaskItems(completed, null, null, <CheckCircle size={18} />, '#27ae60')}
+          {renderTaskItems(completed, null, null, <CheckCircle size={18} />, '#22c55e')}
         </div>
 
       </div>

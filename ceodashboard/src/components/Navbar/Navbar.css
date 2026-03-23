@@ -46,10 +46,10 @@
 /* ACTIVE MENU */
 
 .nav-item.active{
-    background:linear-gradient(90deg,#16c79a,#0fa67c);
+    background:var(--accent-gradient);
     color:white;
     transform: translateX(6px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
 }
 
 /* BOTTOM MENU */

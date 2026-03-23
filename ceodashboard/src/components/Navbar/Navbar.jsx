@@ -9,12 +9,13 @@ import {
   Settings,
   LogOut,
   CheckSquare,
-  BarChart2
+  Flag
 } from "lucide-react";
 
 const Navbar = ({ isOpen, onCloseSidebar }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isSprintsRoute = location.pathname.startsWith('/sprints');
 
   const handleLogout = () => {
     alert("Successfully logged out!");
@@ -50,9 +51,9 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
           <span>Projects</span>
         </Link>
 
-        <Link to="/analytics" className={`nav-item ${location.pathname === '/analytics' ? 'active' : ''}`} onClick={handleNavClick}>
-          <BarChart2 className="icon"/>
-          <span>Analytics</span>
+        <Link to="/sprints" className={`nav-item ${isSprintsRoute ? 'active' : ''}`} onClick={handleNavClick}>
+          <Flag className="icon"/>
+          <span>Sprints</span>
         </Link>
 
       </div>

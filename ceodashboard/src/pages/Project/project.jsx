@@ -13,15 +13,15 @@ import {
 import '../Employees/Employees.css'; // Reusing form button CSS
 
 const THEME = {
-  primary: '#0f3d2e',
-  secondary: '#145a42',
+  primary: '#0b6d9d',
+  secondary: '#18b7a6',
   textMain: '#333333',
   bgBody: '#f8fafc',
   status: {
-    green: '#27ae60',
+    green: '#22c55e',
     yellow: '#f1c40f',
     red: '#e74c3c',
-    blue: '#3498db'
+    blue: '#38bdf8'
   }
 };
 
@@ -116,7 +116,7 @@ const Projects = () => {
       <header className="main-header">
         <div>
           <h1>CEO Portfolio Dashboard</h1>
-          <p>Strategic Overview | Health & Resource Analytics</p>
+          <p>Strategic Overview | Health & Resource Delivery</p>
         </div>
         <div className="header-status">
           <CheckCircle className="sync-icon" /> Systems Synced: Just now
@@ -262,7 +262,7 @@ const Projects = () => {
                           className="prog-bar-fill" 
                           initial={{ width: 0 }} 
                           animate={{ width: `${project.progress}%` }} 
-                          style={{ backgroundColor: project.status === 'Completed' ? THEME.status.blue : THEME.secondary }}
+                          style={{ background: 'linear-gradient(95deg, #38bdf8 0%, #22c55e 100%)' }}
                         />
                       </div>
                     </td>

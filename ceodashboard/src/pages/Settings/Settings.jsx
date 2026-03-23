@@ -82,7 +82,7 @@ const Settings = () => {
              </div>
           )}
 
-          {successMsg && <p style={{ color: '#27ae60', marginTop: '15px', fontWeight: 'bold' }}>{successMsg}</p>}
+          {successMsg && <p style={{ color: '#22c55e', marginTop: '15px', fontWeight: 'bold' }}>{successMsg}</p>}
         </motion.div>
 
         {/* Other Settings */}

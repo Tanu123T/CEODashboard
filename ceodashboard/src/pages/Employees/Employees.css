@@ -21,21 +21,21 @@
 }
 
 .primary-btn {
-  background-color: var(--primary, #0f3d2e);
+  background: var(--accent-gradient, linear-gradient(95deg, #38bdf8 0%, #22c55e 100%));
   color: white;
 }
 
 .primary-btn:hover {
-  background-color: var(--secondary, #145a42);
+  filter: brightness(0.96);
 }
 
 .success-btn {
-  background-color: #27ae60;
+  background: var(--accent-gradient, linear-gradient(95deg, #38bdf8 0%, #22c55e 100%));
   color: white;
 }
 
 .success-btn:hover {
-  background-color: #219653;
+  filter: brightness(0.96);
 }
 
 .cancel-btn {
@@ -112,8 +112,8 @@ tr:hover .icon-btn {
 }
 
 .form-input:focus {
-  border-color: #1fa37a;
-  box-shadow: 0 0 0 4px rgba(31, 163, 122, 0.15);
+  border-color: var(--accent-sky, #38bdf8);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18);
 }
 
 .form-actions {
