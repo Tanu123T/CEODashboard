@@ -233,6 +233,10 @@
   gap: 14px;
 }
 
+.sprint-required-kpis {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .sprint-kpi-card {
   background: #ffffff;
   border: 1px solid rgba(56, 189, 248, 0.18);
@@ -415,6 +419,10 @@
   .sprint-kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .sprint-required-kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 1024px) {
@@ -433,6 +441,10 @@
 @media (max-width: 640px) {
   .sprint-project-grid,
   .sprint-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sprint-required-kpis {
     grid-template-columns: 1fr;
   }
 

@@ -1,15 +1,27 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
-import Home from './Home/Home';
-import Project from '../pages/Project/project';
-import Employees from '../pages/Employees/Employees';
-import Sprints from '../pages/Sprints/Sprints';
-import SprintProjectDetail from '../pages/Sprints/SprintProjectDetail';
-import Tasks from '../pages/Tasks/Tasks';
-import Settings from '../pages/Settings/Settings';
 import PageTransition from './PageTransition';
+import PageLoader from './common/PageLoader';
+
+const Home = lazy(() => import('./Home/Home'));
+const Project = lazy(() => import('../pages/Project/project'));
+const Employees = lazy(() => import('../pages/Employees/Employees'));
+const Sprints = lazy(() => import('../pages/Sprints/Sprints'));
+const SprintProjectDetail = lazy(() => import('../pages/Sprints/SprintProjectDetail'));
+const Clients = lazy(() => import('../pages/Clients/Clients'));
+const Risks = lazy(() => import('../pages/Risks/Risks'));
+const Tasks = lazy(() => import('../pages/Tasks/Tasks'));
+const Settings = lazy(() => import('../pages/Settings/Settings'));
+
+const wrappedPage = (Component, title) => (
+  <PageTransition>
+    <Suspense fallback={<PageLoader title={`Loading ${title}...`} />}>
+      <Component />
+    </Suspense>
+  </PageTransition>
+);
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -17,13 +29,15 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-        <Route path="/projects" element={<PageTransition><Project /></PageTransition>} />
-        <Route path="/employees" element={<PageTransition><Employees /></PageTransition>} />
-        <Route path="/sprints" element={<PageTransition><Sprints /></PageTransition>} />
-        <Route path="/sprints/:projectId" element={<PageTransition><SprintProjectDetail /></PageTransition>} />
-        <Route path="/tasks" element={<PageTransition><Tasks /></PageTransition>} />
-        <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
+        <Route path="/" element={wrappedPage(Home, 'Dashboard')} />
+        <Route path="/projects" element={wrappedPage(Project, 'Project Overview')} />
+        <Route path="/sprints" element={wrappedPage(Sprints, 'Sprint Explorer')} />
+        <Route path="/sprints/:projectId" element={wrappedPage(SprintProjectDetail, 'Sprint Detail')} />
+        <Route path="/employees" element={wrappedPage(Employees, 'Team Performance')} />
+        <Route path="/clients" element={wrappedPage(Clients, 'Client Overview')} />
+        <Route path="/risks" element={wrappedPage(Risks, 'Risk Monitoring')} />
+        <Route path="/tasks" element={wrappedPage(Tasks, 'Tasks')} />
+        <Route path="/settings" element={wrappedPage(Settings, 'Settings')} />
       </Routes>
     </AnimatePresence>
   );

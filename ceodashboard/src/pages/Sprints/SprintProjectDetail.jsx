@@ -79,6 +79,19 @@ const SprintProjectDetail = () => {
   }
 
   const details = sprintDetails[project.id];
+  const totalTasks = details.board.length;
+  const completedTasks = details.board.filter((item) => item.status === 'Done').length;
+  const blockedTasks = details.board.filter((item) => item.status === 'Blocked').length;
+  const pendingTasks = totalTasks - completedTasks - blockedTasks;
+  const sprintCompletion = Math.round((completedTasks / Math.max(totalTasks, 1)) * 100);
+
+  const taskKpis = [
+    { title: 'Total Tasks', value: totalTasks, detail: 'All sprint backlog items' },
+    { title: 'Completed Tasks', value: completedTasks, detail: 'Stories moved to done' },
+    { title: 'Pending Tasks', value: pendingTasks, detail: 'Remaining non-blocked work' },
+    { title: 'Blocked Tasks', value: blockedTasks, detail: 'Needs escalation/support' },
+    { title: 'Sprint Completion %', value: `${sprintCompletion}%`, detail: `${completedTasks}/${totalTasks} completed` },
+  ];
 
   return (
     <div className="dashboard-wrapper sprint-page">
@@ -105,6 +118,16 @@ const SprintProjectDetail = () => {
         <div className="sprint-meta-chip">
           <Rocket size={15} /> Release: {project.releaseWindow}
         </div>
+      </section>
+
+      <section className="sprint-kpi-grid sprint-required-kpis">
+        {taskKpis.map((kpi) => (
+          <article key={kpi.title} className="sprint-kpi-card sprint-kpi-good">
+            <p className="sprint-kpi-label">{kpi.title}</p>
+            <h3 className="sprint-kpi-value">{kpi.value}</h3>
+            <p className="sprint-kpi-detail">{kpi.detail}</p>
+          </article>
+        ))}
       </section>
 
       <section className="sprint-kpi-grid">

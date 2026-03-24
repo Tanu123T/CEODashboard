@@ -14,6 +14,9 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { sprintProjects } from './sprintData';
+import EmptyState from '../../components/common/EmptyState';
+import PageLoader from '../../components/common/PageLoader';
+import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 
 const healthClass = (health) => {
   if (health === 'On Track') return 'sprint-health-good';
@@ -27,6 +30,7 @@ const progress = (done, total) => {
 };
 
 const Sprints = () => {
+  const isLoading = useSimulatedLoading(600);
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [healthFilter, setHealthFilter] = useState('All');
@@ -43,6 +47,10 @@ const Sprints = () => {
       return matchesQuery && matchesHealth;
     });
   }, [query, healthFilter]);
+
+  if (isLoading) {
+    return <PageLoader title="Loading Sprint Explorer..." />;
+  }
 
   return (
     <div className="dashboard-wrapper sprint-selector-page">
@@ -131,6 +139,13 @@ const Sprints = () => {
           );
         })}
       </section>
+
+      {filteredProjects.length === 0 ? (
+        <EmptyState
+          title="No sprint projects found"
+          description="Adjust search keywords or health filter to view sprint project options."
+        />
+      ) : null}
 
       <section className="sprint-summary-row">
         <article className="info-card">

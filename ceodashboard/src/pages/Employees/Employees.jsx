@@ -1,183 +1,207 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './Employees.css';
-import '../Project/Project.css'; // Reuse table styles
-import { UserPlus, Edit2, Trash2, Search, UserX } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-
-const initialEmployees = [
-  { id: 1, name: 'Alice Smith', email: 'alice@company.com', role: 'Software Engineer', status: 'Active' },
-  { id: 2, name: 'Bob Johnson', email: 'bob@company.com', role: 'Product Manager', status: 'On Leave' },
-  { id: 3, name: 'Charlie Davis', email: 'charlie@company.com', role: 'UX Designer', status: 'Inactive' },
-  { id: 4, name: 'Diana Prince', email: 'diana@company.com', role: 'Marketing Head', status: 'Active' },
-  { id: 5, name: 'Evan Wright', email: 'evan@company.com', role: 'DevOps Engineer', status: 'Active' },
-];
+import '../Project/Project.css';
+import {
+  Users,
+  Search,
+  ArrowUpDown,
+  CheckCircle2,
+  Gauge,
+  ChevronDown,
+  ChevronUp,
+  Trophy,
+  Inbox,
+} from 'lucide-react';
+import EmptyState from '../../components/common/EmptyState';
+import PageLoader from '../../components/common/PageLoader';
+import useSortableData from '../../hooks/useSortableData';
+import useSimulatedLoading from '../../hooks/useSimulatedLoading';
+import { teamMembers } from '../../data/teamPerformanceData';
 
 const Employees = () => {
-  const [employees, setEmployees] = useState(initialEmployees);
+  const isLoading = useSimulatedLoading(600);
   const [search, setSearch] = useState('');
-  
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ id: null, name: '', email: '', role: '', status: 'Active' });
+  const [squadFilter, setSquadFilter] = useState('All');
+  const [expandedId, setExpandedId] = useState(null);
 
-  const filteredEmployees = employees.filter(emp => 
-    emp.name.toLowerCase().includes(search.toLowerCase()) || 
-    emp.role.toLowerCase().includes(search.toLowerCase()) ||
-    emp.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const squadOptions = useMemo(() => {
+    return ['All', ...new Set(teamMembers.map((member) => member.squad))];
+  }, []);
 
-  const handleAddClick = () => {
-    setFormData({ id: null, name: '', email: '', role: '', status: 'Active' });
-    setShowForm(true);
+  const filteredTeam = useMemo(() => {
+    return teamMembers.filter((member) => {
+      const matchesSearch =
+        member.name.toLowerCase().includes(search.toLowerCase()) ||
+        member.role.toLowerCase().includes(search.toLowerCase()) ||
+        member.squad.toLowerCase().includes(search.toLowerCase());
+
+      const matchesSquad = squadFilter === 'All' || member.squad === squadFilter;
+      return matchesSearch && matchesSquad;
+    });
+  }, [search, squadFilter]);
+
+  const { sortedItems: sortedTeam, sortConfig, requestSort } = useSortableData(filteredTeam, {
+    key: 'taskCompletionRate',
+    direction: 'desc',
+  });
+
+  const averageCompletion = Math.round(teamMembers.reduce((sum, item) => sum + item.taskCompletionRate, 0) / teamMembers.length);
+  const averageUtilization = Math.round(teamMembers.reduce((sum, item) => sum + item.utilization, 0) / teamMembers.length);
+  const topPerformers = teamMembers.filter((item) => item.attendance >= 95 && item.taskCompletionRate >= 90);
+
+  const sortLabel = (key) => {
+    if (sortConfig.key !== key) return <ArrowUpDown size={13} />;
+    return sortConfig.direction === 'asc' ? '↑' : '↓';
   };
 
-  const handleEditClick = (emp) => {
-    setFormData(emp);
-    setShowForm(true);
-  };
-
-  const handleDelete = (id) => {
-    setEmployees(employees.filter(e => e.id !== id));
-  };
-
-  const handleSave = () => {
-    if (!formData.name || !formData.email || !formData.role) return;
-
-    if (formData.id) {
-      // Edit
-      setEmployees(employees.map(e => e.id === formData.id ? formData : e));
-    } else {
-      // Add
-      const newId = employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 1 : 1;
-      setEmployees([...employees, { ...formData, id: newId }]);
-    }
-    setShowForm(false);
-  };
-
-  const getStatusClass = (status) => {
-    if (status === 'Active') return 'status-on-track';
-    if (status === 'On Leave') return 'status-delayed';
-    return 'status-at-risk';
-  };
+  if (isLoading) {
+    return <PageLoader title="Loading Team Performance..." />;
+  }
 
   return (
     <div className="dashboard-wrapper">
-      <header className="main-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <header className="main-header">
         <div>
-          <h1>Employees</h1>
-          <p>Team Management & Directory</p>
+          <h1>Team Performance</h1>
+          <p>Track team members, workload, and delivery quality in one place.</p>
         </div>
-        <button className="action-btn primary-btn" onClick={handleAddClick}>
-          <UserPlus size={16} /> Add Employee
-        </button>
       </header>
 
-      <AnimatePresence>
-      {showForm && (
-        <motion.div 
-          className="form-card"
-          initial={{ opacity: 0, y: -20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -20, scale: 0.95 }}
-          transition={{ duration: 0.2 }}
-        >
-          <h3>{formData.id ? 'Edit Employee' : 'Add Employee'}</h3>
-          <div className="form-grid">
-            <input 
-              type="text" 
-              placeholder="Full Name" 
-              className="form-input"
-              value={formData.name} 
-              onChange={e => setFormData({...formData, name: e.target.value})} 
-            />
-            <input 
-              type="email" 
-              placeholder="Email Address" 
-              className="form-input"
-              value={formData.email} 
-              onChange={e => setFormData({...formData, email: e.target.value})} 
-            />
-            <input 
-              type="text" 
-              placeholder="Role / Title" 
-              className="form-input"
-              value={formData.role} 
-              onChange={e => setFormData({...formData, role: e.target.value})} 
-            />
-            <select 
-              className="form-input" 
-              value={formData.status} 
-              onChange={e => setFormData({...formData, status: e.target.value})}
-            >
-              <option value="Active">Active</option>
-              <option value="On Leave">On Leave</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-          <div className="form-actions">
-            <button className="action-btn success-btn" onClick={handleSave}>Save</button>
-            <button className="action-btn cancel-btn" onClick={() => setShowForm(false)}>Cancel</button>
-          </div>
-        </motion.div>
-      )}
-      </AnimatePresence>
-
-      <div className="main-content-grid" style={{ gridTemplateColumns: '1fr' }}>
-        <div className="table-container">
-          
-          <div className="search-bar">
-            <Search className="search-icon" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search by name, email, or role..." 
-              value={search} 
-              onChange={e => setSearch(e.target.value)} 
-            />
+      <section className="main-content-grid">
+        <article className="table-container">
+          <div className="table-header-row project-toolbar-row">
+            <h2 className="section-title" style={{ margin: 0 }}>Team Performance Matrix</h2>
+            <div className="project-toolbar-controls">
+              <div className="project-search-inline">
+                <Search size={15} />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search by member, role, or squad"
+                />
+              </div>
+              <div className="project-filter-chips">
+                {squadOptions.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    className={`filter-chip ${squadFilter === option ? 'active' : ''}`}
+                    onClick={() => setSquadFilter(option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <table className="projects-table">
-            <thead>
-              <tr>
-                <th>Employee Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEmployees.map(emp => (
-                <tr key={emp.id}>
-                  <td className="font-bold">{emp.name}</td>
-                  <td>{emp.email}</td>
-                  <td>{emp.role}</td>
-                  <td>
-                    <span className={`status-badge ${getStatusClass(emp.status)}`}>
-                      {emp.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="icon-btn edit-btn" onClick={() => handleEditClick(emp)}>
-                      <Edit2 size={16} />
-                    </button>
-                    <button className="icon-btn delete-btn" onClick={() => handleDelete(emp.id)}>
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {filteredEmployees.length === 0 && (
+          <div className="table-scroll">
+            <table className="projects-table">
+              <thead>
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
-                    <UserX size={48} style={{ color: '#ccc', marginBottom: '10px' }} />
-                    <p style={{ margin: 0, fontWeight: 500, color: '#555' }}>No employees found</p>
-                    <p style={{ fontSize: '13px', marginTop: '5px' }}>Try adjusting your search query "{search}".</p>
-                  </td>
+                  <th onClick={() => requestSort('name')} className="sortable-head">Member {sortLabel('name')}</th>
+                  <th onClick={() => requestSort('role')} className="sortable-head">Role {sortLabel('role')}</th>
+                  <th onClick={() => requestSort('attendance')} className="sortable-head">Attendance {sortLabel('attendance')}</th>
+                  <th onClick={() => requestSort('taskCompletionRate')} className="sortable-head">Completion {sortLabel('taskCompletionRate')}</th>
+                  <th onClick={() => requestSort('utilization')} className="sortable-head">Utilization {sortLabel('utilization')}</th>
+                  <th>Tasks</th>
+                  <th>Details</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {sortedTeam.map((member) => (
+                  <React.Fragment key={member.id}>
+                    <tr>
+                      <td className="font-bold">{member.name}</td>
+                      <td>{member.role}</td>
+                      <td>{member.attendance}%</td>
+                      <td>{member.taskCompletionRate}%</td>
+                      <td>{member.utilization}%</td>
+                      <td>{member.completedTasks}/{member.assignedTasks}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="icon-btn details-btn"
+                          style={{ opacity: 1, transform: 'scale(1)' }}
+                          onClick={() => setExpandedId(expandedId === member.id ? null : member.id)}
+                        >
+                          {expandedId === member.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        </button>
+                      </td>
+                    </tr>
+                    {expandedId === member.id ? (
+                      <tr className="project-detail-row">
+                        <td colSpan="7">
+                          <div className="project-detail-card">
+                            <p><strong>Squad:</strong> {member.squad}</p>
+                            <p><strong>Sprint Velocity:</strong> {member.velocity} points</p>
+                            <p><strong>Quality Score:</strong> {member.qualityScore}%</p>
+                            <p><strong>Load Balance:</strong> {member.assignedTasks - member.completedTasks} open tasks remaining</p>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : null}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {sortedTeam.length === 0 ? (
+            <EmptyState
+              title="No team members match current filters"
+              description="Adjust search or squad filter to view performance insights."
+            />
+          ) : null}
+        </article>
+
+        <aside className="sidebar-info">
+          <article className="info-card">
+            <h3><Trophy size={17} /> Top Performers</h3>
+            <ul className="icon-list">
+              {topPerformers.map((member) => (
+                <li key={member.id}>
+                  <div className="list-main">
+                    <Users className="list-icon" size={16} />
+                    <div>
+                      <p className="list-title">{member.name}</p>
+                      <p className="list-subtitle">{member.role}</p>
+                    </div>
+                  </div>
+                  <strong>{member.taskCompletionRate}%</strong>
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="info-card">
+            <h3><Inbox size={17} /> Capacity Notes</h3>
+            <ul className="icon-list">
+              <li>
+                <div className="list-main">
+                  <Gauge className="list-icon" size={16} />
+                  <div>
+                    <p className="list-title">Utilization Threshold</p>
+                    <p className="list-subtitle">Maintain between 75% and 85%</p>
+                  </div>
+                </div>
+                <strong>{averageUtilization}%</strong>
+              </li>
+              <li>
+                <div className="list-main">
+                  <CheckCircle2 className="list-icon" size={16} />
+                  <div>
+                    <p className="list-title">Completion Discipline</p>
+                    <p className="list-subtitle">Target above 88% this quarter</p>
+                  </div>
+                </div>
+                <strong>{averageCompletion}%</strong>
+              </li>
+            </ul>
+          </article>
+        </aside>
+      </section>
     </div>
   );
 };
