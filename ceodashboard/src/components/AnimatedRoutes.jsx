@@ -12,7 +12,6 @@ const Sprints = lazy(() => import('../pages/Sprints/Sprints'));
 const SprintProjectDetail = lazy(() => import('../pages/Sprints/SprintProjectDetail'));
 const Clients = lazy(() => import('../pages/Clients/Clients'));
 const Risks = lazy(() => import('../pages/Risks/Risks'));
-const Tasks = lazy(() => import('../pages/Tasks/Tasks'));
 const Settings = lazy(() => import('../pages/Settings/Settings'));
 
 const wrappedPage = (Component, title) => (
@@ -36,7 +35,6 @@ const AnimatedRoutes = () => {
         <Route path="/employees" element={wrappedPage(Employees, 'Team Performance')} />
         <Route path="/clients" element={wrappedPage(Clients, 'Client Overview')} />
         <Route path="/risks" element={wrappedPage(Risks, 'Risk Monitoring')} />
-        <Route path="/tasks" element={wrappedPage(Tasks, 'Tasks')} />
         <Route path="/settings" element={wrappedPage(Settings, 'Settings')} />
       </Routes>
     </AnimatePresence>

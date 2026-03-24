@@ -10,7 +10,6 @@ import {
   ShieldAlert,
   Settings,
   LogOut,
-  CheckSquare,
   Flag
 } from "lucide-react";
 
@@ -36,11 +35,6 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
         <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`} onClick={handleNavClick}>
           <LayoutDashboard className="icon"/>
           <span>Dashboard</span>
-        </Link>
-
-        <Link to="/tasks" className={`nav-item ${location.pathname === '/tasks' ? 'active' : ''}`} onClick={handleNavClick}>
-          <CheckSquare className="icon"/>
-          <span>Tasks</span>
         </Link>
 
         <Link to="/employees" className={`nav-item ${location.pathname === '/employees' ? 'active' : ''}`} onClick={handleNavClick}>
