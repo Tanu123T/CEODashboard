@@ -12,6 +12,28 @@ import {
   trendValues,
 } from '../teamData';
 
+const mixWithWhite = (hex, amount = 0.3) => {
+  const value = hex.replace('#', '').trim();
+  const normalized = value.length === 3
+    ? value.split('').map((char) => `${char}${char}`).join('')
+    : value;
+
+  if (normalized.length !== 6) {
+    return hex;
+  }
+
+  const [r, g, b] = [0, 2, 4].map((index) => parseInt(normalized.slice(index, index + 2), 16));
+  const blend = (channel) => Math.round(channel + (255 - channel) * amount);
+
+  return `rgb(${blend(r)} ${blend(g)} ${blend(b)})`;
+};
+
+const buildSoftBarGradient = (hex) => {
+  const light = mixWithWhite(hex, 0.5);
+  const mid = mixWithWhite(hex, 0.28);
+  return `linear-gradient(90deg, ${light} 0%, ${mid} 55%, ${hex} 100%)`;
+};
+
 const OverviewTab = () => {
   const maxDeptCount = Math.max(...departmentDistribution.map((item) => item.count));
 
@@ -88,7 +110,10 @@ const OverviewTab = () => {
                 <div className="tm-bar-wrap">
                   <div
                     className="tm-bar"
-                    style={{ '--bar-width': formatPercent((dept.count / maxDeptCount) * 100), backgroundColor: dept.color }}
+                    style={{
+                      '--bar-width': formatPercent((dept.count / maxDeptCount) * 100),
+                      background: buildSoftBarGradient(dept.color),
+                    }}
                   />
                 </div>
                 <strong>{dept.count}</strong>
@@ -131,7 +156,12 @@ const OverviewTab = () => {
                   <em className={projectStatusTone[project.status] || 'on-track'}>{project.status}</em>
                 </div>
                 <div className="tm-progress-track">
-                  <div style={{ '--progress-width': formatPercent(project.progress), backgroundColor: project.color }} />
+                  <div
+                    style={{
+                      '--progress-width': formatPercent(project.progress),
+                      background: buildSoftBarGradient(project.color),
+                    }}
+                  />
                 </div>
                 <div className="tm-project-meta">
                   <span>{project.team}</span>
