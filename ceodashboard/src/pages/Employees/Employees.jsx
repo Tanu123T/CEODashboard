@@ -25,7 +25,11 @@ const Employees = () => {
 
   return (
     <div className="tm-page">
-      <TopBar title="Team Management" subtitle={`Last updated: ${formatted} • ${time}`} />
+      <TopBar
+        title="Welcome, CEO"
+        subtitle="Team Management"
+        pill={`Last updated: ${formatted} • ${time}`}
+      />
 
       <div className="tm-tabs">
         {TABS.map((item) => {
