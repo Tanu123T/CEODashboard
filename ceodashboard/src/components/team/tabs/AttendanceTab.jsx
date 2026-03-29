@@ -50,12 +50,16 @@ const attendanceAreaPoints = () => {
 
 const AttendanceTab = () => {
   return (
-    <>
+    <div className="tm-attendance-root">
       <section className="tm-att-summary-grid">
-        {attendanceSummaryCards.map((item) => {
+        {attendanceSummaryCards.map((item, index) => {
           const Icon = iconMap[item.tone];
           return (
-            <article key={item.title} className="tm-att-summary-card">
+            <article
+              key={item.title}
+              className="tm-att-summary-card tm-att-anim-card"
+              style={{ '--att-index': index }}
+            >
               <span className={`tm-att-summary-icon ${item.tone}`}><Icon size={17} /></span>
               <div>
                 <p>{item.title}</p>
@@ -67,10 +71,14 @@ const AttendanceTab = () => {
       </section>
 
       <section className="tm-att-biometric-grid">
-        {biometricCards.map((card) => {
+        {biometricCards.map((card, index) => {
           const Icon = biometricIconMap[card.tone];
           return (
-            <article key={card.key} className={`tm-att-biometric-card ${card.tone}`}>
+            <article
+              key={card.key}
+              className={`tm-att-biometric-card tm-att-anim-bio ${card.tone}`}
+              style={{ '--att-index': index }}
+            >
               <div className="tm-att-biometric-head">
                 <div className="tm-att-biometric-title">
                   <span><Icon size={19} /></span>
@@ -102,7 +110,7 @@ const AttendanceTab = () => {
       </section>
 
       <section className="tm-att-trend-grid">
-        <article className="tm-att-panel">
+        <article className="tm-att-panel tm-att-anim-panel">
           <div className="tm-att-panel-head">
             <div>
               <h3>Weekly Attendance Trend</h3>
@@ -131,7 +139,7 @@ const AttendanceTab = () => {
           </svg>
         </article>
 
-        <article className="tm-att-panel tm-att-donut-panel">
+        <article className="tm-att-panel tm-att-donut-panel tm-att-anim-panel">
           <h3>Biometric Method Split</h3>
           <p>Today's check-ins by type</p>
           <div className="tm-att-donut" />
@@ -142,7 +150,7 @@ const AttendanceTab = () => {
         </article>
       </section>
 
-      <section className="tm-att-simulator">
+      <section className="tm-att-simulator tm-att-anim-panel">
         <div>
           <h3>Biometric Check-in Simulator</h3>
           <p>Simulate facial or fingerprint check-in</p>
@@ -150,7 +158,7 @@ const AttendanceTab = () => {
         <button type="button">Open Simulator</button>
       </section>
 
-      <section className="tm-att-log-panel">
+      <section className="tm-att-log-panel tm-att-anim-panel">
         <div className="tm-att-log-head">
           <div>
             <h3>Today's Attendance Log</h3>
@@ -182,8 +190,8 @@ const AttendanceTab = () => {
               </tr>
             </thead>
             <tbody>
-              {attendanceLog.map((row) => (
-                <tr key={row.code}>
+              {attendanceLog.map((row, index) => (
+                <tr key={row.code} className="tm-att-log-row" style={{ '--att-row-index': index }}>
                   <td>
                     <div className="tm-att-employee-cell">
                       <span className="tm-att-initials">{row.initials}</span>
@@ -212,7 +220,7 @@ const AttendanceTab = () => {
           </table>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 

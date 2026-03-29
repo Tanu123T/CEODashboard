@@ -11,13 +11,13 @@ export const trendValues = [216, 224, 228, 234, 241, 247];
 export const trendLabels = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
 
 export const departmentDistribution = [
-  { name: 'Eng', count: 82, color: '#6e39de' },
-  { name: 'Sales', count: 42, color: '#15b57b' },
-  { name: 'Mktg', count: 35, color: '#f2a20f' },
-  { name: 'Product', count: 28, color: '#3f7be8' },
-  { name: 'Ops', count: 24, color: '#ec4ba0' },
+  { name: 'Eng', count: 82, color: '#2f71c7' },
+  { name: 'Sales', count: 42, color: '#18b7a6' },
+  { name: 'Mktg', count: 35, color: '#f0a84b' },
+  { name: 'Product', count: 28, color: '#38bdf8' },
+  { name: 'Ops', count: 24, color: '#22c55e' },
   { name: 'Finance', count: 16, color: '#0ca8c7' },
-  { name: 'Design', count: 10, color: '#8054e7' },
+  { name: 'Design', count: 10, color: '#66a3ff' },
   { name: 'HR', count: 10, color: '#667085' },
 ];
 
@@ -31,11 +31,11 @@ export const alerts = [
 ];
 
 export const activeProjects = [
-  { name: 'Platform v3.0 Rebuild', team: 'Engineering', members: 18, due: 'Apr 15', progress: 72, status: 'On Track', color: '#7a55e9' },
-  { name: 'Q1 Enterprise Sales Drive', team: 'Sales', members: 8, due: 'Mar 31', progress: 88, status: 'Ahead', color: '#19b678' },
-  { name: 'Spring Marketing Campaign', team: 'Marketing', members: 6, due: 'Apr 1', progress: 55, status: 'At Risk', color: '#f19f0f' },
-  { name: '2026 Product Roadmap', team: 'Product', members: 5, due: 'Mar 20', progress: 95, status: 'Ahead', color: '#3f7be8' },
-  { name: 'Brand Identity Refresh', team: 'Design', members: 4, due: 'Apr 30', progress: 40, status: 'On Track', color: '#e04e9f' },
+  { name: 'Platform v3.0 Rebuild', team: 'Engineering', members: 18, due: 'Apr 15', progress: 72, status: 'On Track', color: '#18b7a6' },
+  { name: 'Q1 Enterprise Sales Drive', team: 'Sales', members: 8, due: 'Mar 31', progress: 88, status: 'Ahead', color: '#2f71c7' },
+  { name: 'Spring Marketing Campaign', team: 'Marketing', members: 6, due: 'Apr 1', progress: 55, status: 'At Risk', color: '#f0a84b' },
+  { name: '2026 Product Roadmap', team: 'Product', members: 5, due: 'Mar 20', progress: 95, status: 'Ahead', color: '#38bdf8' },
+  { name: 'Brand Identity Refresh', team: 'Design', members: 4, due: 'Apr 30', progress: 40, status: 'On Track', color: '#22c55e' },
 ];
 
 export const topPerformers = [

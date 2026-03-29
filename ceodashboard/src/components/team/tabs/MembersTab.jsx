@@ -46,7 +46,7 @@ const MembersTab = () => {
 
   return (
     <>
-      <section className="tm-member-toolbar">
+      <section className="tm-member-toolbar tm-member-anim-toolbar">
         <div className="tm-search-box">
           <Search size={17} />
           <input
@@ -81,10 +81,11 @@ const MembersTab = () => {
 
       <section className={`tm-members-layout ${viewMode === 'grid' && selectedMember ? 'with-detail' : ''}`}>
         <div className={`tm-member-grid ${viewMode}`}>
-          {filteredMembers.map((member) => (
+          {filteredMembers.map((member, index) => (
             <article
               key={member.id}
-              className={`tm-member-card ${selectedMember?.id === member.id ? 'selected' : ''}`}
+              className={`tm-member-card tm-member-anim-card ${selectedMember?.id === member.id ? 'selected' : ''}`}
+              style={{ '--member-index': index }}
               onClick={() => setSelectedMemberId(member.id)}
               role="button"
               tabIndex={0}
@@ -135,7 +136,7 @@ const MembersTab = () => {
         </div>
 
         {viewMode === 'grid' && selectedMember ? (
-          <aside className="tm-member-detail">
+          <aside className="tm-member-detail tm-member-anim-detail">
             <header>
               <div className={`tm-avatar ${selectedMember.badgeTone}`}>{selectedMember.initials}</div>
               <div>
