@@ -1,257 +1,334 @@
 import React from "react";
 import "./Home.css";
 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  Area,
+  Line,
+  BarChart,
+  Bar,
+  Cell,
+  CartesianGrid,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import {
-  Calendar,
+  Briefcase,
   Users,
-  DollarSign,
-  Clock,
-  AlertCircle,
-  TrendingUp,
-  LayoutDashboard,
-  ArrowUpRight,
-  CheckCircle2,
+  Zap,
   TriangleAlert,
-  CircleDashed,
-  Briefcase
+  TrendingUp,
+  Clock3,
+  UserRound,
+  FileText,
+  ArrowRight,
 } from "lucide-react";
 
-const revenueData = [
-  { month: 'Jan', value: 120 },
-  { month: 'Feb', value: 180 },
-  { month: 'Mar', value: 160 },
-  { month: 'Apr', value: 240 },
-  { month: 'May', value: 210 },
-  { month: 'Jun', value: 340 },
-];
-
-const projectStatus = [
-  { name: 'Completed', value: 45, color: '#22c55e' },
-  { name: 'Active', value: 35, color: '#38bdf8' },
-  { name: 'Delayed', value: 20, color: '#e74c3c' },
-];
-
-const statsData = [
+const kpiCards = [
   {
-    label: 'Total Revenue',
-    value: '₹3.4Cr',
-    meta: '+8.2% vs last month',
-    icon: DollarSign,
+    icon: Briefcase,
+    title: "ACTIVE PROJECTS",
+    value: "6",
+    meta: "2 on track",
+    color: "blue",
   },
   {
-    label: 'Total Employees',
-    value: '148',
-    meta: '+6 new hires this month',
     icon: Users,
+    title: "TEAM MEMBERS",
+    value: "8",
+    meta: "All squads",
+    color: "green",
   },
   {
-    label: 'Active Projects',
-    value: '12',
-    meta: '3 nearing delivery',
-    icon: LayoutDashboard,
+    icon: Zap,
+    title: "ACTIVE SPRINTS",
+    value: "2",
+    meta: "2 in progress",
+    color: "teal",
   },
   {
-    label: 'Growth %',
-    value: '+24%',
-    meta: 'Strong QoQ momentum',
-    icon: TrendingUp,
-  },
-];
-
-const meetings = [
-  {
-    time: '10:30 AM',
-    title: 'Client Meeting',
-    details: 'Medical Tourism Platform',
-  },
-  {
-    time: '12:00 PM',
-    title: 'Team Standup',
-    details: 'Development Team',
-  },
-  {
-    time: '03:00 PM',
-    title: 'Investor Call',
-    details: 'Quarterly Review',
-  },
-];
-
-const alerts = [
-  {
-    tone: 'warning',
     icon: TriangleAlert,
-    title: 'Delayed Project',
-    details: 'CRM System requires milestone realignment',
+    title: "OPEN BLOCKERS",
+    value: "4",
+    meta: "Needs action",
+    color: "red",
+  },
+];
+
+const velocityData = [
+  { week: "W1", planned: 40, actual: 38 },
+  { week: "W2", planned: 45, actual: 42 },
+  { week: "W3", planned: 50, actual: 44 },
+  { week: "W4", planned: 49, actual: 53 },
+  { week: "W5", planned: 55, actual: 50 },
+  { week: "W6", planned: 60, actual: 58 },
+];
+
+const projectProgressData = [
+  { name: "Enterprise", value: 68, color: "#39c89b" },
+  { name: "AI", value: 38, color: "#f4bd1f" },
+  { name: "Multi-Tenant", value: 86, color: "#39c89b" },
+  { name: "Mobile", value: 24, color: "#f26d6d" },
+  { name: "Patient", value: 60, color: "#39c89b" },
+  { name: "Trade", value: 50, color: "#f4bd1f" },
+];
+
+const scheduleItems = [
+  {
+    time: "09:00 AM",
+    title: "Daily Standup - Platform Squad",
+    meta: "15 min - Arjun, Priya, Ravi, Sneha",
+    icon: Users,
+    tone: "blue",
+    tag: "Standup",
   },
   {
-    tone: 'success',
-    icon: CheckCircle2,
-    title: 'Pending Payment Cleared',
-    details: '₹1.5L received from enterprise client',
+    time: "02:00 PM",
+    title: "Risk Review - Orbit Dynamics",
+    meta: "45 min - Kavya, Rohan, Nisha K.",
+    icon: TriangleAlert,
+    tone: "red",
+    tag: "Risk Review",
   },
   {
-    tone: 'danger',
-    icon: CircleDashed,
-    title: 'Critical Bugs',
-    details: '5 high-priority issues need engineering attention',
+    time: "03:30 PM",
+    title: "1:1 with Sneha Patel",
+    meta: "30 min - Sneha",
+    icon: UserRound,
+    tone: "teal",
+    tag: "1:1",
   },
+  {
+    time: "04:30 PM",
+    title: "Q1 Board Report - Prep",
+    meta: "1 hr",
+    icon: FileText,
+    tone: "purple",
+    tag: "Deep Work",
+  },
+  {
+    time: "06:00 PM",
+    title: "Proposal Review - FinEdge Capital",
+    meta: "30 min - Rohan, Amit S.",
+    icon: Briefcase,
+    tone: "orange",
+    tag: "Client",
+  },
+];
+
+const sprintOverview = [
+  { title: "Enterprise CRM Overhaul", meta: "Sprint 24 - TechNova Solutions", progress: 72, tone: "green" },
+  { title: "AI Analytics Dashboard", meta: "Sprint 11 - Orbit Dynamics", progress: 38, tone: "amber" },
+];
+
+const projectsOverview = [
+  { title: "Enterprise CRM Overhaul", meta: "TechNova Solutions", progress: 68, tone: "green" },
+  { title: "AI Analytics Dashboard", meta: "Orbit Dynamics", progress: 38, tone: "amber" },
+  { title: "Multi-Tenant Auth System", meta: "CloudStack Inc.", progress: 85, tone: "green" },
+  { title: "Mobile Commerce App", meta: "RetailPro Group", progress: 24, tone: "red" },
 ];
 
 const Home = () => {
-
-  const today = new Date();
-  const date = today.toLocaleDateString("en-IN", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric"
-  });
-
   return (
     <div className="home">
+      <section className="hero">
+        <h1>Good morning, CEO</h1>
+        <p>Here&apos;s your business snapshot for March 24, 2026.</p>
+      </section>
 
-      {/* Welcome Section */}
-
-      <div className="welcome-section">
-        <div>
-          <p className="welcome-eyebrow">Executive overview</p>
-          <h2>Welcome, CEO</h2>
-          <p className="welcome-date">{date}</p>
-        </div>
-
-        <div className="welcome-pill">
-          <Calendar size={16} />
-          <span>Board review in 2 days</span>
-        </div>
-      </div>
-
-
-      {/* Stats Cards */}
-
-      <div className="stats-grid">
-        {statsData.map((item) => {
-          const Icon = item.icon;
+      <section className="kpi-grid">
+        {kpiCards.map((card) => {
+          const Icon = card.icon;
 
           return (
-            <div className="stat-card" key={item.label}>
-              <div className="stat-icon-wrap">
-                <Icon className="stat-icon" />
+            <article className="kpi-card" key={card.title}>
+              <div className={`kpi-icon ${card.color}`}>
+                <Icon size={20} />
               </div>
-
-              <div className="stat-copy">
-                <p className="stat-label">{item.label}</p>
-                <h3>{item.value}</h3>
-                <p className="stat-meta">
-                  <ArrowUpRight size={14} />
-                  <span>{item.meta}</span>
-                </p>
+              <div>
+                <p className="kpi-title">{card.title}</p>
+                <h3 className="kpi-value">{card.value}</h3>
+                <p className="kpi-meta">{card.meta}</p>
               </div>
-            </div>
+            </article>
           );
         })}
+      </section>
 
-      </div>
-
-      {/* Charts Section */}
-      <div className="home-charts-grid">
-        <div className="chart-card">
-          <div className="card-head">
-            <h3>Revenue Growth</h3>
-            <span className="head-chip">Last 6 months</span>
-          </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={revenueData}>
-              <defs>
-                <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.35}/>
-                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
-              <YAxis hide />
-              <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }} />
-              <Area type="monotone" dataKey="value" stroke="#18b7a6" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="chart-card">
-          <div className="card-head">
-            <h3>Project Status Distribution</h3>
-            <span className="head-chip head-chip-neutral">Live split</span>
-          </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <PieChart>
-              <Pie data={projectStatus} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none">
-                {projectStatus.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-
-          <div className="status-legend">
-            {projectStatus.map((item) => (
-              <div key={item.name} className="legend-item">
-                <span className="legend-dot" style={{ backgroundColor: item.color }} />
-                <span>{item.name}</span>
-                <strong>{item.value}%</strong>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-
-      {/* Main Grid */}
-
-      <div className="dashboard-grid">
-        <div className="schedule-card">
-          <h3><Clock /> Today's Schedule</h3>
-
-          {meetings.map((meeting) => (
-            <div className="meeting" key={meeting.time}>
-              <span className="meeting-time">{meeting.time}</span>
-              <div className="meeting-content">
-                <h4>{meeting.title}</h4>
-                <p>{meeting.details}</p>
-              </div>
+      <section className="charts-grid">
+        <article className="panel">
+          <header className="panel-head">
+            <div>
+              <h2>Sprint Velocity Trend</h2>
+              <p>Planned vs actual story points</p>
             </div>
-          ))}
-        </div>
+            <TrendingUp className="trend-icon" size={20} />
+          </header>
 
+          <div className="chart-wrap chart-wrap-tall">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={velocityData} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="actualFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3bc89b" stopOpacity={0.24} />
+                    <stop offset="95%" stopColor="#3bc89b" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke="#e8eef7" strokeDasharray="4 4" />
+                <XAxis dataKey="week" axisLine={false} tickLine={false} tick={{ fill: "#8ca0b8", fontSize: 12 }} />
+                <YAxis
+                  domain={[0, 60]}
+                  ticks={[0, 15, 30, 45, 60]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#8ca0b8", fontSize: 12 }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    border: "1px solid #d8e1ef",
+                    borderRadius: "10px",
+                    boxShadow: "0 10px 20px rgba(29, 45, 70, 0.08)",
+                    fontSize: "12px",
+                  }}
+                />
+                <Area type="monotone" dataKey="actual" fill="url(#actualFill)" stroke="none" />
+                <Line type="monotone" dataKey="planned" stroke="#5fa2ff" strokeWidth={2.5} strokeDasharray="6 5" dot={false} />
+                <Line type="monotone" dataKey="actual" stroke="#3bc89b" strokeWidth={3} dot={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </article>
 
-        {/* Alerts */}
+        <article className="panel">
+          <header className="panel-head">
+            <div>
+              <h2>Project Progress</h2>
+              <p>Completion % per project</p>
+            </div>
+          </header>
 
-        <div className="alerts-card">
-          <h3><AlertCircle /> Important Alerts</h3>
+          <div className="chart-wrap chart-wrap-tall">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={projectProgressData} margin={{ top: 8, right: 10, left: -16, bottom: 0 }}>
+                <CartesianGrid vertical={false} stroke="#e8eef7" strokeDasharray="4 4" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#8ca0b8", fontSize: 12 }} />
+                <YAxis
+                  domain={[0, 100]}
+                  ticks={[0, 25, 50, 75, 100]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#8ca0b8", fontSize: 12 }}
+                />
+                <Tooltip
+                  formatter={(value) => `${value}%`}
+                  contentStyle={{
+                    border: "1px solid #d8e1ef",
+                    borderRadius: "10px",
+                    boxShadow: "0 10px 20px rgba(29, 45, 70, 0.08)",
+                    fontSize: "12px",
+                  }}
+                />
+                <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={42}>
+                  {projectProgressData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </article>
+      </section>
 
-          {alerts.map((item) => {
+      <section className="panel schedule-panel">
+        <header className="panel-head">
+          <div>
+            <h2>Today&apos;s Schedule</h2>
+            <p>Monday, March 30, 2026</p>
+          </div>
+          <Clock3 className="schedule-clock" size={20} />
+        </header>
+
+        <div className="schedule-list">
+          {scheduleItems.map((item) => {
             const Icon = item.icon;
 
             return (
-              <div className={`alert-item ${item.tone}`} key={item.title}>
-                <div className="alert-icon-wrap">
+              <article className="schedule-item" key={`${item.time}-${item.title}`}>
+                <span className="schedule-time">{item.time}</span>
+                <span className={`schedule-icon ${item.tone}`}>
                   <Icon size={16} />
-                </div>
-                <div>
+                </span>
+                <div className="schedule-copy">
                   <h4>{item.title}</h4>
-                  <p>{item.details}</p>
+                  <p>{item.meta}</p>
                 </div>
-              </div>
+                <span className={`schedule-tag ${item.tone}`}>{item.tag}</span>
+              </article>
             );
           })}
-
-          <button type="button" className="view-all-btn">
-            <Briefcase size={16} />
-            View all priority items
-          </button>
         </div>
+      </section>
 
-      </div>
+      <section className="bottom-grid">
+        <article className="panel compact-panel">
+          <header className="panel-head panel-head-link">
+            <h2>Active Sprints</h2>
+            <button className="link-button" type="button">
+              <span>View all</span>
+              <ArrowRight size={14} />
+            </button>
+          </header>
 
+          <div className="progress-list">
+            {sprintOverview.map((item) => (
+              <article className="progress-item" key={item.title}>
+                <div className={`progress-dot ${item.tone}`} />
+                <div className="progress-copy">
+                  <h4>{item.title}</h4>
+                  <p>{item.meta}</p>
+                </div>
+                <div className="progress-value-wrap">
+                  <strong>{item.progress}%</strong>
+                  <div className="progress-track">
+                    <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </article>
+
+        <article className="panel compact-panel">
+          <header className="panel-head panel-head-link">
+            <h2>Projects Overview</h2>
+            <button className="link-button" type="button">
+              <span>View all</span>
+              <ArrowRight size={14} />
+            </button>
+          </header>
+
+          <div className="progress-list">
+            {projectsOverview.map((item) => (
+              <article className="progress-item" key={item.title}>
+                <div className={`progress-dot ${item.tone}`} />
+                <div className="progress-copy">
+                  <h4>{item.title}</h4>
+                  <p>{item.meta}</p>
+                </div>
+                <div className="progress-value-wrap">
+                  <strong>{item.progress}%</strong>
+                  <div className="progress-track">
+                    <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </article>
+      </section>
     </div>
   );
 };

@@ -1,12 +1,12 @@
 .sprint-page,
 .sprint-selector-page {
   display: grid;
-  gap: 22px;
+  gap: 10px;
 }
 
 .sprint-selector-controls {
   display: grid;
-  gap: 14px;
+  gap: 10px;
 }
 
 .sprint-search-wrap {
@@ -33,16 +33,16 @@
 
 .sprint-filter-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .sprint-filter-chip {
   border: 1px solid #d9e2ec;
-  background: #f8fbfd;
+  background: #f8fafc;
   color: #334155;
   border-radius: 999px;
-  padding: 7px 12px;
+  padding: 6px 10px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -57,17 +57,17 @@
 .sprint-project-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 10px;
 }
 
 .sprint-project-card {
   background: #ffffff;
-  border: 1px solid rgba(56, 189, 248, 0.18);
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e7edf3;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .sprint-project-head {
@@ -78,7 +78,7 @@
 
 .sprint-project-head h3 {
   margin: 2px 0 0;
-  font-size: 20px;
+  font-size: 15px;
   color: #111111;
 }
 
@@ -97,29 +97,29 @@
   align-items: center;
   gap: 7px;
   color: #475569;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .sprint-project-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .sprint-project-stats p {
   margin: 0;
   color: #64748b;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .sprint-project-stats strong {
-  font-size: 13px;
+  font-size: 12px;
   color: #0f172a;
 }
 
 .sprint-project-progress-bar {
   width: 100%;
-  height: 8px;
+  height: 6px;
   border-radius: 999px;
   background: #e8edf4;
   overflow: hidden;
@@ -142,13 +142,13 @@
 .sprint-summary-copy {
   color: #475569;
   margin: 0;
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 .sprint-summary-metrics {
-  margin-top: 14px;
+  margin-top: 10px;
   display: flex;
-  gap: 14px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -158,7 +158,7 @@
   gap: 6px;
   padding: 6px 10px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   background: linear-gradient(95deg, rgba(56, 189, 248, 0.12) 0%, rgba(34, 197, 94, 0.12) 100%);
   color: #0b6d9d;
@@ -172,12 +172,12 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   border: 1px solid #d9e2ec;
   border-radius: 999px;
-  background: #f8fbfd;
+  background: #f8fafc;
   color: #334155;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   padding: 6px 11px;
   cursor: pointer;
@@ -188,8 +188,8 @@
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  padding: 8px 13px;
-  font-size: 12px;
+  padding: 7px 12px;
+  font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -220,8 +220,8 @@
   align-items: center;
   gap: 7px;
   border-radius: 999px;
-  padding: 7px 12px;
-  font-size: 12px;
+  padding: 6px 10px;
+  font-size: 11px;
   font-weight: 600;
   color: #0b6d9d;
   background: linear-gradient(95deg, rgba(56, 189, 248, 0.12) 0%, rgba(34, 197, 94, 0.12) 100%);
@@ -230,7 +230,7 @@
 .sprint-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
 .sprint-required-kpis {
@@ -239,30 +239,30 @@
 
 .sprint-kpi-card {
   background: #ffffff;
-  border: 1px solid rgba(56, 189, 248, 0.18);
+  border: 1px solid #e7edf3;
   border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .sprint-kpi-label {
   margin: 0;
   color: #64748b;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
 
 .sprint-kpi-value {
   margin: 4px 0;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.2;
   color: #111111;
 }
 
 .sprint-kpi-detail {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -281,11 +281,134 @@
 .sprint-chart-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 20px;
+  gap: 10px;
 }
 
 .sprint-main-grid {
   margin-top: 0;
+}
+
+.sprint-panel {
+  background: #ffffff;
+  border: 1px solid #e7edf3;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.sprint-panel h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 650;
+  color: #0b1f44;
+}
+
+.sprint-section-title {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 650;
+  color: #0b1f44;
+}
+
+.sprint-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 10px;
+}
+
+.sprint-sidebar {
+  display: grid;
+  gap: 10px;
+}
+
+.sprint-info-card {
+  background: #ffffff;
+  border: 1px solid #e7edf3;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.sprint-info-card h3 {
+  margin: 0 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 650;
+  color: #0b1f44;
+}
+
+.sprint-board-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sprint-board-table th {
+  text-align: left;
+  color: #5f738f;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid #e7edf3;
+  padding: 10px 8px;
+}
+
+.sprint-board-table td {
+  color: #253a57;
+  font-size: 13px;
+  border-bottom: 1px solid #eef3f8;
+  padding: 10px 8px;
+  vertical-align: middle;
+}
+
+.sprint-board-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.sprint-ticket-id {
+  font-weight: 700;
+  color: #0b1f44;
+}
+
+.sprint-owner-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sprint-row-icon {
+  color: #7f93ad;
+}
+
+.sprint-list-title {
+  margin: 0;
+  color: #233b58;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sprint-list-subtitle {
+  margin: 3px 0 0;
+  color: #7b8ca3;
+  font-size: 12px;
+}
+
+.sprint-legend {
+  display: grid;
+  gap: 8px;
+}
+
+.sprint-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 12px;
+}
+
+.sprint-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .sprint-board-table td:nth-child(2) {
@@ -427,7 +550,8 @@
 
 @media (max-width: 1024px) {
   .sprint-chart-grid,
-  .sprint-main-grid {
+  .sprint-main-grid,
+  .sprint-detail-grid {
     grid-template-columns: 1fr;
   }
 }

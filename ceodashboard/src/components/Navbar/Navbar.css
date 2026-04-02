@@ -1,12 +1,12 @@
 .navbar{
     width:260px;
-    background:#f7f8f9;
+    background:#edf2f7;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-    padding:20px;
-    border-right:1px solid #e4e4e4;
-    height: calc(100vh - 70px); /* Full height minus header */
+    padding:12px 10px;
+    border-right:1px solid #d7e1ec;
+    height: calc(100vh - 58px);
     box-sizing:border-box;
 }
 
@@ -15,18 +15,19 @@
 .nav-menu{
     display:flex;
     flex-direction:column;
-    gap:10px;
+    gap:2px;
 }
 
 .nav-item{
     display:flex;
     align-items:center;
     gap:12px;
-    padding:12px 14px;
-    border-radius:8px;
+    padding:10px 12px;
+    border-radius:12px;
     cursor:pointer;
-    color:#555;
-    font-size:14px;
+    color:#3b506d;
+    font-size:17px;
+    font-weight:500;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -34,22 +35,23 @@
 }
 
 .nav-item:hover{
-    background:#eeeeee;
-    transform: translateX(4px);
+    background:#e4ecf6;
+    transform: translateX(2px);
 }
 
 .icon{
-    font-size:18px;
+    width:20px;
+    height:20px;
     flex-shrink:0;
 }
 
 /* ACTIVE MENU */
 
 .nav-item.active{
-    background:var(--accent-gradient);
+    background:linear-gradient(95deg, #4b8fe7 0%, #2fc7a6 100%);
     color:white;
-    transform: translateX(6px);
-    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+    transform: none;
+    box-shadow: 0 6px 16px rgba(56, 132, 226, 0.22);
 }
 
 /* BOTTOM MENU */
@@ -57,15 +59,18 @@
 .bottom-menu{
     display:flex;
     flex-direction:column;
-    gap:10px;
-    margin-bottom: 50px;
+    gap:2px;
+    margin-top:8px;
+    padding-top:10px;
+    border-top:1px solid #d8e2ee;
+    margin-bottom: 6px;
 }
 
 @media (max-width: 1024px) {
     .navbar{
         width:280px;
         max-width:85vw;
-        height: calc(100vh - 70px);
+        height: calc(100vh - 58px);
         transform: translateX(-100%);
         transition: transform 0.25s ease;
         z-index:999;
@@ -77,7 +82,7 @@
     }
 
     .bottom-menu{
-        margin-bottom:20px;
+        margin-bottom:8px;
     }
 }
 
@@ -86,11 +91,11 @@
         top:64px;
         height: calc(100vh - 64px);
         width:260px;
-        padding:16px;
+        padding:12px 10px;
     }
 
     .nav-item{
-        padding:11px 12px;
+        padding:10px 10px;
         font-size:13px;
     }
 }

@@ -1,224 +1,295 @@
 import React, { useMemo, useState } from 'react';
 import './Project.css';
 import {
+  ArrowLeft,
+  ArrowRight,
   BriefcaseBusiness,
-  CheckCircle2,
-  Search,
-  Users2,
-  Building2,
   CalendarDays,
-  AlertTriangle,
-  ChevronDown,
-  ChevronUp,
-  ArrowUpDown,
-  FolderSearch,
+  CheckCircle,
+  Circle,
+  Clock3,
+  TriangleAlert,
+  UserRound,
+  Zap,
 } from 'lucide-react';
-import '../Employees/Employees.css';
-import EmptyState from '../../components/common/EmptyState';
 import PageLoader from '../../components/common/PageLoader';
-import useSortableData from '../../hooks/useSortableData';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 import { projectRecords } from '../../data/projectsData';
 
-const STATUS_OPTIONS = ['All', 'Active', 'Ongoing', 'Completed'];
-
-const formatDate = (isoDate) => {
-  return new Date(isoDate).toLocaleDateString('en-IN', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-};
+const formatCurrency = (value) => `₹${value.toLocaleString('en-IN')}`;
 
 const Projects = () => {
   const isLoading = useSimulatedLoading(650);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
-  const [expandedProjectId, setExpandedProjectId] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
-  const filteredProjects = useMemo(() => {
-    return projectRecords.filter((project) => {
-      const matchesSearch =
-        project.name.toLowerCase().includes(search.toLowerCase()) ||
-        project.client.toLowerCase().includes(search.toLowerCase()) ||
-        project.manager.toLowerCase().includes(search.toLowerCase());
+  const totals = useMemo(() => {
+    const onTrack = projectRecords.filter((item) => item.statusTone === 'on-track').length;
+    const needsAttention = projectRecords.filter((item) => item.statusTone !== 'on-track').length;
 
-      const matchesStatus =
-        statusFilter === 'All' || project.status === statusFilter;
+    return {
+      total: projectRecords.length,
+      onTrack,
+      needsAttention,
+    };
+  }, []);
 
-      return matchesSearch && matchesStatus;
-    });
-  }, [search, statusFilter]);
-
-  const { sortedItems: sortedProjects, sortConfig, requestSort } = useSortableData(filteredProjects, {
-    key: 'deadline',
-    direction: 'asc',
-  });
-
-  const sortLabel = (key) => {
-    if (sortConfig.key !== key) return <ArrowUpDown size={13} />;
-    return sortConfig.direction === 'asc' ? '↑' : '↓';
-  };
+  const selectedProject = useMemo(
+    () => projectRecords.find((item) => item.id === selectedProjectId) || null,
+    [selectedProjectId]
+  );
 
   if (isLoading) {
     return <PageLoader title="Loading Project Overview..." />;
   }
 
+  if (selectedProject) {
+    const radius = 66;
+    const circumference = 2 * Math.PI * radius;
+    const progress = Math.max(0, Math.min(100, selectedProject.progress));
+    const dashOffset = circumference - (progress / 100) * circumference;
+    const remaining = Math.max(selectedProject.budgetTotal - selectedProject.budgetSpent, 0);
+
+    return (
+      <div className="projects-page project-detail-page">
+        <button type="button" className="project-back" onClick={() => setSelectedProjectId(null)}>
+          <ArrowLeft size={17} />
+          <span>Back to Projects</span>
+        </button>
+
+        <section className="project-detail-hero">
+          <div className="project-detail-hero-top" />
+          <div className="project-detail-hero-content">
+            <div>
+              <h1>{selectedProject.name}</h1>
+              <p>{selectedProject.client}</p>
+            </div>
+            <span className={`project-status-pill ${selectedProject.statusTone}`}>
+              <Circle size={8} fill="currentColor" />
+              {selectedProject.statusLabel}
+            </span>
+          </div>
+
+          <div className="project-detail-meta-cards">
+            <article>
+              <p><CalendarDays size={14} /> START DATE</p>
+              <h3>{selectedProject.startDate}</h3>
+            </article>
+            <article>
+              <p><CalendarDays size={14} /> DEADLINE</p>
+              <h3>{selectedProject.dueDate}</h3>
+            </article>
+            <article>
+              <p><UserRound size={14} /> LEAD</p>
+              <h3>{selectedProject.lead}</h3>
+            </article>
+            <article>
+              <p><Zap size={14} /> SPRINTS</p>
+              <h3>{selectedProject.sprints}</h3>
+            </article>
+          </div>
+        </section>
+
+        <section className="project-detail-grid top">
+          <article className="project-detail-panel">
+            <h3>ABOUT</h3>
+            <p className="project-about-text">{selectedProject.about}</p>
+
+            <h3 className="detail-subtitle">TECH STACK</h3>
+            <div className="chip-row muted">
+              {selectedProject.techStack.map((item) => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
+
+            <h3 className="detail-subtitle">TEAM</h3>
+            <div className="chip-row green">
+              {selectedProject.team.map((member) => (
+                <span key={member}>{member}</span>
+              ))}
+            </div>
+          </article>
+
+          <article className="project-detail-panel project-completion-panel">
+            <div className="progress-ring-wrap">
+              <svg viewBox="0 0 180 180" className="progress-ring" aria-label="Project completion">
+                <circle cx="90" cy="90" r={radius} className="progress-ring-track" />
+                <circle
+                  cx="90"
+                  cy="90"
+                  r={radius}
+                  className="progress-ring-fill"
+                  style={{
+                    strokeDasharray: circumference,
+                    strokeDashoffset: dashOffset,
+                  }}
+                />
+              </svg>
+              <div className="progress-ring-copy">
+                <strong>{selectedProject.progress}%</strong>
+                <span>Complete</span>
+              </div>
+            </div>
+            <p>{selectedProject.milestonesDone} of {selectedProject.milestones.length} milestones done</p>
+          </article>
+        </section>
+
+        <section className="project-detail-panel">
+          <h3>BUDGET</h3>
+          <div className="budget-head-row">
+            <strong>{formatCurrency(selectedProject.budgetSpent)}</strong>
+            <span>of {formatCurrency(selectedProject.budgetTotal)}</span>
+            <em>{selectedProject.progress}% utilized</em>
+          </div>
+          <div className="project-progress-track detail-budget-track">
+            <span className="project-progress-fill on-track" style={{ width: `${selectedProject.progress}%` }} />
+          </div>
+
+          <div className="budget-stat-grid">
+            <article>
+              <p>BUDGET</p>
+              <h4>{formatCurrency(selectedProject.budgetTotal)}</h4>
+            </article>
+            <article>
+              <p>SPENT</p>
+              <h4 className="green-text">{formatCurrency(selectedProject.budgetSpent)}</h4>
+            </article>
+            <article>
+              <p>REMAINING</p>
+              <h4 className="green-text">{formatCurrency(remaining)}</h4>
+            </article>
+          </div>
+        </section>
+
+        <section className="project-detail-panel">
+          <h3>MILESTONES</h3>
+          <div className="milestone-list">
+            {selectedProject.milestones.map((item) => (
+              <article key={item.title} className="milestone-item">
+                <div className={`milestone-name ${item.done ? 'done' : ''}`}>
+                  {item.done ? <CheckCircle size={20} /> : <Circle size={20} />}
+                  <span>{item.title}</span>
+                </div>
+                <strong>{item.date}</strong>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="project-detail-panel">
+          <h3>RISKS</h3>
+          <div className="risk-list">
+            {selectedProject.risks.length > 0 ? (
+              selectedProject.risks.map((risk) => (
+                <div key={risk} className="risk-item">
+                  <TriangleAlert size={18} />
+                  <span>{risk}</span>
+                </div>
+              ))
+            ) : (
+              <div className="risk-item neutral">
+                <CheckCircle size={18} />
+                <span>No active risks logged.</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="project-detail-panel">
+          <h3>RECENT ACTIVITY</h3>
+          <div className="activity-list">
+            {selectedProject.activity.map((item) => (
+              <article key={`${item.actor}-${item.time}`} className="activity-item">
+                <Clock3 size={16} />
+                <div>
+                  <p><strong>{item.actor}</strong> {item.action}</p>
+                  <span>{item.time}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
-    <div className="dashboard-wrapper">
-      <header className="main-header">
-        <div>
-          <h1>Project Overview</h1>
-          <p>Manage projects, owners, timelines, and delivery risk from one register.</p>
-        </div>
-        <div className="header-status">
-          <CheckCircle2 className="sync-icon" size={16} /> Live overview refreshed now
-        </div>
+    <div className="projects-page">
+      <header className="projects-header">
+        <h1>Projects</h1>
+        <p>All active and in-progress projects</p>
       </header>
 
-      <section className="table-container">
-        <div className="table-header-row project-toolbar-row">
-          <h2 className="section-title" style={{ margin: 0 }}>Project Register</h2>
-          <div className="project-toolbar-controls">
-            <div className="project-search-inline">
-              <Search size={15} />
-              <input
-                type="text"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search by project, client, or manager"
-              />
-            </div>
-            <div className="project-filter-chips">
-              {STATUS_OPTIONS.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  className={`filter-chip ${statusFilter === option ? 'active' : ''}`}
-                  onClick={() => setStatusFilter(option)}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="table-scroll">
-          <table className="projects-table">
-            <thead>
-              <tr>
-                <th onClick={() => requestSort('name')} className="sortable-head">Project {sortLabel('name')}</th>
-                <th onClick={() => requestSort('client')} className="sortable-head">Client {sortLabel('client')}</th>
-                <th onClick={() => requestSort('manager')} className="sortable-head">Manager {sortLabel('manager')}</th>
-                <th>Team</th>
-                <th onClick={() => requestSort('status')} className="sortable-head">Status {sortLabel('status')}</th>
-                <th onClick={() => requestSort('startDate')} className="sortable-head">Start Date {sortLabel('startDate')}</th>
-                <th onClick={() => requestSort('deadline')} className="sortable-head">Deadline {sortLabel('deadline')}</th>
-                <th onClick={() => requestSort('progress')} className="sortable-head">Progress {sortLabel('progress')}</th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedProjects.map((project) => (
-                <React.Fragment key={project.id}>
-                  <tr>
-                    <td className="font-bold">{project.name}</td>
-                    <td className="client-cell"><Building2 className="row-icon" size={15} />{project.client}</td>
-                    <td>{project.manager}</td>
-                    <td className="team-lead-cell"><Users2 className="row-icon" size={15} />{project.teamMembers.length} members</td>
-                    <td>
-                      <span className={`status-badge status-${project.status.toLowerCase()}`}>
-                        {project.status}
-                      </span>
-                    </td>
-                    <td className="date-cell"><CalendarDays className="row-icon" size={14} />{formatDate(project.startDate)}</td>
-                    <td className="date-cell">{formatDate(project.deadline)}</td>
-                    <td>
-                      <div className="prog-bar-bg">
-                        <div className="prog-bar-fill" style={{ width: `${project.progress}%`, background: 'linear-gradient(95deg, #38bdf8 0%, #22c55e 100%)' }} />
-                      </div>
-                      <small>{project.progress}%</small>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="icon-btn details-btn"
-                        onClick={() => setExpandedProjectId(expandedProjectId === project.id ? null : project.id)}
-                        style={{ opacity: 1, transform: 'scale(1)' }}
-                      >
-                        {expandedProjectId === project.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                      </button>
-                    </td>
-                  </tr>
-                  {expandedProjectId === project.id ? (
-                    <tr className="project-detail-row">
-                      <td colSpan="9">
-                        <div className="project-detail-card">
-                          <p><strong>Milestone:</strong> {project.milestone}</p>
-                          <p><strong>Risk Level:</strong> {project.riskLevel}</p>
-                          <p><strong>Budget:</strong> INR {project.budget}Cr | <strong>Spent:</strong> INR {project.spent}Cr</p>
-                          <p><strong>Team Members:</strong> {project.teamMembers.join(', ')}</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {sortedProjects.length === 0 ? (
-          <EmptyState
-            title="No projects match your filter"
-            description="Try changing the status filter or search term to view project data."
-          />
-        ) : null}
+      <section className="projects-kpi-grid">
+        <article className="projects-kpi-card">
+          <p>Total Projects</p>
+          <h3 className="kpi-blue">{totals.total}</h3>
+        </article>
+        <article className="projects-kpi-card">
+          <p>On Track</p>
+          <h3 className="kpi-green">{totals.onTrack}</h3>
+        </article>
+        <article className="projects-kpi-card">
+          <p>Needs Attention / At Risk</p>
+          <h3 className="kpi-red">{totals.needsAttention}</h3>
+        </article>
       </section>
 
-      <section className="main-content-grid">
-        <article className="info-card">
-          <h3><CalendarDays size={17} /> Upcoming Deadlines</h3>
-          <ul className="icon-list">
-            {projectRecords
-              .slice()
-              .sort((a, b) => Date.parse(a.deadline) - Date.parse(b.deadline))
-              .slice(0, 4)
-              .map((item) => (
-                <li key={item.id}>
-                  <div className="list-main">
-                    <BriefcaseBusiness className="list-icon" size={16} />
-                    <div>
-                      <p className="list-title">{item.name}</p>
-                      <p className="list-subtitle">{item.status} | {item.client}</p>
-                    </div>
-                  </div>
-                  <strong>{formatDate(item.deadline)}</strong>
-                </li>
-              ))}
-          </ul>
-        </article>
+      <section className="projects-grid">
+        {projectRecords.map((project) => (
+          <button
+            key={project.id}
+            type="button"
+            className="project-card"
+            onClick={() => setSelectedProjectId(project.id)}
+          >
+            <div className="project-row-top">
+              <div className="project-head-left">
+                <span className={`project-icon ${project.iconTone}`}>
+                  <BriefcaseBusiness size={17} />
+                </span>
+                <div>
+                  <h3>
+                    {project.name}
+                    <span className={`project-status-pill ${project.statusTone}`}>
+                      <Circle size={8} fill="currentColor" />
+                      {project.statusLabel}
+                    </span>
+                  </h3>
+                  <p>{project.client}</p>
+                </div>
+              </div>
+              <ArrowRight size={18} className="project-arrow" />
+            </div>
 
-        <article className="info-card attention">
-          <h3><AlertTriangle size={17} className="critical-icon" /> Immediate Attention</h3>
-          <ul className="icon-list">
-            {projectRecords
-              .filter((item) => item.riskLevel === 'High')
-              .map((item) => (
-                <li key={item.id}>
-                  <div className="list-main">
-                    <FolderSearch className="list-icon" size={16} />
-                    <div>
-                      <p className="list-title">{item.name}</p>
-                      <p className="list-subtitle">Manager: {item.manager}</p>
-                    </div>
-                  </div>
-                  <strong>{item.riskLevel}</strong>
-                </li>
-              ))}
-          </ul>
-        </article>
+            <div className="project-progress-block">
+              <div className="project-progress-head">
+                <span>Progress</span>
+                <strong>{project.progress}%</strong>
+              </div>
+              <div className="project-progress-track">
+                <span
+                  className={`project-progress-fill ${project.statusTone}`}
+                  style={{ width: `${project.progress}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="project-meta-row">
+              <span>
+                Lead: <strong>{project.lead}</strong>
+              </span>
+              <span>
+                Due: <strong>{project.dueDate}</strong>
+              </span>
+              {project.riskCount > 0 ? (
+                <span className="risk-meta">
+                  <TriangleAlert size={14} />
+                  {project.riskCount} {project.riskCount === 1 ? 'risk' : 'risks'}
+                </span>
+              ) : null}
+            </div>
+          </button>
+        ))}
       </section>
     </div>
   );

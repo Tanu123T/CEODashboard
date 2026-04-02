@@ -1,17 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './Risks.css';
-import '../Project/Project.css';
-import '../Employees/Employees.css';
-import {
-  Search,
-  ArrowUpDown,
-  ChevronDown,
-  ChevronUp,
-  Activity,
-} from 'lucide-react';
-import EmptyState from '../../components/common/EmptyState';
+import { Activity, ChevronDown, ChevronUp, Search, TriangleAlert } from 'lucide-react';
 import PageLoader from '../../components/common/PageLoader';
-import useSortableData from '../../hooks/useSortableData';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 import { riskAlerts } from '../../data/risksData';
 
@@ -66,126 +56,117 @@ const Risks = () => {
     });
   }, [alerts, query, categoryFilter]);
 
-  const { sortedItems: sortedAlerts, sortConfig, requestSort } = useSortableData(filteredAlerts, {
-    key: 'ageDays',
-    direction: 'desc',
-  });
+  const stats = useMemo(() => {
+    const criticalOrHigh = filteredAlerts.filter(
+      (item) => item.severity === 'Critical' || item.severity === 'High'
+    ).length;
+    const open = filteredAlerts.filter((item) => item.status === 'Open').length;
 
-  const sortLabel = (key) => {
-    if (sortConfig.key !== key) return <ArrowUpDown size={13} />;
-    return sortConfig.direction === 'asc' ? '↑' : '↓';
-  };
+    return {
+      total: filteredAlerts.length,
+      criticalOrHigh,
+      open,
+    };
+  }, [filteredAlerts]);
 
   if (isLoading) {
     return <PageLoader title="Loading Risk & Alert Monitoring..." />;
   }
 
   return (
-    <div className="dashboard-wrapper">
-      <header className="main-header">
+    <div className="risks-page">
+      <header className="risks-header">
         <div>
-          <h1>Risk & Alert Monitoring</h1>
+          <h1>Risks & Alerts</h1>
           <p>Track active risks, ownership, and mitigation status across projects.</p>
         </div>
-        <div className="header-status">
-          <Activity className="sync-icon" size={16} /> Real-time simulation | {lastUpdated.toLocaleTimeString('en-IN')}
+        <div className="risks-live-pill">
+          <Activity size={16} />
+          <span>Live update {lastUpdated.toLocaleTimeString('en-IN')}</span>
         </div>
       </header>
 
-      <section className="table-container">
-        <div className="table-header-row project-toolbar-row">
-          <h2 className="section-title" style={{ margin: 0 }}>Risk Register</h2>
-          <div className="project-toolbar-controls">
-            <div className="project-search-inline">
-              <Search size={15} />
-              <input
-                type="text"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search by project, owner, or category"
-              />
-            </div>
-            <div className="project-filter-chips">
-              {categoryOptions.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  className={`filter-chip ${categoryFilter === option ? 'active' : ''}`}
-                  onClick={() => setCategoryFilter(option)}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+      <section className="risks-kpi-grid">
+        <article className="risk-kpi-card">
+          <p>Total Alerts</p>
+          <h3>{stats.total}</h3>
+        </article>
+        <article className="risk-kpi-card warning">
+          <p>Critical / High</p>
+          <h3>{stats.criticalOrHigh}</h3>
+        </article>
+        <article className="risk-kpi-card danger">
+          <p>Open Alerts</p>
+          <h3>{stats.open}</h3>
+        </article>
+      </section>
 
-        <div className="table-scroll">
-          <table className="projects-table">
-            <thead>
-              <tr>
-                <th onClick={() => requestSort('id')} className="sortable-head">ID {sortLabel('id')}</th>
-                <th onClick={() => requestSort('category')} className="sortable-head">Category {sortLabel('category')}</th>
-                <th onClick={() => requestSort('project')} className="sortable-head">Project {sortLabel('project')}</th>
-                <th onClick={() => requestSort('severity')} className="sortable-head">Severity {sortLabel('severity')}</th>
-                <th onClick={() => requestSort('owner')} className="sortable-head">Owner {sortLabel('owner')}</th>
-                <th onClick={() => requestSort('ageDays')} className="sortable-head">Age (days) {sortLabel('ageDays')}</th>
-                <th onClick={() => requestSort('status')} className="sortable-head">Status {sortLabel('status')}</th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedAlerts.map((alert) => (
-                <React.Fragment key={alert.id}>
-                  <tr>
-                    <td className="font-bold">{alert.id}</td>
-                    <td>{alert.category}</td>
-                    <td>{alert.project}</td>
-                    <td>
-                      <span className={`risk-severity-badge severity-${alert.severity.toLowerCase()}`}>
-                        {alert.severity}
-                      </span>
-                    </td>
-                    <td>{alert.owner}</td>
-                    <td>{alert.ageDays}</td>
-                    <td>
-                      <span className={`risk-status-badge risk-status-${alert.status.toLowerCase()}`}>
-                        {alert.status}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="icon-btn details-btn"
-                        style={{ opacity: 1, transform: 'scale(1)' }}
-                        onClick={() => setExpandedId(expandedId === alert.id ? null : alert.id)}
-                      >
-                        {expandedId === alert.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                      </button>
-                    </td>
-                  </tr>
-                  {expandedId === alert.id ? (
-                    <tr className="project-detail-row">
-                      <td colSpan="8">
-                        <div className="project-detail-card">
-                          <p><strong>Description:</strong> {alert.description}</p>
-                          <p><strong>Owner Team:</strong> {alert.owner}</p>
-                          <p><strong>Monitoring Note:</strong> Alert state updates automatically every 12 seconds for UI simulation.</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {sortedAlerts.length === 0 ? (
-          <EmptyState
-            title="No risk alerts found"
-            description="Adjust search or category filters to inspect risk records."
+      <section className="risk-toolbar">
+        <div className="risk-search-inline">
+          <Search size={15} />
+          <input
+            type="text"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search by project, owner, or category"
           />
+        </div>
+        <div className="risk-filter-chips">
+          {categoryOptions.map((option) => (
+            <button
+              key={option}
+              type="button"
+              className={`risk-chip ${categoryFilter === option ? 'active' : ''}`}
+              onClick={() => setCategoryFilter(option)}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="risk-list">
+        {filteredAlerts.map((alert) => (
+          <article key={alert.id} className="risk-row-card">
+            <div className="risk-row-main">
+              <div className="risk-main-left">
+                <p className="risk-id">{alert.id}</p>
+                <div>
+                  <h3>{alert.project}</h3>
+                  <p>{alert.category} - Owner: {alert.owner}</p>
+                </div>
+              </div>
+
+              <div className="risk-main-right">
+                <span className={`risk-badge severity-${alert.severity.toLowerCase()}`}>{alert.severity}</span>
+                <span className={`risk-badge status-${alert.status.toLowerCase()}`}>{alert.status}</span>
+                <span className="risk-age">{alert.ageDays}d</span>
+                <button
+                  type="button"
+                  className="risk-toggle-btn"
+                  onClick={() => setExpandedId(expandedId === alert.id ? null : alert.id)}
+                >
+                  {expandedId === alert.id ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                </button>
+              </div>
+            </div>
+
+            {expandedId === alert.id ? (
+              <div className="risk-expanded">
+                <p>
+                  <TriangleAlert size={15} />
+                  <span>{alert.description}</span>
+                </p>
+              </div>
+            ) : null}
+          </article>
+        ))}
+
+        {filteredAlerts.length === 0 ? (
+          <article className="risk-empty">
+            <h4>No risk alerts found</h4>
+            <p>Adjust search or category filters to inspect risk records.</p>
+          </article>
         ) : null}
       </section>
     </div>

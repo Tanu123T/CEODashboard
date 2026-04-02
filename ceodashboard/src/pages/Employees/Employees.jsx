@@ -4,16 +4,12 @@ import TopBar from '../../components/layout/TopBar';
 import OverviewTab from '../../components/team/tabs/OverviewTab';
 import MembersTab from '../../components/team/tabs/MembersTab';
 import AttendanceTab from '../../components/team/tabs/AttendanceTab';
-import PerformanceTab from '../../components/team/tabs/PerformanceTab';
-import ProjectsTab from '../../components/team/tabs/ProjectsTab';
-import { Building2, Briefcase, Clock3, TrendingUp, Users } from 'lucide-react';
+import { Building2, Clock3, Users } from 'lucide-react';
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: Building2 },
   { id: 'members', label: 'Members', icon: Users, badge: '247' },
   { id: 'attendance', label: 'Attendance', icon: Clock3, live: true },
-  { id: 'projects', label: 'Projects', icon: Briefcase, badge: '18' },
-  { id: 'performance', label: 'Performance', icon: TrendingUp },
 ];
 
 const Employees = () => {
@@ -53,8 +49,6 @@ const Employees = () => {
       {tab === 'overview' ? <OverviewTab /> : null}
       {tab === 'members' ? <MembersTab /> : null}
       {tab === 'attendance' ? <AttendanceTab /> : null}
-      {tab === 'projects' ? <ProjectsTab /> : null}
-      {tab === 'performance' ? <PerformanceTab /> : null}
     </div>
   );
 };
