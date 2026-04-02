@@ -9,6 +9,7 @@ const Home = lazy(() => import('./Home/Home'));
 const Project = lazy(() => import('../pages/Project/project'));
 const Employees = lazy(() => import('../pages/Employees/Employees'));
 const Sprints = lazy(() => import('../pages/Sprints/Sprints'));
+const SprintProjectSprints = lazy(() => import('../pages/Sprints/SprintProjectSprints'));
 const SprintProjectDetail = lazy(() => import('../pages/Sprints/SprintProjectDetail'));
 const Clients = lazy(() => import('../pages/Clients/Clients'));
 const Risks = lazy(() => import('../pages/Risks/Risks'));
@@ -30,8 +31,10 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={wrappedPage(Home, 'Dashboard')} />
         <Route path="/projects" element={wrappedPage(Project, 'Project Overview')} />
+        <Route path="/projects/:projectId" element={wrappedPage(Project, 'Project Detail')} />
         <Route path="/sprints" element={wrappedPage(Sprints, 'Sprint Explorer')} />
-        <Route path="/sprints/:projectId" element={wrappedPage(SprintProjectDetail, 'Sprint Detail')} />
+        <Route path="/sprints/:projectId" element={wrappedPage(SprintProjectSprints, 'Project Sprint List')} />
+        <Route path="/sprints/:projectId/:sprintId" element={wrappedPage(SprintProjectDetail, 'Sprint Detail')} />
         <Route path="/employees" element={wrappedPage(Employees, 'Team Performance')} />
         <Route path="/clients" element={wrappedPage(Clients, 'Client Overview')} />
         <Route path="/risks" element={wrappedPage(Risks, 'Risk Monitoring')} />
