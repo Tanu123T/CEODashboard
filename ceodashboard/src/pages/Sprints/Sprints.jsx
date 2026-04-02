@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Sprints.css';
-import '../Project/Project.css';
-import '../Employees/Employees.css';
 import {
   Search,
   ArrowRight,

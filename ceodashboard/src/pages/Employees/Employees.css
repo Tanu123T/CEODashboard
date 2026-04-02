@@ -105,10 +105,10 @@
   appearance: none;
   background: transparent;
   color: #8b96a8;
-  font-size: 16px;
-  font-weight: 500;
-  min-height: 58px;
-  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 48px;
+  padding: 10px 16px;
   border: 1px solid transparent;
   border-radius: 4px;
   position: relative;
@@ -170,6 +170,7 @@
 .tm-tab.active {
   color: #0f8f83;
   font-weight: 600;
+  font-size: 13px;
   border-color: #c8ddd6;
   background: #f3fbf9;
   border-radius: 2px;
@@ -212,12 +213,13 @@
   margin: 10px 0 6px;
   color: #8390a6;
   font-weight: 600;
+  font-size: 12px;
 }
 
 .tm-kpi-card h3 {
   margin: 0;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
 }
 
@@ -250,6 +252,7 @@
 .tm-panel h3 {
   margin: 0;
   font-size: 18px;
+  color: #111111;
   font-weight: 650;
 }
 
@@ -280,6 +283,7 @@
 .tm-panel-meta span {
   color: #8390a6;
   font-weight: 600;
+  font-size: 12px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -402,10 +406,13 @@
 
 .tm-dept-list span {
   color: #637188;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .tm-dept-list strong {
+  font-weight: 600;
+  font-size: 13px;
   color: #4b5a72;
   text-align: right;
 }
@@ -459,7 +466,8 @@
 
 .tm-alert-list li span {
   color: #344763;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 13px;
 }
 
 .tm-alert-list li em {
@@ -481,6 +489,7 @@
   margin-bottom: 8px;
 }
 
+  font-size: 13px;
 .tm-project-head span {
   color: #21304e;
   font-weight: 600;
@@ -514,11 +523,14 @@
 .tm-project-meta {
   margin-top: 8px;
   display: grid;
+  font-size: 12px;
   grid-template-columns: repeat(4, auto);
   justify-content: space-between;
   color: #8c99ad;
   font-weight: 600;
 }
+  font-weight: 600;
+  font-size: 12px;
 
 .tm-project-meta strong {
   color: #5c6a80;
@@ -534,11 +546,13 @@
 .tm-top-list li p {
   margin: 2px 0 0;
   color: #8c99ad;
+  font-size: 12px;
 }
 
 .tm-top-list li span {
   color: #d78a03;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   display: inline-flex;
   gap: 5px;
   align-items: center;
@@ -560,11 +574,13 @@
   margin: 0;
   color: #1f2f4d;
   font-size: 18px;
+  font-weight: 650;
 }
 
 .tm-workforce-strip p {
   margin: 6px 0 0;
   color: #7d8ba2;
+  font-size: 12px;
 }
 
 .tm-workforce-strip ul {
@@ -809,7 +825,7 @@
 
 .tm-member-headline h3 {
   margin: 0;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.2;
 }
@@ -817,7 +833,7 @@
 .tm-member-headline p {
   margin: 3px 0 0;
   color: #8a97ab;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .tm-status-pill {
@@ -851,26 +867,29 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 12px;
 }
 
 .tm-checkin {
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   color: #6f8f8f;
 }
 
 .tm-project-row {
   margin-top: 9px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  border: 1px solid var(--tm-border);
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 9px 10px;
-  font-weight: 700;
-  color: #334665;
-  transition: transform 190ms ease, border-color 190ms ease, background-color 190ms ease;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid var(--tm-border);
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334665;
+    transition: transform 190ms ease, border-color 190ms ease, background-color 190ms ease;
 }
 
 .tm-metrics-row {
@@ -878,6 +897,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-size: 12px;
   color: #8190a7;
   font-weight: 600;
 }
@@ -950,11 +970,13 @@
 .tm-member-detail header h3 {
   margin: 0;
   font-size: 18px;
+  color: #111111;
   font-weight: 650;
   line-height: 1.2;
 }
 
 .tm-member-detail header p {
+  font-size: 12px;
   margin: 3px 0 0;
   color: #8390a6;
 }
@@ -967,8 +989,9 @@
   padding: 8px 10px;
   display: flex;
   justify-content: space-between;
+  font-size: 12px;
   align-items: center;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .tm-detail-card {
@@ -982,6 +1005,8 @@
   margin: 0 0 8px;
   color: #89a0b2;
   font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 

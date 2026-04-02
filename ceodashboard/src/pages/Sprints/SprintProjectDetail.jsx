@@ -1,8 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './Sprints.css';
-import '../Project/Project.css';
-import '../Employees/Employees.css';
 import {
   ResponsiveContainer,
   LineChart,
@@ -141,7 +139,7 @@ const SprintProjectDetail = () => {
       </section>
 
       <section className="sprint-chart-grid">
-        <article className="chart-container">
+        <article className="sprint-panel">
           <h3>Burndown Trend</h3>
           <ResponsiveContainer width="100%" height={270}>
             <LineChart data={details.burndown}>
@@ -156,7 +154,7 @@ const SprintProjectDetail = () => {
           </ResponsiveContainer>
         </article>
 
-        <article className="breakdown-card">
+        <article className="sprint-panel">
           <h3>Work Distribution</h3>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
@@ -168,10 +166,10 @@ const SprintProjectDetail = () => {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
-          <div className="modern-legend sprint-legend">
+          <div className="sprint-legend">
             {details.workSplit.map((item) => (
-              <div key={item.name} className="legend-item">
-                <span className="dot" style={{ background: item.color }} />
+              <div key={item.name} className="sprint-legend-item">
+                <span className="sprint-dot" style={{ background: item.color }} />
                 <span>{item.name} ({item.value}%)</span>
               </div>
             ))}
@@ -179,10 +177,10 @@ const SprintProjectDetail = () => {
         </article>
       </section>
 
-      <section className="main-content-grid sprint-main-grid">
-        <article className="table-container">
-          <h2 className="section-title">Detailed Sprint Board</h2>
-          <table className="projects-table sprint-board-table">
+      <section className="sprint-detail-grid">
+        <article className="sprint-panel sprint-board-panel">
+          <h2 className="sprint-section-title">Detailed Sprint Board</h2>
+          <table className="sprint-board-table">
             <thead>
               <tr>
                 <th>Ticket</th>
@@ -196,9 +194,9 @@ const SprintProjectDetail = () => {
             <tbody>
               {details.board.map((item) => (
                 <tr key={item.id}>
-                  <td className="font-bold">{item.id}</td>
+                  <td className="sprint-ticket-id">{item.id}</td>
                   <td>{item.title}</td>
-                  <td className="team-lead-cell"><Users size={14} className="row-icon" />{item.owner}</td>
+                  <td className="sprint-owner-cell"><Users size={14} className="sprint-row-icon" />{item.owner}</td>
                   <td>
                     <span className={`sprint-priority-badge ${priorityClass(item.priority)}`}>
                       {item.priority}
@@ -216,8 +214,8 @@ const SprintProjectDetail = () => {
           </table>
         </article>
 
-        <aside className="sidebar-info">
-          <article className="info-card">
+        <aside className="sprint-sidebar">
+          <article className="sprint-info-card">
             <h3><Target size={17} /> Sprint Goals</h3>
             <ul className="sprint-goals-list">
               {details.goals.map((goal) => (
@@ -229,15 +227,15 @@ const SprintProjectDetail = () => {
             </ul>
           </article>
 
-          <article className="info-card">
+          <article className="sprint-info-card">
             <h3><AlertTriangle size={17} /> Blockers</h3>
             <ul className="sprint-blockers-list">
               {details.blockers.map((item) => (
                 <li key={item.id}>
                   <div>
-                    <p className="list-title">{item.id} - {item.title}</p>
-                    <p className="list-subtitle">{item.impact}</p>
-                    <p className="list-subtitle">Owner: {item.owner} | ETA: {item.eta}</p>
+                    <p className="sprint-list-title">{item.id} - {item.title}</p>
+                    <p className="sprint-list-subtitle">{item.impact}</p>
+                    <p className="sprint-list-subtitle">Owner: {item.owner} | ETA: {item.eta}</p>
                   </div>
                   <span className="sprint-severity-tag">{item.severity}</span>
                 </li>
@@ -245,14 +243,14 @@ const SprintProjectDetail = () => {
             </ul>
           </article>
 
-          <article className="info-card">
+          <article className="sprint-info-card">
             <h3><Users size={17} /> Team Capacity</h3>
             <ul className="sprint-capacity-list">
               {details.capacity.map((item) => (
                 <li key={item.team}>
                   <div>
-                    <p className="list-title">{item.team}</p>
-                    <p className="list-subtitle">{item.members} members</p>
+                    <p className="sprint-list-title">{item.team}</p>
+                    <p className="sprint-list-subtitle">{item.members} members</p>
                   </div>
                   <div className="sprint-capacity-metrics">
                     <strong>{item.capacity}</strong>
@@ -265,8 +263,8 @@ const SprintProjectDetail = () => {
         </aside>
       </section>
 
-      <section className="table-container sprint-velocity-block">
-        <h2 className="section-title">Sprint Velocity History</h2>
+      <section className="sprint-panel sprint-velocity-block">
+        <h2 className="sprint-section-title">Sprint Velocity History</h2>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={details.velocity}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9eef4" />
@@ -280,8 +278,8 @@ const SprintProjectDetail = () => {
         </ResponsiveContainer>
       </section>
 
-      <section className="table-container">
-        <h2 className="section-title">Scope Change Summary</h2>
+      <section className="sprint-panel">
+        <h2 className="sprint-section-title">Scope Change Summary</h2>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={details.scope}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9eef4" />

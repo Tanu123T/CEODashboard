@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 
-import { Bell, Settings, LogOut, ChevronDown, Menu } from "lucide-react";
+import { Bell, Settings, LogOut, ChevronDown, Menu, Search, X } from "lucide-react";
 
 const Header = ({ onToggleSidebar }) => {
   const [showNotifications, setShowNotifications] = useState(false);
@@ -17,8 +17,6 @@ const Header = ({ onToggleSidebar }) => {
 
   return (
     <div className="header">
-
-      {/* LEFT SIDE */}
       <div className="header-left">
         <button
           type="button"
@@ -28,19 +26,29 @@ const Header = ({ onToggleSidebar }) => {
         >
           <Menu size={20} />
         </button>
+
+        <button type="button" className="close-chip" aria-label="Close panel">
+          <X size={16} />
+        </button>
+
         <div className="logo-box">VG</div>
-        <h2 className="title">
-          Vishwaguru Infotech Pvt Ltd <span>CEO Dashboard</span>
-        </h2>
+
+        <div className="title-wrap">
+          <h2 className="title">Vishwaguru Infotech Pvt Ltd</h2>
+          <p>CEO Dashboard</p>
+        </div>
       </div>
 
-      {/* RIGHT SIDE */}
-      <div className="header-right">
+      <div className="header-search-wrap" role="search">
+        <Search size={17} />
+        <input type="text" placeholder="Search by project, client, or squad" aria-label="Search" />
+      </div>
 
+      <div className="header-right">
         <div className="icon-box notification" onClick={() => { setShowNotifications(!showNotifications); setShowProfile(false); }}>
           <Bell />
           <span className="badge">3</span>
-          
+
           {showNotifications && (
             <div className="dropdown-menu notifications-menu">
               <h4>Notifications</h4>
@@ -54,10 +62,7 @@ const Header = ({ onToggleSidebar }) => {
         </div>
 
         <div className="profile" onClick={() => { setShowProfile(!showProfile); setShowNotifications(false); }}>
-          <img
-            src="https://i.pravatar.cc/40"
-            alt="profile"
-          />
+          <span className="avatar-chip">CE</span>
           <ChevronDown />
 
           {showProfile && (
@@ -71,9 +76,7 @@ const Header = ({ onToggleSidebar }) => {
             </div>
           )}
         </div>
-
       </div>
-
     </div>
   );
 };
