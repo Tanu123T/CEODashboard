@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './Risks.css';
-import { Activity, ChevronDown, ChevronUp, Search, TriangleAlert } from 'lucide-react';
+import { Activity, ChevronRight, CircleCheck, Search, ShieldAlert, ShieldCheck, ShieldQuestion, TriangleAlert, X } from 'lucide-react';
 import PageLoader from '../../components/common/PageLoader';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 import { riskAlerts } from '../../data/risksData';
@@ -19,7 +19,7 @@ const Risks = () => {
   const [alerts, setAlerts] = useState(riskAlerts);
   const [query, setQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
-  const [expandedId, setExpandedId] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
   useEffect(() => {
@@ -55,6 +55,16 @@ const Risks = () => {
       return matchesSearch && matchesCategory;
     });
   }, [alerts, query, categoryFilter]);
+
+  const selectedAlert = useMemo(() => {
+    return filteredAlerts.find((item) => item.id === selectedId) || null;
+  }, [filteredAlerts, selectedId]);
+
+  useEffect(() => {
+    if (selectedId && !filteredAlerts.some((item) => item.id === selectedId)) {
+      setSelectedId(filteredAlerts[0]?.id ?? null);
+    }
+  }, [filteredAlerts, selectedId]);
 
   const stats = useMemo(() => {
     const criticalOrHigh = filteredAlerts.filter(
@@ -125,49 +135,137 @@ const Risks = () => {
         </div>
       </section>
 
-      <section className="risk-list">
-        {filteredAlerts.map((alert) => (
-          <article key={alert.id} className="risk-row-card">
-            <div className="risk-row-main">
-              <div className="risk-main-left">
-                <p className="risk-id">{alert.id}</p>
-                <div>
-                  <h3>{alert.project}</h3>
-                  <p>{alert.category} - Owner: {alert.owner}</p>
-                </div>
-              </div>
+      <section className="risks-layout">
+        <div className="risk-list-column">
+          <div className="risk-list">
+            {filteredAlerts.map((alert) => {
+              const isSelected = selectedAlert?.id === alert.id;
 
-              <div className="risk-main-right">
-                <span className={`risk-badge severity-${alert.severity.toLowerCase()}`}>{alert.severity}</span>
-                <span className={`risk-badge status-${alert.status.toLowerCase()}`}>{alert.status}</span>
-                <span className="risk-age">{alert.ageDays}d</span>
+              return (
                 <button
+                  key={alert.id}
                   type="button"
-                  className="risk-toggle-btn"
-                  onClick={() => setExpandedId(expandedId === alert.id ? null : alert.id)}
+                  className={`risk-row-card ${isSelected ? 'active' : ''}`}
+                  onClick={() => setSelectedId(alert.id)}
                 >
-                  {expandedId === alert.id ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                  <div className="risk-row-main">
+                    <div className="risk-main-left">
+                      <div className={`risk-icon ${alert.severity.toLowerCase()}`}>
+                        <TriangleAlert size={18} />
+                      </div>
+                      <div className="risk-copy">
+                        <h3>{alert.project}</h3>
+                        <div className="risk-subline">
+                          <span className={`risk-badge severity-${alert.severity.toLowerCase()}`}>{alert.severity}</span>
+                          <span className={`risk-badge status-${alert.status.toLowerCase()}`}>{alert.status}</span>
+                          <span className="risk-meta-text">{alert.category}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="risk-main-right">
+                      <div className="risk-owner-block">
+                        <span>{alert.owner}</span>
+                        <strong>{alert.raisedOn}</strong>
+                      </div>
+                      <ChevronRight size={17} className="risk-chevron" />
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+
+            {filteredAlerts.length === 0 ? (
+              <article className="risk-empty">
+                <h4>No risk alerts found</h4>
+                <p>Adjust search or category filters to inspect risk records.</p>
+              </article>
+            ) : null}
+          </div>
+        </div>
+
+        <aside className="risk-detail-column">
+          {selectedAlert ? (
+            <article className={`risk-detail-card severity-${selectedAlert.severity.toLowerCase()}`}>
+              <div className="risk-detail-top">
+                <div className="risk-detail-badges">
+                  <span className={`risk-badge severity-${selectedAlert.severity.toLowerCase()}`}>{selectedAlert.severity}</span>
+                  <span className={`risk-badge status-${selectedAlert.status.toLowerCase()}`}>{selectedAlert.status}</span>
+                </div>
+                <button type="button" className="risk-close-btn" onClick={() => setSelectedId(null)}>
+                  <X size={16} />
                 </button>
               </div>
-            </div>
 
-            {expandedId === alert.id ? (
-              <div className="risk-expanded">
-                <p>
-                  <TriangleAlert size={15} />
-                  <span>{alert.description}</span>
-                </p>
+              <h2>{selectedAlert.project}</h2>
+              <p className="risk-detail-subtitle">{selectedAlert.category}</p>
+
+              <div className="risk-detail-grid">
+                <article>
+                  <span>Probability</span>
+                  <strong>{selectedAlert.probability}</strong>
+                </article>
+                <article>
+                  <span>Impact</span>
+                  <strong>{selectedAlert.impact}</strong>
+                </article>
+                <article>
+                  <span>Owner</span>
+                  <strong>{selectedAlert.owner}</strong>
+                </article>
+                <article>
+                  <span>Raised</span>
+                  <strong>{selectedAlert.raisedOn}</strong>
+                </article>
               </div>
-            ) : null}
-          </article>
-        ))}
 
-        {filteredAlerts.length === 0 ? (
-          <article className="risk-empty">
-            <h4>No risk alerts found</h4>
-            <p>Adjust search or category filters to inspect risk records.</p>
-          </article>
-        ) : null}
+              <section className="risk-detail-block">
+                <h3>Description</h3>
+                <p>{selectedAlert.description}</p>
+              </section>
+
+              <section className="risk-detail-callout">
+                <div className="risk-callout-head">
+                  <ShieldAlert size={16} />
+                  <span>Mitigation Strategy</span>
+                </div>
+                <p>{selectedAlert.mitigationStrategy}</p>
+              </section>
+
+              <section className="risk-detail-block">
+                <h3>Action Items</h3>
+                <ul className="risk-action-list">
+                  {selectedAlert.actionItems.map((item) => (
+                    <li key={item}>
+                      <CircleCheck size={16} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section className="risk-detail-block">
+                <h3>Discussion</h3>
+                <div className="risk-discussion">
+                  {selectedAlert.discussion.map((item) => (
+                    <div key={item.author} className="risk-discussion-item">
+                      <strong>{item.author}</strong>
+                      <span>{item.note}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </article>
+          ) : (
+            <article className="risk-detail-card empty">
+              <div className="risk-detail-empty-icon">
+                <ShieldQuestion size={28} />
+              </div>
+              <h2>Select a risk</h2>
+              <p>Click any risk in the list to view the detailed mitigation panel.</p>
+            </article>
+          )}
+        </aside>
       </section>
     </div>
   );

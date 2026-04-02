@@ -7,7 +7,20 @@ export const riskAlerts = [
     owner: 'Core Product',
     ageDays: 4,
     status: 'Open',
+    raisedOn: 'Mar 18, 2026',
+    probability: 'High',
+    impact: 'High',
     description: 'Compliance workflow stories are behind plan by 6 days.',
+    mitigationStrategy: 'Re-sequence compliance stories, add daily owner check-ins, and escalate vendor dependencies early.',
+    actionItems: [
+      'Review blockers with compliance and platform teams',
+      'Rebaseline impacted milestones for the sprint',
+      'Track resolution progress in the daily standup',
+    ],
+    discussion: [
+      { author: 'Kavya Nair', note: 'Progress is slowing because vendor approval is pending.' },
+      { author: 'Team Lead', note: 'We will re-prioritize high-impact stories until approval arrives.' },
+    ],
   },
   {
     id: 'R-102',
@@ -17,7 +30,20 @@ export const riskAlerts = [
     owner: 'AI Experience',
     ageDays: 7,
     status: 'Escalated',
+    raisedOn: 'Mar 15, 2026',
+    probability: 'Critical',
+    impact: 'High',
     description: 'Safety review milestone slipped from planned release window.',
+    mitigationStrategy: 'Pause release gating, resolve safety review blockers, and move the milestone into the next window.',
+    actionItems: [
+      'Escalate review to the product owner today',
+      'Lock updated launch milestones',
+      'Prepare risk review note for leadership',
+    ],
+    discussion: [
+      { author: 'Sneha Patel', note: 'The release date needs to move until review sign-off is complete.' },
+      { author: 'QA Lead', note: 'Testing can continue once the revised safety criteria are approved.' },
+    ],
   },
   {
     id: 'R-103',
@@ -27,7 +53,19 @@ export const riskAlerts = [
     owner: 'Platform',
     ageDays: 2,
     status: 'Mitigating',
+    raisedOn: 'Mar 20, 2026',
+    probability: 'Medium',
+    impact: 'Medium',
     description: 'QA bandwidth below required level for current sprint scope.',
+    mitigationStrategy: 'Shift a backend engineer temporarily into QA and reduce parallel work to protect delivery.',
+    actionItems: [
+      'Reassign one engineer to testing coverage',
+      'Reduce non-critical backlog items',
+      'Recheck capacity after QA standup',
+    ],
+    discussion: [
+      { author: 'Ravi Kumar', note: 'We can hold the sprint if QA coverage remains above threshold.' },
+    ],
   },
   {
     id: 'R-104',
@@ -37,7 +75,19 @@ export const riskAlerts = [
     owner: 'Finance Ops',
     ageDays: 11,
     status: 'Open',
+    raisedOn: 'Mar 12, 2026',
+    probability: 'High',
+    impact: 'High',
     description: 'Invoice INV-882 remains unpaid beyond due date by 11 days.',
+    mitigationStrategy: 'Coordinate with finance stakeholders and trigger a payment reminder escalation path.',
+    actionItems: [
+      'Send overdue payment notice',
+      'Confirm invoice status with procurement',
+      'Escalate if unpaid by end of day',
+    ],
+    discussion: [
+      { author: 'Saurabh Jain', note: 'Payment processing is delayed due to approval queue backlog.' },
+    ],
   },
   {
     id: 'R-105',
@@ -47,7 +97,19 @@ export const riskAlerts = [
     owner: 'Platform',
     ageDays: 1,
     status: 'Open',
+    raisedOn: 'Mar 19, 2026',
+    probability: 'Critical',
+    impact: 'High',
     description: 'Tenant isolation regression identified in staging smoke test.',
+    mitigationStrategy: 'Freeze staging deployment, isolate the regression, and validate tenant boundaries before release.',
+    actionItems: [
+      'Reproduce the regression in staging',
+      'Patch isolation logic and retest',
+      'Get sign-off from security review',
+    ],
+    discussion: [
+      { author: 'Arjun Mehta', note: 'Security is waiting on the next smoke-test result before approving release.' },
+    ],
   },
   {
     id: 'R-106',
@@ -57,7 +119,19 @@ export const riskAlerts = [
     owner: 'Mobile Squad',
     ageDays: 3,
     status: 'Mitigating',
+    raisedOn: 'Mar 10, 2026',
+    probability: 'Medium',
+    impact: 'High',
     description: 'Intermittent booking retry failures on iOS checkout flow.',
+    mitigationStrategy: 'Increase telemetry, isolate retry conditions, and ship a hotfix behind a feature flag.',
+    actionItems: [
+      'Capture failing checkout traces',
+      'Patch retry handler for iOS path',
+      'Verify the booking flow with QA',
+    ],
+    discussion: [
+      { author: 'Rohan Das', note: 'iOS failures are reproducible in the latest production-like build.' },
+    ],
   },
   {
     id: 'R-107',
@@ -67,7 +141,19 @@ export const riskAlerts = [
     owner: 'Finance Ops',
     ageDays: 6,
     status: 'Open',
+    raisedOn: 'Mar 22, 2026',
+    probability: 'Medium',
+    impact: 'Medium',
     description: 'Milestone payment pending confirmation from procurement team.',
+    mitigationStrategy: 'Follow up with procurement and keep the client updated on payment and milestone dependency.',
+    actionItems: [
+      'Confirm procurement acknowledgement',
+      'Update finance tracker and ETA',
+      'Notify project owner of the delay',
+    ],
+    discussion: [
+      { author: 'Finance Ops', note: 'Payment is expected after procurement clears the invoice.' },
+    ],
   },
 ];
 
