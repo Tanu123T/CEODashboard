@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import './Project.css';
 import {
   ArrowLeft,
@@ -20,7 +21,8 @@ const formatCurrency = (value) => `₹${value.toLocaleString('en-IN')}`;
 
 const Projects = () => {
   const isLoading = useSimulatedLoading(650);
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const navigate = useNavigate();
+  const { projectId } = useParams();
 
   const totals = useMemo(() => {
     const onTrack = projectRecords.filter((item) => item.statusTone === 'on-track').length;
@@ -34,12 +36,28 @@ const Projects = () => {
   }, []);
 
   const selectedProject = useMemo(
-    () => projectRecords.find((item) => item.id === selectedProjectId) || null,
-    [selectedProjectId]
+    () => projectRecords.find((item) => String(item.id) === projectId) || null,
+    [projectId]
   );
 
   if (isLoading) {
     return <PageLoader title="Loading Project Overview..." />;
+  }
+
+  if (projectId && !selectedProject) {
+    return (
+      <div className="projects-page project-detail-page">
+        <button type="button" className="project-back" onClick={() => navigate('/projects')}>
+          <ArrowLeft size={17} />
+          <span>Back to Projects</span>
+        </button>
+
+        <section className="project-detail-panel">
+          <h3>Project not found</h3>
+          <p className="project-about-text">The requested project could not be located.</p>
+        </section>
+      </div>
+    );
   }
 
   if (selectedProject) {
@@ -51,7 +69,7 @@ const Projects = () => {
 
     return (
       <div className="projects-page project-detail-page">
-        <button type="button" className="project-back" onClick={() => setSelectedProjectId(null)}>
+        <button type="button" className="project-back" onClick={() => navigate('/projects')}>
           <ArrowLeft size={17} />
           <span>Back to Projects</span>
         </button>
@@ -240,7 +258,7 @@ const Projects = () => {
             key={project.id}
             type="button"
             className="project-card"
-            onClick={() => setSelectedProjectId(project.id)}
+            onClick={() => navigate(`/projects/${project.id}`)}
           >
             <div className="project-row-top">
               <div className="project-head-left">

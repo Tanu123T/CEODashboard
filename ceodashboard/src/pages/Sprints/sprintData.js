@@ -13,6 +13,7 @@ export const sprintProjects = [
     blockers: 2,
     contributors: 9,
     releaseWindow: 'Q2 Wave 1',
+    scrumMaster: 'Meera Joshi',
   },
   {
     id: 'banking-portal',
@@ -28,6 +29,7 @@ export const sprintProjects = [
     blockers: 4,
     contributors: 7,
     releaseWindow: 'Compliance Release',
+    scrumMaster: 'Aman Khanna',
   },
   {
     id: 'travel-app',
@@ -43,6 +45,7 @@ export const sprintProjects = [
     blockers: 1,
     contributors: 6,
     releaseWindow: 'Summer Features',
+    scrumMaster: 'Nidhi Verma',
   },
   {
     id: 'ai-chatbot',
@@ -58,6 +61,7 @@ export const sprintProjects = [
     blockers: 5,
     contributors: 8,
     releaseWindow: 'Pilot Enablement',
+    scrumMaster: 'Ishaan Patel',
   },
 ];
 

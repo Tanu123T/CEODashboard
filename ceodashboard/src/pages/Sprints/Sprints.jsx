@@ -89,7 +89,12 @@ const Sprints = () => {
           const completion = progress(project.donePoints, project.totalPoints);
 
           return (
-            <article key={project.id} className="sprint-project-card">
+            <button
+              key={project.id}
+              type="button"
+              className="sprint-project-card"
+              onClick={() => navigate(`/sprints/${project.id}`)}
+            >
               <div className="sprint-project-head">
                 <div>
                   <p className="sprint-project-client">{project.client}</p>
@@ -125,15 +130,11 @@ const Sprints = () => {
               </div>
 
               <div className="sprint-project-actions">
-                <button
-                  type="button"
-                  className="action-btn primary-btn"
-                  onClick={() => navigate(`/sprints/${project.id}`)}
-                >
-                  View Full Sprint Detail <ArrowRight size={15} />
-                </button>
+                <span className="sprint-project-link">
+                  Open sprint details <ArrowRight size={15} />
+                </span>
               </div>
-            </article>
+            </button>
           );
         })}
       </section>

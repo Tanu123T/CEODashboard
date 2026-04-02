@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './Sprints.css';
 import {
@@ -25,6 +25,8 @@ import {
   CircleDashed,
   Activity,
   Rocket,
+  CheckCircle2,
+  UserRound,
 } from 'lucide-react';
 import { sprintProjects, sprintDetails } from './sprintData';
 
@@ -55,7 +57,7 @@ const healthClass = (health) => {
 };
 
 const SprintProjectDetail = () => {
-  const { projectId } = useParams();
+  const { projectId, sprintId } = useParams();
   const navigate = useNavigate();
 
   const project = sprintProjects.find((item) => item.id === projectId);
@@ -69,7 +71,7 @@ const SprintProjectDetail = () => {
             <p>The requested project sprint was not found.</p>
           </div>
         </header>
-        <button type="button" className="action-btn primary-btn" onClick={() => navigate('/sprints')}>
+          <button type="button" className="action-btn primary-btn" onClick={() => navigate('/sprints')}>
           <ArrowLeft size={16} /> Back To Sprint Projects
         </button>
       </div>
@@ -77,6 +79,7 @@ const SprintProjectDetail = () => {
   }
 
   const details = sprintDetails[project.id];
+  const selectedVelocity = details.velocity.find((item) => item.sprint === sprintId) || details.velocity[details.velocity.length - 1];
   const totalTasks = details.board.length;
   const completedTasks = details.board.filter((item) => item.status === 'Done').length;
   const blockedTasks = details.board.filter((item) => item.status === 'Blocked').length;
@@ -91,14 +94,37 @@ const SprintProjectDetail = () => {
     { title: 'Sprint Completion %', value: `${sprintCompletion}%`, detail: `${completedTasks}/${totalTasks} completed` },
   ];
 
+  const ownerAllocation = useMemo(() => {
+    const summary = details.board.reduce((acc, item) => {
+      if (!acc[item.owner]) {
+        acc[item.owner] = { owner: item.owner, assigned: 0, completed: 0, inProgress: 0, blocked: 0 };
+      }
+
+      acc[item.owner].assigned += 1;
+
+      if (item.status === 'Done') acc[item.owner].completed += 1;
+      if (item.status === 'In Progress' || item.status === 'Review') acc[item.owner].inProgress += 1;
+      if (item.status === 'Blocked') acc[item.owner].blocked += 1;
+
+      return acc;
+    }, {});
+
+    return Object.values(summary).map((item) => ({
+      ...item,
+      completionRate: Math.round((item.completed / Math.max(item.assigned, 1)) * 100),
+    }));
+  }, [details.board]);
+
+  const completedTaskList = details.board.filter((item) => item.status === 'Done');
+
   return (
     <div className="dashboard-wrapper sprint-page">
       <header className="main-header sprint-detail-header">
         <div>
-          <button type="button" className="sprint-back-link" onClick={() => navigate('/sprints')}>
-            <ArrowLeft size={14} /> All Sprint Projects
+          <button type="button" className="sprint-back-link" onClick={() => navigate(`/sprints/${project.id}`)}>
+            <ArrowLeft size={14} /> All {project.name} Sprints
           </button>
-          <h1>{project.name} - {project.sprint}</h1>
+          <h1>{project.name} - {selectedVelocity.sprint}</h1>
           <p>{details.about}</p>
         </div>
         <div className={`sprint-health-pill ${healthClass(project.health)}`}>
@@ -114,8 +140,60 @@ const SprintProjectDetail = () => {
           <Users size={15} /> {project.contributors} contributors
         </div>
         <div className="sprint-meta-chip">
-          <Rocket size={15} /> Release: {project.releaseWindow}
+          <UserRound size={15} /> Scrum Master: {project.scrumMaster}
         </div>
+        <div className="sprint-meta-chip">
+          <Rocket size={15} /> Cycle: {selectedVelocity.sprint} ({selectedVelocity.completed}/{selectedVelocity.planned} pts)
+        </div>
+      </section>
+
+      <section className="sprint-detail-grid sprint-allocation-grid">
+        <article className="sprint-panel">
+          <h2 className="sprint-section-title">Task Allocation By Owner</h2>
+          <div className="sprint-allocation-table-wrap">
+            <table className="sprint-allocation-table">
+              <thead>
+                <tr>
+                  <th>Owner</th>
+                  <th>Assigned</th>
+                  <th>Completed</th>
+                  <th>In Progress</th>
+                  <th>Blocked</th>
+                  <th>Completion</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ownerAllocation.map((item) => (
+                  <tr key={item.owner}>
+                    <td>{item.owner}</td>
+                    <td>{item.assigned}</td>
+                    <td>{item.completed}</td>
+                    <td>{item.inProgress}</td>
+                    <td>{item.blocked}</td>
+                    <td>{item.completionRate}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article className="sprint-panel">
+          <h2 className="sprint-section-title">Completed Tasks</h2>
+          <div className="sprint-completed-list">
+            {completedTaskList.length > 0 ? (
+              completedTaskList.map((item) => (
+                <div key={item.id} className="sprint-completed-item">
+                  <span><CheckCircle2 size={15} /> {item.id}</span>
+                  <strong>{item.title}</strong>
+                  <em>Completed by {item.owner}</em>
+                </div>
+              ))
+            ) : (
+              <p className="sprint-empty-copy">No completed tasks yet for this sprint cycle.</p>
+            )}
+          </div>
+        </article>
       </section>
 
       <section className="sprint-kpi-grid sprint-required-kpis">
