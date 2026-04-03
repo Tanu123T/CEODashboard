@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import './Project.css';
+import './project.css';
 import {
   ArrowLeft,
   ArrowRight,
