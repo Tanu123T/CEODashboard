@@ -1,0 +1,74 @@
+:root {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  --accent-sky: #38bdf8;
+  --accent-green: #22c55e;
+  --accent-mix: #18b7a6;
+  --accent-gradient: linear-gradient(95deg, var(--accent-sky) 0%, var(--accent-green) 100%);
+  --accent-gradient-soft: linear-gradient(140deg, rgba(56, 189, 248, 0.14) 0%, rgba(34, 197, 94, 0.14) 100%);
+  --accent-ring: rgba(56, 189, 248, 0.24);
+
+  color: #213547;
+  background-color: #eef3f8;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+a {
+  font-weight: 500;
+  color: #4b8fe7;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #2c79de;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  background: #eef3f8;
+}
+
+.accent-gradient-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+h1 {
+  font-size: 2.6em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.4em 0.9em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: transparent;
+  cursor: pointer;
+  transition: border-color 0.25s, background-color 0.25s;
+}
+button:hover {
+  border-color: rgba(75, 143, 231, 0.3);
+}
+button:focus,
+button:focus-visible {
+  outline: 2px solid rgba(75, 143, 231, 0.4);
+  outline-offset: 1px;
+}
