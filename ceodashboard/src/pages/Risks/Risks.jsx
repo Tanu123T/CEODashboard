@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Risks.css';
 import { Activity, ChevronDown, ChevronUp, Search, TriangleAlert } from 'lucide-react';
 import PageLoader from '../../components/common/PageLoader';
@@ -16,11 +17,30 @@ const categoryOptions = [
 
 const Risks = () => {
   const isLoading = useSimulatedLoading(700);
+  const location = useLocation();
   const [alerts, setAlerts] = useState(riskAlerts);
   const [query, setQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [expandedId, setExpandedId] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const navToken = location.state?.token ?? null;
+
+  useEffect(() => {
+    const navState = location.state;
+    if (!navState || !navToken) return;
+
+    if (navState.category) {
+      setCategoryFilter(navState.category);
+    }
+
+    if (navState.query) {
+      setQuery(navState.query);
+    }
+
+    if (navState.selectedRiskId) {
+      setSelectedId(navState.selectedRiskId);
+    }
+  }, [location.state, navToken]);
 
   useEffect(() => {
     const timer = setInterval(() => {

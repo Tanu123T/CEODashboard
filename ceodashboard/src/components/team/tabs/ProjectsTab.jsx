@@ -1,13 +1,16 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
   BriefcaseBusiness,
   CalendarDays,
   CheckCircle2,
   Clock3,
+  Search,
   TrendingUp,
   Users2,
 } from 'lucide-react';
+import { sprintDetails, sprintProjects } from '../../../pages/Sprints/sprintData';
 
 const projectBudgetData = [
   { code: 'PRJ-001', budget: 420, spent: 302, color: '#18b7a6' },
@@ -16,19 +19,6 @@ const projectBudgetData = [
   { code: 'PRJ-004', budget: 62, spent: 61, color: '#22c55e' },
   { code: 'PRJ-005', budget: 78, spent: 24, color: '#38bdf8' },
   { code: 'PRJ-006', budget: 220, spent: 61, color: '#0ca8c7' },
-];
-
-const portfolioHealth = [
-  { label: 'Ahead of Schedule', value: 2, tone: 'ahead' },
-  { label: 'On Track', value: 3, tone: 'ontrack' },
-  { label: 'At Risk', value: 1, tone: 'risk' },
-  { label: 'Delayed', value: 0, tone: 'delayed' },
-];
-
-const upcomingDeadlines = [
-  { title: 'Platform v3.0 Rebuild...', due: 'Apr 15' },
-  { title: 'Spring Marketing Campaign...', due: 'Apr 1' },
-  { title: 'Brand Identity Refresh...', due: 'Apr 30' },
 ];
 
 const boardProjects = [
@@ -185,46 +175,318 @@ const milestoneItems = [
   { text: 'QA & Testing', done: false },
 ];
 
-const ProjectsTab = () => {
+const completedProjectsArchive = [
+  {
+    id: 'CP-101',
+    title: 'Hospital CRM Rollout',
+    client: 'HealthPlus Group',
+    owner: 'Priya Patel',
+    completedOn: 'Mar 14, 2026',
+    budget: '$860K',
+    spent: '$822K',
+    impact: 'Reduced manual ops by 34%',
+    quality: '99.1% uptime in first 30 days',
+  },
+  {
+    id: 'CP-102',
+    title: 'Identity Security Upgrade',
+    client: 'CloudStack Inc.',
+    owner: 'Sarah Chen',
+    completedOn: 'Feb 27, 2026',
+    budget: '$610K',
+    spent: '$598K',
+    impact: 'Cut auth failure incidents by 41%',
+    quality: '0 P1 security findings post-launch',
+  },
+  {
+    id: 'CP-103',
+    title: 'Enterprise Reporting Suite',
+    client: 'FinEdge Capital',
+    owner: 'James Wilson',
+    completedOn: 'Jan 31, 2026',
+    budget: '$740K',
+    spent: '$752K',
+    impact: 'Board reporting cycle shortened by 6 days',
+    quality: '98.4% report accuracy',
+  },
+];
+
+const sprintProjectByDashboardProject = {
+  'PRJ-001': 'hospital-crm',
+  'PRJ-002': 'banking-portal',
+  'PRJ-003': 'travel-app',
+  'PRJ-004': 'product-roadmap',
+  'PRJ-005': 'brand-refresh',
+  'PRJ-006': 'ai-chatbot',
+};
+
+const dueDateToTime = (dueLabel) => {
+  const monthIndex = {
+    Jan: 0,
+    Feb: 1,
+    Mar: 2,
+    Apr: 3,
+    May: 4,
+    Jun: 5,
+    Jul: 6,
+    Aug: 7,
+    Sep: 8,
+    Oct: 9,
+    Nov: 10,
+    Dec: 11,
+  };
+
+  const [monthLabel, dayLabel] = dueLabel.split(' ');
+  const month = monthIndex[monthLabel];
+  const day = Number.parseInt(dayLabel, 10);
+
+  if (Number.isNaN(month) || Number.isNaN(day)) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  return new Date(new Date().getFullYear(), month, day).getTime();
+};
+
+const sprintHealthFromCompletion = (completion) => {
+  if (completion >= 90) return { label: 'On Track', tone: 'ontrack' };
+  if (completion >= 75) return { label: 'Needs Attention', tone: 'risk' };
+  return { label: 'At Risk', tone: 'risk' };
+};
+
+const ProjectsTab = ({ selectedProjectId: externalSelectedProjectId, projectFocusToken, projectsScrollToken, onProjectSelect }) => {
+  const navigate = useNavigate();
+  const projectsListRef = useRef(null);
   const [hoveredBarIndex, setHoveredBarIndex] = useState(null);
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [viewMode, setViewMode] = useState('board');
+  const [internalSelectedProjectId, setInternalSelectedProjectId] = useState(null);
+  const [search, setSearch] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [healthFilter, setHealthFilter] = useState('All');
+
+  const selectedProjectId = externalSelectedProjectId ?? internalSelectedProjectId;
 
   const yTicks = [0, 150, 300, 450, 600];
   const chartBottom = 190;
   const chartHeight = 150;
 
-  const selectedProject = useMemo(
-    () => boardProjects.find((item) => item.id === selectedProjectId) || null,
-    [selectedProjectId]
+  const departments = useMemo(
+    () => ['All', ...new Set(boardProjects.map((item) => item.department))],
+    []
   );
+
+  const statuses = useMemo(
+    () => ['All', ...new Set(boardProjects.map((item) => item.status))],
+    []
+  );
+
+  const healthLevels = useMemo(
+    () => ['All', ...new Set(boardProjects.map((item) => item.health))],
+    []
+  );
+
+  const filteredProjects = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return boardProjects.filter((item) => {
+      const matchesSearch =
+        !query ||
+        item.id.toLowerCase().includes(query) ||
+        item.title.toLowerCase().includes(query) ||
+        item.ownerFull.toLowerCase().includes(query);
+      const matchesDepartment = departmentFilter === 'All' || item.department === departmentFilter;
+      const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
+      const matchesHealth = healthFilter === 'All' || item.health === healthFilter;
+
+      return matchesSearch && matchesDepartment && matchesStatus && matchesHealth;
+    });
+  }, [search, departmentFilter, statusFilter, healthFilter]);
+
+  const visibleBudgetData = useMemo(
+    () => projectBudgetData.filter((item) => filteredProjects.some((project) => project.id === item.code)),
+    [filteredProjects]
+  );
+
+  const portfolioHealthSummary = useMemo(
+    () => [
+      { label: 'Ahead of Schedule', value: filteredProjects.filter((item) => item.status === 'Ahead').length, tone: 'ahead' },
+      { label: 'On Track', value: filteredProjects.filter((item) => item.status === 'On Track').length, tone: 'ontrack' },
+      { label: 'At Risk', value: filteredProjects.filter((item) => item.status === 'At Risk').length, tone: 'risk' },
+      { label: 'Delayed', value: filteredProjects.filter((item) => item.status === 'Delayed').length, tone: 'delayed' },
+    ],
+    [filteredProjects]
+  );
+
+  const upcomingDeadlineItems = useMemo(
+    () => filteredProjects.slice().sort((a, b) => dueDateToTime(a.due) - dueDateToTime(b.due)).slice(0, 3).map((item) => ({
+      title: item.title,
+      due: item.due,
+    })),
+    [filteredProjects]
+  );
+
+  const totalBudget = useMemo(
+    () => visibleBudgetData.reduce((sum, item) => sum + item.budget, 0),
+    [visibleBudgetData]
+  );
+
+  const totalSpent = useMemo(
+    () => visibleBudgetData.reduce((sum, item) => sum + item.spent, 0),
+    [visibleBudgetData]
+  );
+
+  const selectedProject = useMemo(
+    () => filteredProjects.find((item) => item.id === selectedProjectId) || null,
+    [filteredProjects, selectedProjectId]
+  );
+
+  useEffect(() => {
+    if (!externalSelectedProjectId) return;
+
+    const selectedItem = boardProjects.find((item) => item.id === externalSelectedProjectId);
+    if (!selectedItem) return;
+
+    setSearch(selectedItem.id);
+    setDepartmentFilter(selectedItem.department);
+    setStatusFilter(selectedItem.status);
+    setHealthFilter(selectedItem.health);
+    setViewMode('board');
+  }, [externalSelectedProjectId, projectFocusToken]);
+
+  useEffect(() => {
+    if (!projectsScrollToken) return;
+
+    if (projectsListRef.current) {
+      projectsListRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [projectsScrollToken]);
+
+  const selectedProjectSprints = useMemo(
+    () => {
+      if (!selectedProject) return [];
+
+      const sprintProjectId = sprintProjectByDashboardProject[selectedProject.id];
+      const sprintDetail = sprintDetails[sprintProjectId];
+      if (!sprintDetail) return [];
+
+      return sprintDetail.velocity.map((item) => {
+        const completion = Math.round((item.completed / Math.max(item.planned, 1)) * 100);
+        const health = sprintHealthFromCompletion(completion);
+
+        return {
+          sprint: item.sprint,
+          commit: item.planned,
+          done: item.completed,
+          carryOver: Math.max(item.planned - item.completed, 0),
+          completion,
+          status: health.label,
+          tone: health.tone,
+        };
+      });
+    },
+    [selectedProject]
+  );
+
+  const selectedSprintProject = useMemo(() => {
+    if (!selectedProject) return null;
+    const sprintProjectId = sprintProjectByDashboardProject[selectedProject.id];
+    return sprintProjects.find((item) => item.id === sprintProjectId) || null;
+  }, [selectedProject]);
+
+  const processStageIndex = selectedProject
+    ? selectedProject.progress >= 96
+      ? 3
+      : selectedProject.progress >= 75
+        ? 2
+        : selectedProject.progress >= 40
+          ? 1
+          : 0
+    : 0;
+
+  const processStages = ['Discovery', 'Build', 'Quality', 'Release'];
+  const activeFilterSummary = selectedProject
+    ? [
+        { label: 'Project', value: selectedProject.title },
+        { label: 'Department', value: selectedProject.department },
+        { label: 'Status', value: selectedProject.status },
+        { label: 'Health', value: selectedProject.health },
+      ]
+    : [];
 
   return (
     <div className="tm-projects-root">
+      <section className="tm-member-toolbar tm-project-filters">
+        <div className="tm-search-box">
+          <Search size={17} />
+          <input
+            type="text"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by project ID, title, or owner..."
+          />
+        </div>
+
+        <select value={departmentFilter} onChange={(event) => setDepartmentFilter(event.target.value)}>
+          {departments.map((department) => (
+            <option key={department} value={department}>{department === 'All' ? 'All Departments' : department}</option>
+          ))}
+        </select>
+
+        <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+          {statuses.map((status) => (
+            <option key={status} value={status}>{status === 'All' ? 'All Statuses' : status}</option>
+          ))}
+        </select>
+
+        <select value={healthFilter} onChange={(event) => setHealthFilter(event.target.value)}>
+          {healthLevels.map((health) => (
+            <option key={health} value={health}>{health === 'All' ? 'All Health Levels' : health}</option>
+          ))}
+        </select>
+      </section>
+
+      {selectedProject ? (
+        <section className="tm-project-focus-strip tm-project-anim-panel">
+          <div>
+            <p className="tm-executive-eyebrow">Focused project view</p>
+            <h3>{selectedProject.title}</h3>
+            <p className="tm-muted">The filters below are auto-applied from the card you clicked.</p>
+          </div>
+          <div className="tm-project-focus-meta">
+            {activeFilterSummary.map((item) => (
+              <div key={item.label}>
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section className="tm-kpi-grid tm-projects-kpis">
         <article className="tm-kpi-card tm-project-anim-kpi" style={{ '--proj-index': 0 }}>
           <span className="tm-kpi-icon blue"><BriefcaseBusiness size={16} /></span>
           <p>Active Projects</p>
-          <h3>18</h3>
-          <small>Across all teams</small>
+          <h3>{filteredProjects.length}</h3>
+          <small>Filtered portfolio</small>
         </article>
         <article className="tm-kpi-card tm-project-anim-kpi" style={{ '--proj-index': 1 }}>
           <span className="tm-kpi-icon mint"><CheckCircle2 size={16} /></span>
           <p>On Track / Ahead</p>
-          <h3>5/6</h3>
-          <small>Shown here</small>
+          <h3>{`${filteredProjects.filter((item) => item.status === 'On Track' || item.status === 'Ahead').length}/${filteredProjects.length || 0}`}</h3>
+          <small>Portfolio quality</small>
         </article>
         <article className="tm-kpi-card tm-project-anim-kpi" style={{ '--proj-index': 2 }}>
           <span className="tm-kpi-icon amber"><AlertTriangle size={16} /></span>
           <p>At Risk</p>
-          <h3>1</h3>
+          <h3>{filteredProjects.filter((item) => item.status === 'At Risk').length}</h3>
           <small>Need attention</small>
         </article>
         <article className="tm-kpi-card tm-project-anim-kpi" style={{ '--proj-index': 3 }}>
           <span className="tm-kpi-icon lavender"><TrendingUp size={16} /></span>
           <p>Total Budget Committed</p>
-          <h3>$1K</h3>
-          <small>$1K spent (62%)</small>
+          <h3>{`$${totalBudget}K`}</h3>
+          <small>{`$${totalSpent}K spent (${totalBudget ? Math.round((totalSpent / totalBudget) * 100) : 0}%)`}</small>
         </article>
       </section>
 
@@ -252,7 +514,7 @@ const ProjectsTab = () => {
               );
             })}
 
-            {projectBudgetData.map((item, index) => {
+            {visibleBudgetData.map((item, index) => {
               const groupX = 98 + index * 88;
               const budgetHeight = (item.budget / 600) * chartHeight;
               const spentHeight = (item.spent / 600) * chartHeight;
@@ -287,7 +549,7 @@ const ProjectsTab = () => {
         <article className="tm-panel tm-project-health-panel tm-project-anim-panel" style={{ '--proj-index': 1 }}>
           <h3>Portfolio Health</h3>
           <ul className="tm-project-health-list">
-            {portfolioHealth.map((item, index) => (
+            {portfolioHealthSummary.map((item, index) => (
               <li key={item.label} className={`${item.tone} tm-project-health-item`} style={{ '--proj-index': index }}>
                 <span>{item.label}</span>
                 <strong>{item.value}</strong>
@@ -298,7 +560,7 @@ const ProjectsTab = () => {
           <div className="tm-project-deadlines">
             <p>UPCOMING DEADLINES</p>
             <ul>
-              {upcomingDeadlines.map((item, index) => (
+              {upcomingDeadlineItems.map((item, index) => (
                 <li key={item.title} className="tm-project-deadline-item" style={{ '--proj-index': index }}>
                   <span>{item.title}</span>
                   <strong>{item.due}</strong>
@@ -309,7 +571,11 @@ const ProjectsTab = () => {
         </article>
       </section>
 
-      <section className="tm-panel tm-project-board-panel tm-project-anim-panel" style={{ '--proj-index': 2 }}>
+      <section
+        ref={projectsListRef}
+        className="tm-panel tm-project-board-panel tm-project-anim-panel"
+        style={{ '--proj-index': 2 }}
+      >
         <div className="tm-project-board-head">
           <h3>All Projects</h3>
           <div className="tm-view-toggle">
@@ -333,13 +599,19 @@ const ProjectsTab = () => {
         <div className="tm-project-board-layout">
           {viewMode === 'board' ? (
             <div className="tm-board-grid">
-              {boardProjects.map((item, index) => (
+              {filteredProjects.map((item, index) => (
                 <button
                   key={item.id}
                   type="button"
                   className={`tm-board-card tm-project-anim-card ${selectedProjectId === item.id ? 'active' : ''}`}
                   style={{ '--proj-index': index }}
-                  onClick={() => setSelectedProjectId(item.id)}
+                  onClick={() => {
+                    if (onProjectSelect) {
+                      onProjectSelect(item.id);
+                      return;
+                    }
+                    setInternalSelectedProjectId(item.id);
+                  }}
                 >
                   <div className="tm-board-card-top">
                     <span className="tm-board-id">{item.id}</span>
@@ -366,16 +638,23 @@ const ProjectsTab = () => {
                   </div>
                 </button>
               ))}
+              {!filteredProjects.length ? <p className="tm-empty">No projects match current filters.</p> : null}
             </div>
           ) : (
             <div className="tm-project-list-mode">
-              {boardProjects.map((item, index) => (
+              {filteredProjects.map((item, index) => (
                 <button
                   key={item.id}
                   type="button"
                   className={`tm-project-list-row tm-project-anim-row ${selectedProjectId === item.id ? 'active' : ''}`}
                   style={{ '--proj-index': index }}
-                  onClick={() => setSelectedProjectId(item.id)}
+                  onClick={() => {
+                    if (onProjectSelect) {
+                      onProjectSelect(item.id);
+                      return;
+                    }
+                    setInternalSelectedProjectId(item.id);
+                  }}
                 >
                   <strong>{item.id}</strong>
                   <span>{item.title}</span>
@@ -383,6 +662,7 @@ const ProjectsTab = () => {
                   <b>{item.progress}%</b>
                 </button>
               ))}
+              {!filteredProjects.length ? <p className="tm-empty">No projects match current filters.</p> : null}
             </div>
           )}
 
@@ -417,6 +697,18 @@ const ProjectsTab = () => {
                   <article><span>STATUS</span><strong>{selectedProject.status}</strong></article>
                 </div>
 
+                <div className="tm-project-milestones tm-project-process">
+                  <h5>EXECUTION PROCESS</h5>
+                  <ul>
+                    {processStages.map((stage, index) => (
+                      <li key={stage} className={index < processStageIndex ? 'done' : index === processStageIndex ? 'current' : ''}>
+                        <i />
+                        <span>{stage}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
                 <div className="tm-project-milestones">
                   <h5>MILESTONES</h5>
                   <ul>
@@ -427,6 +719,36 @@ const ProjectsTab = () => {
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                <div className="tm-project-milestones tm-project-sprints">
+                  <h5>PROJECT SPRINTS</h5>
+                  <div className="tm-project-sprint-table-wrap">
+                    <table className="tm-project-sprint-table">
+                      <thead>
+                        <tr>
+                          <th>Sprint</th>
+                          <th>Planned/Done</th>
+                          <th>Carryover</th>
+                          <th>Commit/Done</th>
+                          <th>Completion</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedProjectSprints.map((sprint) => (
+                          <tr key={`${selectedProject.id}-${sprint.sprint}`}>
+                            <td>{sprint.sprint}</td>
+                            <td>{`${sprint.commit}/${sprint.done}`}</td>
+                            <td>{sprint.carryOver}</td>
+                            <td>{`${sprint.done}/${sprint.commit}`}</td>
+                            <td>{`${sprint.completion}%`}</td>
+                            <td><span className={`tm-chip ${sprint.tone}`}>{sprint.status}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
 
                 <div className="tm-project-tags">
@@ -443,7 +765,31 @@ const ProjectsTab = () => {
                   </div>
                 </div>
 
-                <button type="button" className="tm-project-report-btn">View Full Report</button>
+                <div className="tm-project-report-actions">
+                  <button
+                    type="button"
+                    className="tm-project-report-btn"
+                    onClick={() => {
+                      if (selectedSprintProject) {
+                        navigate(`/sprints/${selectedSprintProject.id}`);
+                      }
+                    }}
+                  >
+                    View Project Sprints
+                  </button>
+                  <button
+                    type="button"
+                    className="tm-project-report-btn tm-project-report-secondary"
+                    onClick={() => {
+                      if (selectedSprintProject && selectedProjectSprints.length) {
+                        const latestSprint = selectedProjectSprints[selectedProjectSprints.length - 1].sprint;
+                        navigate(`/sprints/${selectedSprintProject.id}/${latestSprint}`);
+                      }
+                    }}
+                  >
+                    Open Latest Sprint Detail
+                  </button>
+                </div>
               </>
             ) : (
               <div className="tm-project-detail-empty">
@@ -452,6 +798,36 @@ const ProjectsTab = () => {
               </div>
             )}
           </aside>
+        </div>
+      </section>
+
+      <section className="tm-panel tm-project-board-panel tm-project-anim-panel" style={{ '--proj-index': 3 }}>
+        <div className="tm-project-board-head">
+          <h3>Completed Projects Archive</h3>
+          <p className="tm-muted">Board-level delivery outcomes and closure quality</p>
+        </div>
+
+        <div className="tm-completed-grid">
+          {completedProjectsArchive.map((project) => (
+            <article key={project.id} className="tm-completed-card">
+              <div className="tm-board-card-top">
+                <span className="tm-board-id">{project.id}</span>
+                <em className="tm-chip ontrack">Completed</em>
+              </div>
+              <h4>{project.title}</h4>
+              <p>{project.client}</p>
+              <div className="tm-project-detail-stats">
+                <article><span>OWNER</span><strong>{project.owner}</strong></article>
+                <article><span>COMPLETED</span><strong>{project.completedOn}</strong></article>
+                <article><span>BUDGET</span><strong>{project.budget}</strong></article>
+                <article><span>SPENT</span><strong>{project.spent}</strong></article>
+              </div>
+              <div className="tm-project-tags">
+                <span>{project.impact}</span>
+                <span>{project.quality}</span>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </div>

@@ -1,71 +1,148 @@
 import React, { useMemo, useState } from 'react';
-import { ChevronRight, CircleUserRound, Star } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import {
-  activeProjects,
-  alerts,
-  departmentDistribution,
-  formatPercent,
-  kpiCards,
-  projectStatusTone,
+  attendanceSummaryCards,
+  headcountTrendsByYear,
+  members,
   topPerformers,
-  trendLabels,
-  trendValues,
 } from '../teamData';
 
-const mixWithWhite = (hex, amount = 0.3) => {
-  const value = hex.replace('#', '').trim();
-  const normalized = value.length === 3
-    ? value.split('').map((char) => `${char}${char}`).join('')
-    : value;
-
-  if (normalized.length !== 6) {
-    return hex;
-  }
-
-  const [r, g, b] = [0, 2, 4].map((index) => parseInt(normalized.slice(index, index + 2), 16));
-  const blend = (channel) => Math.round(channel + (255 - channel) * amount);
-
-  return `rgb(${blend(r)} ${blend(g)} ${blend(b)})`;
-};
-
-const buildSoftBarGradient = (hex) => {
-  const light = mixWithWhite(hex, 0.5);
-  const mid = mixWithWhite(hex, 0.28);
-  return `linear-gradient(90deg, ${light} 0%, ${mid} 55%, ${hex} 100%)`;
-};
-
-const OverviewTab = () => {
+const OverviewTab = ({ onNavigateTab }) => {
+  const [selectedYear, setSelectedYear] = useState('2026');
   const [hoveredTrendIndex, setHoveredTrendIndex] = useState(null);
-  const maxDeptCount = Math.max(...departmentDistribution.map((item) => item.count));
+
+  const yearOptions = useMemo(
+    () => Object.keys(headcountTrendsByYear).sort((a, b) => Number(b) - Number(a)),
+    []
+  );
+
+  const currentTrend = headcountTrendsByYear[selectedYear] || headcountTrendsByYear[yearOptions[0]];
+  const trendValues = currentTrend?.values || [];
+  const trendLabels = currentTrend?.labels || [];
+
+  const overallTrendDomain = useMemo(() => {
+    const allValues = Object.values(headcountTrendsByYear).flatMap((entry) => entry.values || []);
+    if (!allValues.length) {
+      return { min: 0, max: 10 };
+    }
+    const minValue = Math.min(...allValues);
+    const maxValue = Math.max(...allValues);
+    const padding = Math.max(4, Math.ceil((maxValue - minValue) * 0.15));
+    return {
+      min: minValue - padding,
+      max: maxValue + padding,
+    };
+  }, []);
+
+  const yDomain = useMemo(() => {
+    if (!trendValues.length) {
+      return { min: 0, max: 10 };
+    }
+    return {
+      min: overallTrendDomain.min,
+      max: overallTrendDomain.max,
+    };
+  }, [overallTrendDomain, trendValues]);
+
+  const yScale = useMemo(() => {
+    const range = yDomain.max - yDomain.min || 1;
+    return (value) => 220 - ((value - yDomain.min) / range) * 168;
+  }, [yDomain]);
+
+  const yTicks = useMemo(() => {
+    const steps = 4;
+    const range = yDomain.max - yDomain.min;
+    return Array.from({ length: steps + 1 }, (_, index) => Math.round(yDomain.min + (range / steps) * index));
+  }, [yDomain]);
+
+  const xStep = trendValues.length > 1 ? 460 / (trendValues.length - 1) : 0;
 
   const trendGrowth = useMemo(
     () => trendValues.map((value, index) => (index === 0 ? 0 : value - trendValues[index - 1])),
-    []
+    [trendValues]
   );
 
   const chartPoints = trendValues
     .map((value, index) => {
-      const x = 32 + index * 92;
-      const y = 220 - ((value - 200) / 60) * 168;
+      const x = 32 + index * xStep;
+      const y = yScale(value);
       return `${x},${y}`;
     })
     .join(' ');
 
   const areaPoints = `32,220 ${chartPoints} 492,220`;
 
+  const totalEmployees = members.length;
+  const topPerformer = topPerformers[0];
+  const presentToday = attendanceSummaryCards.find((item) => item.title === 'Present Today')?.value || 0;
+  const absentToday = attendanceSummaryCards.find((item) => item.title === 'Absent')?.value || 0;
+
+  const cockpitCards = [
+    {
+      id: 'total-employees',
+      title: 'Total employees',
+      value: totalEmployees,
+      hint: 'Current workforce size',
+      onClick: () => {
+        onNavigateTab?.('members');
+      },
+    },
+    {
+      id: 'present-today',
+      title: 'Present today',
+      value: presentToday,
+      hint: 'Operational readiness',
+      onClick: () => {
+        onNavigateTab?.('attendance');
+      },
+    },
+    {
+      id: 'absent-today',
+      title: 'Absent today',
+      value: absentToday,
+      hint: 'Needs follow-up',
+      onClick: () => {
+        onNavigateTab?.('attendance');
+      },
+    },
+    {
+      id: 'top-performer',
+      title: 'Top performer',
+      value: topPerformer?.name || '-',
+      hint: topPerformer ? `Rating ${topPerformer.rating}` : 'Performance spotlight',
+      onClick: () => {
+        onNavigateTab?.('performance');
+      },
+    },
+  ];
+
   return (
     <div className="tm-overview-root">
-      <section className="tm-kpi-grid">
-        {kpiCards.map((card) => (
-          <article key={card.title} className="tm-kpi-card tm-anim-card">
-            <span className={`tm-kpi-icon ${card.tone}`}>
-              <CircleUserRound size={16} />
-            </span>
-            <p>{card.title}</p>
-            <h3>{card.value}</h3>
-            <small>{card.delta}</small>
-          </article>
-        ))}
+      <section className="tm-executive-cockpit tm-anim-panel">
+        <div className="tm-executive-cockpit-copy">
+          <p className="tm-executive-eyebrow">CEO cockpit</p>
+          <h3>What needs your attention right now</h3>
+          <p>
+            This view is designed for decision-making: it surfaces risk, delivery, people, and
+            performance in that order, with drill-downs available only when needed.
+          </p>
+        </div>
+
+        <div className="tm-executive-cockpit-grid">
+          {cockpitCards.map((card) => (
+            <button
+              key={card.id}
+              type="button"
+              className="tm-executive-card-btn"
+              onClick={card.onClick}
+            >
+              <span>{card.title}</span>
+              <strong>{card.value}</strong>
+              <small>{card.hint}</small>
+            </button>
+          ))}
+        </div>
+
       </section>
 
       <section className="tm-overview-grid">
@@ -77,7 +154,17 @@ const OverviewTab = () => {
             </div>
             <div className="tm-panel-meta">
               <span><i /> Total</span>
-              <button type="button">6 Months</button>
+              <label className="tm-year-filter" htmlFor="tm-headcount-year">Year</label>
+              <select
+                id="tm-headcount-year"
+                value={selectedYear}
+                onChange={(event) => setSelectedYear(event.target.value)}
+                aria-label="Filter headcount trend by year"
+              >
+                {yearOptions.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -97,8 +184,8 @@ const OverviewTab = () => {
                 <stop offset="100%" stopColor="#22c55e" />
               </linearGradient>
             </defs>
-            {[200, 215, 230, 245, 260].map((tick) => {
-              const y = 220 - ((tick - 200) / 60) * 168;
+            {yTicks.map((tick) => {
+              const y = yScale(tick);
               return (
                 <g key={tick}>
                   <line x1="30" y1={y} x2="500" y2={y} />
@@ -111,15 +198,15 @@ const OverviewTab = () => {
             {hoveredTrendIndex !== null ? (
               <line
                 className="tm-trend-hover-line"
-                x1={32 + hoveredTrendIndex * 92}
+                x1={32 + hoveredTrendIndex * xStep}
                 y1="52"
-                x2={32 + hoveredTrendIndex * 92}
+                x2={32 + hoveredTrendIndex * xStep}
                 y2="220"
               />
             ) : null}
             {trendValues.map((value, index) => {
-              const x = 32 + index * 92;
-              const y = 220 - ((value - 200) / 60) * 168;
+              const x = 32 + index * xStep;
+              const y = yScale(value);
               const growth = trendGrowth[index];
               const growthPrefix = growth > 0 ? '+' : '';
               const hitX = Math.max(30, x - 42);
@@ -171,116 +258,8 @@ const OverviewTab = () => {
             })}
           </svg>
         </article>
-
-        <article className="tm-panel tm-anim-panel">
-          <h3>Department Distribution</h3>
-          <p className="tm-muted">247 total across 8 teams</p>
-          <ul className="tm-dept-list">
-            {departmentDistribution.map((dept) => (
-              <li key={dept.name} className="tm-overview-item">
-                <span>{dept.name}</span>
-                <div className="tm-bar-wrap">
-                  <div
-                    className="tm-bar"
-                    style={{
-                      '--bar-width': formatPercent((dept.count / maxDeptCount) * 100),
-                      background: buildSoftBarGradient(dept.color),
-                    }}
-                  />
-                </div>
-                <strong>{dept.count}</strong>
-              </li>
-            ))}
-          </ul>
-        </article>
       </section>
 
-      <section className="tm-overview-grid tm-overview-lower">
-        <article className="tm-panel tm-anim-panel">
-          <div className="tm-panel-title-row">
-            <h3>Team Signals & Alerts</h3>
-            <ChevronRight size={18} />
-          </div>
-          <p className="tm-muted">Requires executive attention</p>
-          <ul className="tm-alert-list">
-            {alerts.map((item) => (
-              <li key={item.text} className="tm-overview-item">
-                <i className={item.color} />
-                <span>{item.text}</span>
-                <em className={item.color}>{item.tag}</em>
-                <ChevronRight size={14} />
-              </li>
-            ))}
-          </ul>
-        </article>
-
-        <article className="tm-panel tm-anim-panel">
-          <div className="tm-panel-title-row">
-            <h3>Active Projects</h3>
-            <ChevronRight size={18} />
-          </div>
-          <p className="tm-muted">Current team workload overview</p>
-          <ul className="tm-project-list">
-            {activeProjects.map((project) => (
-              <li key={project.name} className="tm-overview-item">
-                <div className="tm-project-head">
-                  <span>{project.name}</span>
-                  <em className={projectStatusTone[project.status] || 'on-track'}>{project.status}</em>
-                </div>
-                <div className="tm-progress-track">
-                  <div
-                    style={{
-                      '--progress-width': formatPercent(project.progress),
-                      background: buildSoftBarGradient(project.color),
-                    }}
-                  />
-                </div>
-                <div className="tm-project-meta">
-                  <span>{project.team}</span>
-                  <span>{project.members} members</span>
-                  <span>Due {project.due}</span>
-                  <strong>{project.progress}%</strong>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </article>
-
-        <article className="tm-panel tm-anim-panel">
-          <div className="tm-panel-title-row">
-            <h3>Top Performers</h3>
-            <ChevronRight size={18} />
-          </div>
-          <p className="tm-muted">Highest rated this quarter</p>
-          <ul className="tm-top-list">
-            {topPerformers.map((person) => (
-              <li key={person.name} className="tm-overview-item">
-                <div className={`tm-avatar ${person.tone}`}>{person.initials}</div>
-                <div>
-                  <strong>{person.name}</strong>
-                  <p>{person.project}</p>
-                </div>
-                <span><Star size={14} /> {person.rating}</span>
-              </li>
-            ))}
-          </ul>
-        </article>
-      </section>
-
-      <section className="tm-workforce-strip tm-anim-panel">
-        <div>
-          <h3>Today's Workforce at a Glance</h3>
-          <p>Mar 10, 2026 • Biometric attendance system active</p>
-        </div>
-        <ul>
-          <li className="tm-overview-item"><span>Present</span><strong>231</strong></li>
-          <li className="tm-overview-item"><span>Late</span><strong>8</strong></li>
-          <li className="tm-overview-item"><span>Absent</span><strong>6</strong></li>
-          <li className="tm-overview-item"><span>On Leave</span><strong>2</strong></li>
-          <li className="tm-overview-item"><span>Facial</span><strong>142</strong></li>
-          <li className="tm-overview-item"><span>Fingerprint</span><strong>89</strong></li>
-        </ul>
-      </section>
     </div>
   );
 };
