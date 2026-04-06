@@ -1,5 +1,5 @@
-import React from 'react';
-import { Award, Star, Target, TrendingDown, TrendingUp } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Award, Search, Star, Target, TrendingDown, TrendingUp } from 'lucide-react';
 
 const performanceKpis = [
   { title: 'Avg Performance Score', value: '4.65', subtitle: 'Out of 5.0', tone: 'amber', icon: Star },
@@ -178,11 +178,106 @@ const barTone = (value) => {
 };
 
 const PerformanceTab = () => {
+  const [search, setSearch] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState('All');
+  const [reviewFilter, setReviewFilter] = useState('All');
+  const [trendFilter, setTrendFilter] = useState('All');
+
+  const departments = useMemo(
+    () => ['All', ...new Set(performanceRows.map((row) => row.department))],
+    []
+  );
+
+  const reviews = useMemo(
+    () => ['All', ...new Set(performanceRows.map((row) => row.review))],
+    []
+  );
+
+  const trendOptions = ['All', 'Improving', 'Stable'];
+
+  const filteredRows = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return performanceRows.filter((row) => {
+      const matchesSearch =
+        !query ||
+        row.name.toLowerCase().includes(query) ||
+        row.department.toLowerCase().includes(query);
+      const matchesDepartment = departmentFilter === 'All' || row.department === departmentFilter;
+      const matchesReview = reviewFilter === 'All' || row.review === reviewFilter;
+      const matchesTrend =
+        trendFilter === 'All' ||
+        (trendFilter === 'Improving' && row.trend === 'up') ||
+        (trendFilter === 'Stable' && !row.trend);
+
+      return matchesSearch && matchesDepartment && matchesReview && matchesTrend;
+    });
+  }, [search, departmentFilter, reviewFilter, trendFilter]);
+
+  const avgScore = useMemo(() => {
+    if (!filteredRows.length) return '0.00';
+    const sum = filteredRows.reduce((total, row) => total + row.q4, 0);
+    return (sum / filteredRows.length).toFixed(2);
+  }, [filteredRows]);
+
+  const avgGoals = useMemo(() => {
+    if (!filteredRows.length) return 0;
+    const sum = filteredRows.reduce((total, row) => total + row.goals, 0);
+    return Math.round(sum / filteredRows.length);
+  }, [filteredRows]);
+
+  const topPerformerCount = useMemo(
+    () => filteredRows.filter((row) => row.q4 >= 4.7).length,
+    [filteredRows]
+  );
+
+  const needsAttentionCount = useMemo(
+    () => filteredRows.filter((row) => row.q4 < 4.5).length,
+    [filteredRows]
+  );
+
   return (
     <div className="tm-performance-root">
+      <section className="tm-member-toolbar tm-project-filters">
+        <div className="tm-search-box">
+          <Search size={17} />
+          <input
+            type="text"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by employee or department..."
+          />
+        </div>
+
+        <select value={departmentFilter} onChange={(event) => setDepartmentFilter(event.target.value)}>
+          {departments.map((item) => (
+            <option key={item} value={item}>{item === 'All' ? 'All Departments' : item}</option>
+          ))}
+        </select>
+
+        <select value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value)}>
+          {reviews.map((item) => (
+            <option key={item} value={item}>{item === 'All' ? 'All Reviews' : item}</option>
+          ))}
+        </select>
+
+        <select value={trendFilter} onChange={(event) => setTrendFilter(event.target.value)}>
+          {trendOptions.map((item) => (
+            <option key={item} value={item}>{item === 'All' ? 'All Trends' : item}</option>
+          ))}
+        </select>
+      </section>
+
       <section className="tm-kpi-grid">
         {performanceKpis.map((item, index) => {
           const Icon = item.icon;
+          const valueMap = {
+            'Avg Performance Score': avgScore,
+            'Goals Achieved': `${avgGoals}%`,
+            'Top Performers': topPerformerCount,
+            'Needs Attention': needsAttentionCount,
+          };
+
           return (
             <article
               key={item.title}
@@ -191,7 +286,7 @@ const PerformanceTab = () => {
             >
               <span className={`tm-kpi-icon ${item.tone}`}><Icon size={16} /></span>
               <p>{item.title}</p>
-              <h3>{item.value}</h3>
+              <h3>{valueMap[item.title] ?? item.value}</h3>
               <small>{item.subtitle}</small>
             </article>
           );
@@ -218,7 +313,7 @@ const PerformanceTab = () => {
                 </tr>
               </thead>
               <tbody>
-                {performanceRows.map((row, index) => (
+                {filteredRows.map((row, index) => (
                   <tr
                     key={row.name}
                     className={`tm-perf-row ${index === 0 ? 'active' : ''}`}
@@ -257,6 +352,11 @@ const PerformanceTab = () => {
                     </td>
                   </tr>
                 ))}
+                {!filteredRows.length ? (
+                  <tr>
+                    <td colSpan="8"><p className="tm-empty">No employees match current filters.</p></td>
+                  </tr>
+                ) : null}
               </tbody>
             </table>
           </div>
