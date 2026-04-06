@@ -1,169 +1,29 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Briefcase,
-  ChevronDown,
-  ChevronUp,
   CheckCircle2,
   Clock3,
   Gift,
   Mail,
   MapPin,
   Phone,
+  ScanFace,
   Search,
+  ShieldCheck,
   Star,
+  UserPlus,
 } from 'lucide-react';
 import { members, statusChipTone, statusTone } from '../teamData';
-
-const departmentProjectHistory = {
-  Engineering: ['Platform v3.0 Rebuild', 'ML Recommendation Engine', 'Identity Security Upgrade'],
-  Sales: ['Q1 Enterprise Sales Drive', 'Global Expansion Pipeline', 'Enterprise Reporting Suite'],
-  Product: ['2026 Product Roadmap', 'Hospital CRM Rollout', 'Mobile App Discovery'],
-  Marketing: ['Spring Marketing Campaign', 'Demand Gen Revamp', 'Brand Awareness Sprint'],
-  Design: ['Brand Identity Refresh', 'Design System 2.0', 'UX Audit Program'],
-  HR: ['Q1 Hiring Drive', 'Leadership Upskilling', 'People Policy Refresh'],
-  Finance: ['Budget Forecast 2026', 'Cashflow Optimizer', 'Vendor Cost Program'],
-};
-
-const buildMemberDeliverySnapshot = (member) => {
-  if (!member) return null;
-
-  const departmentProjects = departmentProjectHistory[member.department] || [];
-  const projectsWorked = [member.project, ...departmentProjects.filter((item) => item !== member.project)].slice(0, 3);
-  const taskAllocated = member.done + member.open + 8;
-  const taskCompleted = Math.min(member.done, taskAllocated);
-  const progress = Math.round((taskCompleted / Math.max(taskAllocated, 1)) * 100);
-
-  const leavesTaken =
-    member.status === 'On Leave'
-      ? 8
-      : member.attendanceStatus === 'Absent'
-        ? 4
-        : member.attendanceStatus === 'Late'
-          ? 2
-          : 1;
-
-  const delayedSubmissions = Math.max(member.open - 1, 0) + (member.attendanceStatus === 'Late' ? 1 : 0);
-
-  const projectHistory = projectsWorked.map((projectName, index) => {
-    const projectProgress = Math.min(98, Math.max(36, progress - index * 11 + (member.id % 4) * 3));
-    return {
-      name: projectName,
-      progress: projectProgress,
-    };
-  });
-
-  return {
-    projectsWorked,
-    progress,
-    taskAllocated,
-    taskCompleted,
-    leavesTaken,
-    delayedSubmissions,
-    projectHistory,
-  };
-};
-
-const projectCatalog = {
-  'Platform v3.0 Rebuild': {
-    owner: 'Sarah Chen',
-    teamSize: '18 people',
-    budget: '$420K',
-    status: 'On Track',
-  },
-  'Q1 Enterprise Sales Drive': {
-    owner: 'James Wilson',
-    teamSize: '8 people',
-    budget: '$300K',
-    status: 'Ahead',
-  },
-  'Spring Marketing Campaign': {
-    owner: 'Marcus Lee',
-    teamSize: '6 people',
-    budget: '$110K',
-    status: 'At Risk',
-  },
-  '2026 Product Roadmap': {
-    owner: 'Priya Patel',
-    teamSize: '5 people',
-    budget: '$62K',
-    status: 'Ahead',
-  },
-  'Brand Identity Refresh': {
-    owner: 'Elena Torres',
-    teamSize: '4 people',
-    budget: '$130K',
-    status: 'On Track',
-  },
-  'ML Recommendation Engine': {
-    owner: 'Li Wei',
-    teamSize: '7 people',
-    budget: '$220K',
-    status: 'On Track',
-  },
-  'Q1 Hiring Drive': {
-    owner: 'Anna Kowalski',
-    teamSize: '5 people',
-    budget: '$85K',
-    status: 'On Track',
-  },
-  'Budget Forecast 2026': {
-    owner: 'David Brown',
-    teamSize: '4 people',
-    budget: '$95K',
-    status: 'On Track',
-  },
-};
-
-const shiftDateByDays = (dateLabel, days) => {
-  const baseDate = new Date(dateLabel);
-  if (Number.isNaN(baseDate.getTime())) return dateLabel;
-  baseDate.setDate(baseDate.getDate() + days);
-  return baseDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-};
-
-const buildCurrentProjectDetail = (member, deliverySnapshot) => {
-  if (!member || !deliverySnapshot) return null;
-
-  const allocatedOn = shiftDateByDays(member.since, 14 + member.id * 2);
-  const deadline = shiftDateByDays(allocatedOn, 90 + member.id * 4);
-  const projectMeta = projectCatalog[member.project] || {
-    owner: member.name,
-    teamSize: `${Math.max(3, Math.ceil((member.done + member.open) / 3))} people`,
-    budget: '$120K',
-    status: 'On Track',
-  };
-
-  return {
-    allocatedOn,
-    deadline,
-    role: member.role,
-    tasksAllocated: deliverySnapshot.taskAllocated,
-    tasksCompleted: deliverySnapshot.taskCompleted,
-    tasksOpen: member.open,
-    progress: deliverySnapshot.progress,
-    delayedSubmissions: deliverySnapshot.delayedSubmissions,
-    leavesTaken: deliverySnapshot.leavesTaken,
-    owner: projectMeta.owner,
-    teamSize: projectMeta.teamSize,
-    budget: projectMeta.budget,
-    status: projectMeta.status,
-  };
-};
 
 const MembersTab = () => {
   const [search, setSearch] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
-  const [roleFilter, setRoleFilter] = useState('All');
-  const [workModeFilter, setWorkModeFilter] = useState('All');
   const [viewMode, setViewMode] = useState('grid');
   const [selectedMemberId, setSelectedMemberId] = useState(null);
-  const [showProjectDetail, setShowProjectDetail] = useState(false);
 
   const departments = useMemo(() => ['All', ...new Set(members.map((member) => member.department))], []);
   const statuses = ['All', 'Active', 'Remote', 'On Leave'];
-  const roles = useMemo(() => ['All', ...new Set(members.map((member) => member.role))], []);
-  const workModes = useMemo(() => ['All', ...new Set(members.map((member) => member.workStatus))], []);
 
   const filteredMembers = useMemo(() => {
     return members.filter((member) => {
@@ -175,39 +35,14 @@ const MembersTab = () => {
 
       const matchesDepartment = departmentFilter === 'All' || member.department === departmentFilter;
       const matchesStatus = statusFilter === 'All' || member.status === statusFilter;
-      const matchesRole = roleFilter === 'All' || member.role === roleFilter;
-      const matchesWorkMode = workModeFilter === 'All' || member.workStatus === workModeFilter;
 
-      return matchesSearch && matchesDepartment && matchesStatus && matchesRole && matchesWorkMode;
+      return matchesSearch && matchesDepartment && matchesStatus;
     });
-  }, [search, departmentFilter, statusFilter, roleFilter, workModeFilter]);
+  }, [search, departmentFilter, statusFilter]);
 
   const selectedMember = useMemo(() => {
     return filteredMembers.find((member) => member.id === selectedMemberId) || null;
   }, [filteredMembers, selectedMemberId]);
-
-  const deliverySnapshot = useMemo(() => buildMemberDeliverySnapshot(selectedMember), [selectedMember]);
-  const currentProjectDetail = useMemo(
-    () => buildCurrentProjectDetail(selectedMember, deliverySnapshot),
-    [selectedMember, deliverySnapshot]
-  );
-
-  useEffect(() => {
-    setShowProjectDetail(false);
-  }, [selectedMemberId]);
-
-  useEffect(() => {
-    if (!selectedMember) return undefined;
-
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        setSelectedMemberId(null);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedMember]);
 
   return (
     <>
@@ -234,26 +69,17 @@ const MembersTab = () => {
           ))}
         </select>
 
-        <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
-          {roles.map((item) => (
-            <option key={item} value={item}>{item === 'All' ? 'All Roles' : item}</option>
-          ))}
-        </select>
-
-        <select value={workModeFilter} onChange={(event) => setWorkModeFilter(event.target.value)}>
-          {workModes.map((item) => (
-            <option key={item} value={item}>{item === 'All' ? 'All Work Modes' : item}</option>
-          ))}
-        </select>
-
         <div className="tm-view-toggle">
           <button type="button" className={viewMode === 'grid' ? 'active' : ''} onClick={() => setViewMode('grid')}>Grid</button>
           <button type="button" className={viewMode === 'list' ? 'active' : ''} onClick={() => setViewMode('list')}>List</button>
         </div>
 
+        <button type="button" className="tm-add-member-btn">
+          <UserPlus size={17} /> Add Member
+        </button>
       </section>
 
-      <section className="tm-members-layout">
+      <section className={`tm-members-layout ${viewMode === 'grid' && selectedMember ? 'with-detail' : ''}`}>
         <div className={`tm-member-grid ${viewMode}`}>
           {filteredMembers.map((member, index) => (
             <article
@@ -309,27 +135,8 @@ const MembersTab = () => {
           {!filteredMembers.length ? <p className="tm-empty">No members match your filters.</p> : null}
         </div>
 
-        {selectedMember ? (
-          <div
-            className="tm-member-modal-overlay"
-            onClick={() => setSelectedMemberId(null)}
-            role="presentation"
-          >
-          <aside
-            className="tm-member-detail tm-member-modal-detail tm-member-anim-detail"
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${selectedMember.name} details`}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="tm-member-modal-close"
-              onClick={() => setSelectedMemberId(null)}
-              aria-label="Close employee details"
-            >
-              <span className="tm-close-glyph" aria-hidden="true">&times;</span>
-            </button>
+        {viewMode === 'grid' && selectedMember ? (
+          <aside className="tm-member-detail tm-member-anim-detail">
             <header>
               <div className={`tm-avatar ${selectedMember.badgeTone}`}>{selectedMember.initials}</div>
               <div>
@@ -349,96 +156,11 @@ const MembersTab = () => {
               <small>Checked in at {selectedMember.checkIn}</small>
             </div>
 
-            <div
-              className="tm-detail-card project tm-current-project-card"
-              role="button"
-              tabIndex={0}
-              onClick={() => setShowProjectDetail((value) => !value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  setShowProjectDetail((value) => !value);
-                }
-              }}
-            >
+            <div className="tm-detail-card project">
               <h4>CURRENT PROJECT</h4>
               <p><Gift size={16} /> {selectedMember.project}</p>
-              <small>
-                {selectedMember.done} tasks done • {selectedMember.open} open
-                <span className="tm-project-detail-toggle-copy">
-                  {showProjectDetail ? 'Hide full project details' : 'Click to view full project details'}
-                  {showProjectDetail ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                </span>
-              </small>
+              <small>{selectedMember.done} tasks done • {selectedMember.open} open</small>
             </div>
-
-            {showProjectDetail && currentProjectDetail ? (
-              <div className="tm-detail-card tm-project-detail-card">
-                <h4>PROJECT DETAIL</h4>
-                <div className="tm-project-detail-grid">
-                  <article><span>Allocated On</span><strong>{currentProjectDetail.allocatedOn}</strong></article>
-                  <article><span>Deadline</span><strong>{currentProjectDetail.deadline}</strong></article>
-                  <article><span>Role</span><strong>{currentProjectDetail.role}</strong></article>
-                  <article><span>Status</span><strong>{currentProjectDetail.status}</strong></article>
-                  <article><span>Tasks Allocated</span><strong>{currentProjectDetail.tasksAllocated}</strong></article>
-                  <article><span>Completed Tasks</span><strong>{currentProjectDetail.tasksCompleted}</strong></article>
-                  <article><span>Open Tasks</span><strong>{currentProjectDetail.tasksOpen}</strong></article>
-                  <article><span>Progress</span><strong>{currentProjectDetail.progress}%</strong></article>
-                  <article><span>Delayed Submissions</span><strong>{currentProjectDetail.delayedSubmissions}</strong></article>
-                  <article><span>Leaves</span><strong>{currentProjectDetail.leavesTaken}</strong></article>
-                  <article><span>Project Owner</span><strong>{currentProjectDetail.owner}</strong></article>
-                  <article><span>Team Size</span><strong>{currentProjectDetail.teamSize}</strong></article>
-                  <article><span>Budget</span><strong>{currentProjectDetail.budget}</strong></article>
-                </div>
-              </div>
-            ) : null}
-
-            {deliverySnapshot ? (
-              <div className="tm-detail-card tm-detail-card-work">
-                <h4>WORK DELIVERY SNAPSHOT</h4>
-
-                <div className="tm-work-metric-grid">
-                  <article>
-                    <span>Tasks Allocated</span>
-                    <strong>{deliverySnapshot.taskAllocated}</strong>
-                  </article>
-                  <article>
-                    <span>Completed</span>
-                    <strong>{deliverySnapshot.taskCompleted}</strong>
-                  </article>
-                  <article>
-                    <span>Leaves</span>
-                    <strong>{deliverySnapshot.leavesTaken}</strong>
-                  </article>
-                  <article>
-                    <span>Delayed Submissions</span>
-                    <strong>{deliverySnapshot.delayedSubmissions}</strong>
-                  </article>
-                </div>
-
-                <div className="tm-work-progress-head">
-                  <span>Overall Progress</span>
-                  <strong>{deliverySnapshot.progress}%</strong>
-                </div>
-                <div className="tm-work-progress-track">
-                  <span style={{ width: `${deliverySnapshot.progress}%` }} />
-                </div>
-
-                <div className="tm-work-projects">
-                  <p>PROJECTS WORKED</p>
-                  <ul>
-                    {deliverySnapshot.projectHistory.map((item) => (
-                      <li key={`${selectedMember.id}-${item.name}`}>
-                        <div>
-                          <strong>{item.name}</strong>
-                        </div>
-                        <span>{item.progress}%</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ) : null}
 
             <ul className="tm-contact-list">
               <li><Mail size={16} /> {selectedMember.email}</li>
@@ -466,6 +188,15 @@ const MembersTab = () => {
             </div>
 
             <div className="tm-detail-section">
+              <h4>BIOMETRIC AUTH</h4>
+              <div className="tm-biometric-list">
+                {selectedMember.biometric.map((entry) => (
+                  <div key={entry}><ScanFace size={15} /> {entry} <span>ENROLLED</span></div>
+                ))}
+              </div>
+            </div>
+
+            <div className="tm-detail-section">
               <h4>SKILLS</h4>
               <div className="tm-skill-list">
                 {selectedMember.skills.map((skill) => (
@@ -475,10 +206,10 @@ const MembersTab = () => {
             </div>
 
             <div className="tm-detail-actions">
-              <button type="button" className="danger" onClick={() => setSelectedMemberId(null)}>Close</button>
+              <button type="button">Edit Profile</button>
+              <button type="button" className="danger">Delete</button>
             </div>
           </aside>
-          </div>
         ) : null}
       </section>
 
