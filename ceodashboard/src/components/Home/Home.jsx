@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import "./Home.css";
 
 import {
@@ -20,12 +21,13 @@ import {
   Users,
   Zap,
   TriangleAlert,
-  TrendingUp,
   Clock3,
   UserRound,
   FileText,
   ArrowRight,
 } from "lucide-react";
+
+import { sprintDetails, sprintProjects } from "../../pages/Sprints/sprintData";
 
 const kpiCards = [
   {
@@ -34,6 +36,7 @@ const kpiCards = [
     value: "6",
     meta: "2 on track",
     color: "blue",
+    to: "/projects",
   },
   {
     icon: Users,
@@ -41,6 +44,7 @@ const kpiCards = [
     value: "8",
     meta: "All squads",
     color: "green",
+    to: "/employees",
   },
   {
     icon: Zap,
@@ -48,6 +52,7 @@ const kpiCards = [
     value: "2",
     meta: "2 in progress",
     color: "teal",
+    to: "/sprints",
   },
   {
     icon: TriangleAlert,
@@ -55,6 +60,7 @@ const kpiCards = [
     value: "4",
     meta: "Needs action",
     color: "red",
+    to: "/risks",
   },
 ];
 
@@ -65,6 +71,13 @@ const velocityData = [
   { week: "W4", planned: 49, actual: 53 },
   { week: "W5", planned: 55, actual: 50 },
   { week: "W6", planned: 60, actual: 58 },
+];
+
+const sprintFilterOptions = [
+  ...sprintProjects.map((project) => ({
+    value: project.id,
+    label: `${project.name} - ${project.sprint}`,
+  })),
 ];
 
 const projectProgressData = [
@@ -132,6 +145,28 @@ const projectsOverview = [
 ];
 
 const Home = () => {
+  const [selectedSprintProject, setSelectedSprintProject] = useState("hospital-crm");
+
+  const selectedProject = sprintProjects.find((project) => project.id === selectedSprintProject);
+
+  const sprintVelocityData = useMemo(() => {
+    const projectVelocity = sprintDetails[selectedSprintProject]?.velocity;
+
+    if (!Array.isArray(projectVelocity) || projectVelocity.length === 0) {
+      return velocityData;
+    }
+
+    return projectVelocity.map((point) => ({
+      week: point.sprint,
+      planned: point.planned,
+      actual: point.completed,
+    }));
+  }, [selectedSprintProject]);
+
+  const sprintContextLabel = selectedProject
+    ? `${selectedProject.name} - ${selectedProject.sprint}`
+    : "Current Sprint";
+
   return (
     <div className="home">
       <section className="hero">
@@ -144,7 +179,7 @@ const Home = () => {
           const Icon = card.icon;
 
           return (
-            <article className="kpi-card" key={card.title}>
+            <Link to={card.to} className="kpi-card kpi-card-link" key={card.title}>
               <div className={`kpi-icon ${card.color}`}>
                 <Icon size={20} />
               </div>
@@ -153,7 +188,7 @@ const Home = () => {
                 <h3 className="kpi-value">{card.value}</h3>
                 <p className="kpi-meta">{card.meta}</p>
               </div>
-            </article>
+            </Link>
           );
         })}
       </section>
@@ -164,13 +199,30 @@ const Home = () => {
             <div>
               <h2>Sprint Velocity Trend</h2>
               <p>Planned vs actual story points</p>
+              <p className="panel-context">Showing {sprintContextLabel}</p>
             </div>
-            <TrendingUp className="trend-icon" size={20} />
+            <div className="panel-head-actions">
+              <label className="sprint-filter" htmlFor="sprint-project-filter">
+                <select
+                  id="sprint-project-filter"
+                  value={selectedSprintProject}
+                  onChange={(event) => setSelectedSprintProject(event.target.value)}
+                  className="sprint-filter-select"
+                  aria-label="Sprint project filter"
+                >
+                  {sprintFilterOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </header>
 
           <div className="chart-wrap chart-wrap-tall">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={velocityData} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
+              <ComposedChart data={sprintVelocityData} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
                 <defs>
                   <linearGradient id="actualFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3bc89b" stopOpacity={0.24} />
