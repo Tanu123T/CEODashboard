@@ -1,59 +1,32 @@
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import {
-  attendanceSummaryCards,
-  headcountTrendsByYear,
+  activeProjects,
+  alerts,
+  departmentDistribution,
   members,
   topPerformers,
+  headcountTrendsByYear,
 } from '../teamData';
 
 const OverviewTab = ({ onNavigateTab }) => {
-  const [selectedYear, setSelectedYear] = useState('2026');
   const [hoveredTrendIndex, setHoveredTrendIndex] = useState(null);
+  const navigate = useNavigate();
 
-  const yearOptions = useMemo(
-    () => Object.keys(headcountTrendsByYear).sort((a, b) => Number(b) - Number(a)),
-    []
-  );
-
-  const currentTrend = headcountTrendsByYear[selectedYear] || headcountTrendsByYear[yearOptions[0]];
+  const currentTrend = headcountTrendsByYear[2026];
   const trendValues = currentTrend?.values || [];
   const trendLabels = currentTrend?.labels || [];
-
-  const overallTrendDomain = useMemo(() => {
-    const allValues = Object.values(headcountTrendsByYear).flatMap((entry) => entry.values || []);
-    if (!allValues.length) {
-      return { min: 0, max: 10 };
-    }
-    const minValue = Math.min(...allValues);
-    const maxValue = Math.max(...allValues);
-    const padding = Math.max(4, Math.ceil((maxValue - minValue) * 0.15));
-    return {
-      min: minValue - padding,
-      max: maxValue + padding,
-    };
-  }, []);
-
-  const yDomain = useMemo(() => {
-    if (!trendValues.length) {
-      return { min: 0, max: 10 };
-    }
-    return {
-      min: overallTrendDomain.min,
-      max: overallTrendDomain.max,
-    };
-  }, [overallTrendDomain, trendValues]);
+  const departmentTotal = members.length;
 
   const yScale = useMemo(() => {
-    const range = yDomain.max - yDomain.min || 1;
-    return (value) => 220 - ((value - yDomain.min) / range) * 168;
-  }, [yDomain]);
+    const minValue = 200;
+    const maxValue = 260;
+    const range = maxValue - minValue || 1;
+    return (value) => 220 - ((value - minValue) / range) * 168;
+  }, []);
 
-  const yTicks = useMemo(() => {
-    const steps = 4;
-    const range = yDomain.max - yDomain.min;
-    return Array.from({ length: steps + 1 }, (_, index) => Math.round(yDomain.min + (range / steps) * index));
-  }, [yDomain]);
+  const yTicks = [200, 215, 230, 245, 260];
 
   const xStep = trendValues.length > 1 ? 460 / (trendValues.length - 1) : 0;
 
@@ -72,81 +45,14 @@ const OverviewTab = ({ onNavigateTab }) => {
 
   const areaPoints = `32,220 ${chartPoints} 492,220`;
 
-  const totalEmployees = members.length;
-  const topPerformer = topPerformers[0];
-  const presentToday = attendanceSummaryCards.find((item) => item.title === 'Present Today')?.value || 0;
-  const absentToday = attendanceSummaryCards.find((item) => item.title === 'Absent')?.value || 0;
-
-  const cockpitCards = [
-    {
-      id: 'total-employees',
-      title: 'Total employees',
-      value: totalEmployees,
-      hint: 'Current workforce size',
-      onClick: () => {
-        onNavigateTab?.('members');
-      },
-    },
-    {
-      id: 'present-today',
-      title: 'Present today',
-      value: presentToday,
-      hint: 'Operational readiness',
-      onClick: () => {
-        onNavigateTab?.('attendance');
-      },
-    },
-    {
-      id: 'absent-today',
-      title: 'Absent today',
-      value: absentToday,
-      hint: 'Needs follow-up',
-      onClick: () => {
-        onNavigateTab?.('attendance');
-      },
-    },
-    {
-      id: 'top-performer',
-      title: 'Top performer',
-      value: topPerformer?.name || '-',
-      hint: topPerformer ? `Rating ${topPerformer.rating}` : 'Performance spotlight',
-      onClick: () => {
-        onNavigateTab?.('performance');
-      },
-    },
-  ];
+  const topPerformerList = topPerformers.slice(0, 5);
+  const activeProjectList = activeProjects.slice(0, 3);
+  const alertsList = alerts.slice(0, 5);
 
   return (
-    <div className="tm-overview-root">
-      <section className="tm-executive-cockpit tm-anim-panel">
-        <div className="tm-executive-cockpit-copy">
-          <p className="tm-executive-eyebrow">CEO cockpit</p>
-          <h3>What needs your attention right now</h3>
-          <p>
-            This view is designed for decision-making: it surfaces risk, delivery, people, and
-            performance in that order, with drill-downs available only when needed.
-          </p>
-        </div>
-
-        <div className="tm-executive-cockpit-grid">
-          {cockpitCards.map((card) => (
-            <button
-              key={card.id}
-              type="button"
-              className="tm-executive-card-btn"
-              onClick={card.onClick}
-            >
-              <span>{card.title}</span>
-              <strong>{card.value}</strong>
-              <small>{card.hint}</small>
-            </button>
-          ))}
-        </div>
-
-      </section>
-
-      <section className="tm-overview-grid">
-            <article className="tm-panel tm-trend-panel tm-anim-panel">
+    <div className="tm-overview-root tm-executive-overview-grid">
+      <section className="tm-overview-grid tm-executive-top-grid">
+        <article className="tm-panel tm-trend-panel tm-anim-panel tm-exec-panel-large">
           <div className="tm-panel-head">
             <div>
               <h3>Headcount Growth Trend</h3>
@@ -154,26 +60,16 @@ const OverviewTab = ({ onNavigateTab }) => {
             </div>
             <div className="tm-panel-meta">
               <span><i /> Total</span>
-              <label className="tm-year-filter" htmlFor="tm-headcount-year">Year</label>
-              <select
-                id="tm-headcount-year"
-                value={selectedYear}
-                onChange={(event) => setSelectedYear(event.target.value)}
-                aria-label="Filter headcount trend by year"
-              >
-                {yearOptions.map((year) => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
+              <button type="button">6 Months</button>
             </div>
           </div>
 
-              <svg
-                viewBox="0 0 520 250"
-                className="tm-chart"
-                aria-label="Headcount growth chart"
-                onMouseLeave={() => setHoveredTrendIndex(null)}
-              >
+          <svg
+            viewBox="0 0 520 250"
+            className="tm-chart"
+            aria-label="Headcount growth chart"
+            onMouseLeave={() => setHoveredTrendIndex(null)}
+          >
             <defs>
               <linearGradient id="tmTrendFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#38bdf8" stopOpacity="0.26" />
@@ -193,8 +89,8 @@ const OverviewTab = ({ onNavigateTab }) => {
                 </g>
               );
             })}
-                <polygon className="tm-trend-area" points={areaPoints} />
-                <polyline className="tm-trend-line" points={chartPoints} />
+            <polygon className="tm-trend-area" points={areaPoints} />
+            <polyline className="tm-trend-line" points={chartPoints} />
             {hoveredTrendIndex !== null ? (
               <line
                 className="tm-trend-hover-line"
@@ -258,8 +154,113 @@ const OverviewTab = ({ onNavigateTab }) => {
             })}
           </svg>
         </article>
+
+        <article className="tm-panel tm-anim-panel tm-exec-panel-small">
+          <div className="tm-panel-head">
+            <div>
+              <h3>Department Distribution</h3>
+              <p>{departmentTotal} total across 8 teams</p>
+            </div>
+          </div>
+
+          <ul className="tm-dept-list">
+            {departmentDistribution.map((item) => (
+              <li key={item.name}>
+                <span>{item.name}</span>
+                <div className="tm-bar-wrap">
+                  <div
+                    className="tm-bar"
+                    style={{ width: `${(item.count / departmentTotal) * 100}%`, background: item.color }}
+                  />
+                </div>
+                <strong>{item.count}</strong>
+              </li>
+            ))}
+          </ul>
+        </article>
       </section>
 
+      <section className="tm-overview-grid tm-executive-lower-grid">
+        <article className="tm-panel tm-anim-panel tm-exec-panel-box">
+          <div className="tm-panel-title-row">
+            <div>
+              <h3>Team Signals &amp; Alerts</h3>
+              <p className="tm-section-purpose">Requires executive attention</p>
+            </div>
+            <ChevronRight size={18} />
+          </div>
+
+          <ul className="tm-alert-list">
+            {alertsList.map((item) => (
+              <li key={item.text}>
+                <i className={item.color} />
+                <span>{item.text}</span>
+                <em className={item.color}>{item.tag}</em>
+                <ChevronRight size={16} />
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="tm-panel tm-anim-panel tm-exec-panel-box">
+          <div className="tm-panel-title-row">
+            <div>
+              <h3>Active Projects</h3>
+              <p className="tm-section-purpose">Current team workload overview</p>
+            </div>
+            <ChevronRight size={18} />
+          </div>
+
+          <ul className="tm-project-list">
+            {activeProjectList.map((project) => (
+              <li key={project.id}>
+                <button
+                  type="button"
+                  className="tm-project-card-btn"
+                  onClick={() => navigate('/projects')}
+                >
+                  <div className="tm-project-head">
+                    <span>{project.name}</span>
+                    <em className={project.status.toLowerCase().replace(/\s+/g, '-')}>{project.status}</em>
+                  </div>
+                  <div className="tm-progress-track">
+                    <div style={{ width: `${project.progress}%`, background: project.color }} />
+                  </div>
+                  <div className="tm-project-meta">
+                    <span>{project.team}</span>
+                    <strong>{project.members} members</strong>
+                    <span>Due {project.due}</span>
+                    <strong>{project.progress}%</strong>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="tm-panel tm-anim-panel tm-exec-panel-box">
+          <div className="tm-panel-title-row">
+            <div>
+              <h3>Top Performers</h3>
+              <p className="tm-section-purpose">Highest rated this quarter</p>
+            </div>
+            <ChevronRight size={18} />
+          </div>
+
+          <ul className="tm-top-list">
+            {topPerformerList.map((person) => (
+              <li key={person.name}>
+                <div className={`tm-avatar ${person.tone}`}>{person.initials}</div>
+                <div>
+                  <strong>{person.name}</strong>
+                  <p>{person.project}</p>
+                </div>
+                <span>☆ {person.rating}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      </section>
     </div>
   );
 };

@@ -238,6 +238,109 @@
   margin-bottom: 10px;
 }
 
+.tm-executive-overview-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.tm-executive-top-grid {
+  grid-template-columns: 2fr 1fr;
+}
+
+.tm-executive-lower-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tm-exec-panel-large {
+  min-height: 350px;
+}
+
+.tm-exec-panel-small,
+.tm-exec-panel-box {
+  min-height: 100%;
+}
+
+.tm-exec-panel-box .tm-section-purpose {
+  margin-top: 2px;
+}
+
+.tm-exec-panel-box .tm-alert-list,
+.tm-exec-panel-box .tm-project-list,
+.tm-exec-panel-box .tm-top-list {
+  margin-top: 12px;
+}
+
+.tm-project-list li {
+  list-style: none;
+}
+
+.tm-project-list .tm-project-card-btn {
+  padding: 0;
+}
+
+.tm-project-head em {
+  font-style: normal;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tm-project-head em.on-track { color: #0f9f6a; background: #e7f8f1; }
+.tm-project-head em.ahead { color: #2f71c7; background: #e8f1fd; }
+.tm-project-head em.at-risk { color: #b27a1c; background: #fff3dd; }
+
+.tm-project-meta strong,
+.tm-project-meta span {
+  white-space: nowrap;
+}
+
+.tm-top-list li {
+  list-style: none;
+}
+
+.tm-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: inline-grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.tm-avatar.violet { background: #7b8cd9; }
+.tm-avatar.indigo { background: #6f7fb4; }
+.tm-avatar.emerald { background: #7ca9a6; }
+.tm-avatar.amber { background: #b59a7b; }
+.tm-avatar.pink { background: #cc9ab0; }
+.tm-avatar.blue { background: #6ea0e1; }
+.tm-avatar.teal { background: #58b2a9; }
+.tm-avatar.slate { background: #8590a8; }
+
+.tm-top-list strong {
+  color: #1f2f4d;
+}
+
+.tm-top-list p {
+  margin: 2px 0 0;
+  color: #7e8aa1;
+}
+
+.tm-top-list span {
+  color: #d78a03;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 1200px) {
+  .tm-executive-top-grid,
+  .tm-executive-lower-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .tm-overview-lower {
   grid-template-columns: 1fr 1.1fr 1fr;
 }
