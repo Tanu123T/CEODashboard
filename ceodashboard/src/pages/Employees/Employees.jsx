@@ -19,7 +19,7 @@ const Employees = () => {
   const [tab, setTab] = useState('overview');
   const location = useLocation();
   const navToken = location.state?.token ?? null;
-
+//effects 
   useEffect(() => {
     const navState = location.state;
     if (!navState || !navToken) return;
