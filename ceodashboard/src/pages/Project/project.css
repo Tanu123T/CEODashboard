@@ -357,7 +357,24 @@
   transition: all 0.2s ease;
 }
 
+.project-detail-meta-cards .meta-card-action {
+  background: linear-gradient(135deg, #f5f9ff 0%, #ebf4ff 100%);
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+  color: inherit;
+}
+
 .project-detail-meta-cards article:hover {
+  background: linear-gradient(135deg, #edf5ff 0%, #e4f2ff 100%);
+  border-color: #8eb8ff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+}
+
+.project-detail-meta-cards .meta-card-action:hover {
   background: linear-gradient(135deg, #edf5ff 0%, #e4f2ff 100%);
   border-color: #8eb8ff;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);

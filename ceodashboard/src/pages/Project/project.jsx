@@ -18,6 +18,15 @@ import { projectRecords } from '../../data/projectsData';
 
 const formatCurrency = (value) => `₹${value.toLocaleString('en-IN')}`;
 
+const sprintRouteByProjectId = {
+  1: 'hospital-crm',
+  2: 'ai-chatbot',
+  3: 'banking-portal',
+  4: 'travel-app',
+  5: 'hospital-crm',
+  6: 'banking-portal',
+};
+
 const Projects = () => {
   const isLoading = useSimulatedLoading(650);
   const navigate = useNavigate();
@@ -65,6 +74,7 @@ const Projects = () => {
     const progress = Math.max(0, Math.min(100, selectedProject.progress));
     const dashOffset = circumference - (progress / 100) * circumference;
     const remaining = Math.max(selectedProject.budgetTotal - selectedProject.budgetSpent, 0);
+    const sprintRouteId = sprintRouteByProjectId[selectedProject.id];
 
     return (
       <div className="projects-page project-detail-page">
@@ -99,10 +109,14 @@ const Projects = () => {
               <p><UserRound size={14} /> LEAD</p>
               <h3>{selectedProject.lead}</h3>
             </article>
-            <article>
+            <button
+              type="button"
+              className="meta-card-action"
+              onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
+            >
               <p><Zap size={14} /> SPRINTS</p>
               <h3>{selectedProject.sprints}</h3>
-            </article>
+            </button>
           </div>
         </section>
 
