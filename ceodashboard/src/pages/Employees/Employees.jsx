@@ -15,6 +15,19 @@ const TABS = [
 const Employees = () => {
   const [tab, setTab] = useState('overview');
 
+  const location = useLocation();
+  const navToken = location.state?.token ?? null;
+//effects 
+  useEffect(() => {
+    const navState = location.state;
+    if (!navState || !navToken) return;
+
+    if (navState.tab) {
+      setTab(navState.tab === 'projects' ? 'overview' : navState.tab);
+    }
+  }, [location.state, navToken]);
+
+
   const now = new Date();
   const formatted = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
