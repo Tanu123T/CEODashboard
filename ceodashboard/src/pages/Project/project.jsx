@@ -262,8 +262,8 @@ const Projects = () => {
                 <button
                   key={item.id}
                   type="button"
-                  className="project-sprint-card"
-                  onClick={() => navigate(`/sprints/${selectedProject.sprintProjectId}/${item.id}`)}
+                  className="view-sprint-btn"
+                  onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
                 >
                   <div className="project-sprint-card-title">
                     <strong>{item.id}</strong>
