@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 
 import {
@@ -145,6 +145,7 @@ const projectsOverview = [
 ];
 
 const Home = () => {
+  const navigate = useNavigate();
   const [selectedSprintProject, setSelectedSprintProject] = useState("hospital-crm");
 
   const selectedProject = sprintProjects.find((project) => project.id === selectedSprintProject);
@@ -328,7 +329,7 @@ const Home = () => {
         <article className="panel compact-panel">
           <header className="panel-head panel-head-link">
             <h2>Active Sprints</h2>
-            <button className="link-button" type="button">
+            <button className="link-button" type="button" onClick={() => navigate('/sprints')}>
               <span>View all</span>
               <ArrowRight size={14} />
             </button>
@@ -356,7 +357,7 @@ const Home = () => {
         <article className="panel compact-panel">
           <header className="panel-head panel-head-link">
             <h2>Projects Overview</h2>
-            <button className="link-button" type="button">
+            <button className="link-button" type="button" onClick={() => navigate('/projects')}>
               <span>View all</span>
               <ArrowRight size={14} />
             </button>

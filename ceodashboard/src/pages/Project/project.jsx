@@ -8,7 +8,6 @@ import {
   CalendarDays,
   CheckCircle,
   Circle,
-  Clock3,
   TriangleAlert,
   UserRound,
   Zap,
@@ -19,6 +18,15 @@ import { projectRecords } from '../../data/projectsData';
 import { sprintDetails } from '../Sprints/sprintData';
 
 const formatCurrency = (value) => `₹${value.toLocaleString('en-IN')}`;
+
+const sprintRouteByProjectId = {
+  1: 'hospital-crm',
+  2: 'ai-chatbot',
+  3: 'banking-portal',
+  4: 'travel-app',
+  5: 'hospital-crm',
+  6: 'banking-portal',
+};
 
 const Projects = () => {
   const isLoading = useSimulatedLoading(650);
@@ -75,6 +83,7 @@ const Projects = () => {
     const progress = Math.max(0, Math.min(100, selectedProject.progress));
     const dashOffset = circumference - (progress / 100) * circumference;
     const remaining = Math.max(selectedProject.budgetTotal - selectedProject.budgetSpent, 0);
+    const sprintRouteId = sprintRouteByProjectId[selectedProject.id];
 
     return (
       <div className="projects-page project-detail-page">
@@ -109,10 +118,14 @@ const Projects = () => {
               <p><UserRound size={14} /> LEAD</p>
               <h3>{selectedProject.lead}</h3>
             </article>
-            <article>
+            <button
+              type="button"
+              className="meta-card-action"
+              onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
+            >
               <p><Zap size={14} /> SPRINTS</p>
               <h3>{selectedProject.sprints}</h3>
-            </article>
+            </button>
           </div>
         </section>
 
@@ -139,6 +152,13 @@ const Projects = () => {
           <article className="project-detail-panel project-completion-panel">
             <div className="progress-ring-wrap">
               <svg viewBox="0 0 180 180" className="progress-ring" aria-label="Project completion">
+                <defs>
+                  <linearGradient id="gradientStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#38bdf8" />
+                    <stop offset="50%" stopColor="#22c55e" />
+                    <stop offset="100%" stopColor="#18b7a6" />
+                  </linearGradient>
+                </defs>
                 <circle cx="90" cy="90" r={radius} className="progress-ring-track" />
                 <circle
                   cx="90"
@@ -187,39 +207,41 @@ const Projects = () => {
           </div>
         </section>
 
-        <section className="project-detail-panel">
-          <h3>MILESTONES</h3>
-          <div className="milestone-list">
-            {selectedProject.milestones.map((item) => (
-              <article key={item.title} className="milestone-item">
-                <div className={`milestone-name ${item.done ? 'done' : ''}`}>
-                  {item.done ? <CheckCircle size={20} /> : <Circle size={20} />}
-                  <span>{item.title}</span>
-                </div>
-                <strong>{item.date}</strong>
-              </article>
-            ))}
-          </div>
-        </section>
+        <section className="project-detail-grid bottom">
+          <section className="project-detail-panel milestones-panel">
+            <h3>MILESTONES</h3>
+            <div className="milestone-list">
+              {selectedProject.milestones.map((item) => (
+                <article key={item.title} className="milestone-item">
+                  <div className={`milestone-name ${item.done ? 'done' : ''}`}>
+                    {item.done ? <CheckCircle size={20} /> : <Circle size={20} />}
+                    <span>{item.title}</span>
+                  </div>
+                  <strong>{item.date}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
 
-        <section className="project-detail-panel">
-          <h3>RISKS</h3>
-          <div className="risk-list">
-            {selectedProject.risks.length > 0 ? (
-              selectedProject.risks.map((risk) => (
-                <div key={risk} className="risk-item">
-                  <TriangleAlert size={18} />
-                  <span>{risk}</span>
-                </div>
-              ))
-            ) : (
-              <div className="risk-item neutral">
-                <CheckCircle size={18} />
-                <span>No active risks logged.</span>
+          <div className="project-detail-side">
+            <section className="project-detail-panel">
+              <h3>RISKS</h3>
+              <div className="risk-list">
+                {selectedProject.risks.length > 0 ? (
+                  selectedProject.risks.map((risk) => (
+                    <div key={risk} className="risk-item">
+                      <TriangleAlert size={18} />
+                      <span>{risk}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="risk-item neutral">
+                    <CheckCircle size={18} />
+                    <span>No active risks logged.</span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </section>
+            </section>
 
         <section className="project-detail-panel">
           <div className="project-section-heading">
@@ -314,14 +336,14 @@ const Projects = () => {
                 <span className={`project-icon ${project.iconTone}`}>
                   <BriefcaseBusiness size={17} />
                 </span>
-                <div>
-                  <h3>
-                    {project.name}
+                <div className="project-head-copy">
+                  <div className="project-title-row">
+                    <h3 className="project-name">{project.name}</h3>
                     <span className={`project-status-pill ${project.statusTone}`}>
                       <Circle size={8} fill="currentColor" />
                       {project.statusLabel}
                     </span>
-                  </h3>
+                  </div>
                   <p>{project.client}</p>
                 </div>
               </div>
@@ -342,18 +364,22 @@ const Projects = () => {
             </div>
 
             <div className="project-meta-row">
-              <span>
-                Lead: <strong>{project.lead}</strong>
-              </span>
-              <span>
-                Due: <strong>{project.dueDate}</strong>
-              </span>
+              <article className="meta-chip">
+                <p>Lead</p>
+                <strong>{project.lead}</strong>
+              </article>
+              <article className="meta-chip">
+                <p>Due Date</p>
+                <strong>{project.dueDate}</strong>
+              </article>
               {project.riskCount > 0 ? (
                 <span className="risk-meta">
                   <TriangleAlert size={14} />
                   {project.riskCount} {project.riskCount === 1 ? 'risk' : 'risks'}
                 </span>
-              ) : null}
+              ) : (
+                <span className="risk-meta neutral">No risks</span>
+              )}
             </div>
           </button>
         ))}

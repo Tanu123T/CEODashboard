@@ -1,18 +1,19 @@
 import React, { useMemo, useState } from 'react';
 import './Clients.css';
 import {
-  ArrowLeft,
-  ArrowRight,
-  Building2,
+  BadgeDollarSign,
+  X,
   CalendarDays,
-  Circle,
-  FileText,
-  Handshake,
-  IndianRupee,
+  Download,
   Mail,
   MapPin,
   Phone,
+  Search,
+  SlidersHorizontal,
+  Star,
+  TrendingUp,
   User,
+  Users,
 } from 'lucide-react';
 import PageLoader from '../../components/common/PageLoader';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
@@ -23,260 +24,317 @@ const formatCurrency = (value) => {
   return `₹${value.toLocaleString('en-IN')}`;
 };
 
-const ringColor = (tone) => {
-  if (tone === 'good') return '#29c16f';
-  if (tone === 'warning') return '#f2b12b';
-  if (tone === 'risk') return '#ef5c5c';
-  return '#4b8ef7';
-};
-
-const BriefcaseIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M3.5 8.5A2.5 2.5 0 0 1 6 6h12a2.5 2.5 0 0 1 2.5 2.5v8A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5v-8Z" stroke="currentColor" strokeWidth="1.6" />
-    <path d="M8.5 6V5a1.5 1.5 0 0 1 1.5-1.5h4A1.5 1.5 0 0 1 15.5 5v1" stroke="currentColor" strokeWidth="1.6" />
-  </svg>
-);
-
 const Clients = () => {
   const isLoading = useSimulatedLoading(650);
   const [selectedClientId, setSelectedClientId] = useState(null);
+  const [selectedClientTab, setSelectedClientTab] = useState('overview');
+  const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const totalMrr = useMemo(() => clients.reduce((sum, client) => sum + (client.mrr || 0), 0), []);
   const activeClients = useMemo(() => clients.filter((client) => client.isActive).length, []);
+  const avgEngagement = useMemo(
+    () => Math.round(clients.reduce((sum, client) => sum + client.engagement, 0) / Math.max(clients.length, 1)),
+    []
+  );
+
+  const filteredClients = useMemo(() => {
+    return clients.filter((client) => {
+      const matchesQuery =
+        client.name.toLowerCase().includes(query.toLowerCase())
+        || client.industry.toLowerCase().includes(query.toLowerCase())
+        || client.contact.email.toLowerCase().includes(query.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || client.statusTone === statusFilter;
+      return matchesQuery && matchesStatus;
+    });
+  }, [query, statusFilter]);
 
   const selectedClient = useMemo(
     () => clients.find((client) => client.id === selectedClientId) || null,
     [selectedClientId]
   );
 
+  const openClient = (clientId) => {
+    setSelectedClientId(clientId);
+    setSelectedClientTab('overview');
+  };
+
   if (isLoading) {
     return <PageLoader title="Loading Client Overview..." />;
   }
 
-  if (selectedClient) {
-    const radius = 72;
-    const circumference = 2 * Math.PI * radius;
-    const progress = Math.max(0, Math.min(100, selectedClient.engagement));
-    const dashOffset = circumference - (progress / 100) * circumference;
-
-    return (
-      <div className="clients-page clients-detail-page">
-        <button
-          type="button"
-          className="clients-back"
-          onClick={() => setSelectedClientId(null)}
-        >
-          <ArrowLeft size={18} />
-          <span>Back to Clients</span>
-        </button>
-
-        <section className="client-hero">
-          <div className="client-hero-top-bar" />
-          <div className="client-hero-content">
-            <div>
-              <h1>{selectedClient.name}</h1>
-              <p>{selectedClient.industry}</p>
-            </div>
-            <span className={`client-status-pill ${selectedClient.statusTone}`}>
-              <Circle size={9} fill="currentColor" />
-              {selectedClient.statusLabel}
-            </span>
-          </div>
-
-          <div className="client-stats-grid">
-            <article className="client-stat-card">
-              <p>MRR</p>
-              <h3>{formatCurrency(selectedClient.mrr)}</h3>
-            </article>
-            <article className="client-stat-card">
-              <p>PROJECTS</p>
-              <h3>{selectedClient.projects}</h3>
-            </article>
-            <article className="client-stat-card">
-              <p>STATUS</p>
-              <h3>{selectedClient.accountStatus}</h3>
-            </article>
-            <article className="client-stat-card">
-              <p>ACCOUNT MANAGER</p>
-              <h3>{selectedClient.accountManager}</h3>
-            </article>
-          </div>
-        </section>
-
-        <section className="client-detail-grid top">
-          <article className="client-panel client-engagement-panel">
-            <div className="engagement-ring-wrap">
-              <svg viewBox="0 0 200 200" className="engagement-ring" aria-label="Engagement score">
-                <circle cx="100" cy="100" r={radius} className="engagement-ring-track" />
-                <circle
-                  cx="100"
-                  cy="100"
-                  r={radius}
-                  className="engagement-ring-progress"
-                  style={{
-                    stroke: ringColor(selectedClient.statusTone),
-                    strokeDasharray: circumference,
-                    strokeDashoffset: dashOffset,
-                  }}
-                />
-              </svg>
-              <div className="engagement-copy">
-                <strong>{selectedClient.engagement}%</strong>
-                <span>Engagement</span>
-              </div>
-            </div>
-          </article>
-
-          <article className="client-panel">
-            <h3>ABOUT</h3>
-            <p className="client-about-text">{selectedClient.about}</p>
-
-            <h3 className="client-contact-title">CONTACT DETAILS</h3>
-            <div className="client-contact-grid">
-              <div><User size={18} /> Contact</div>
-              <strong>{selectedClient.contact.name}</strong>
-
-              <div><Mail size={18} /> Email</div>
-              <strong>{selectedClient.contact.email}</strong>
-
-              <div><Phone size={18} /> Phone</div>
-              <strong>{selectedClient.contact.phone}</strong>
-
-              <div><MapPin size={18} /> Location</div>
-              <strong>{selectedClient.contact.location}</strong>
-
-              <div><CalendarDays size={18} /> Since</div>
-              <strong>{selectedClient.contact.since}</strong>
-            </div>
-          </article>
-        </section>
-
-        <section className="client-detail-grid bottom">
-          <article className="client-panel">
-            <h3>PROJECTS</h3>
-            <div className="client-project-list">
-              {selectedClient.projectList.map((project) => (
-                <div key={project} className="client-project-item">
-                  <BriefcaseIcon />
-                  <span>{project}</span>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="client-panel">
-            <h3>BILLING HISTORY</h3>
-            <table className="billing-table">
-              <thead>
-                <tr>
-                  <th>Month</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedClient.billingHistory.map((item) => (
-                  <tr key={item.month}>
-                    <td>{item.month}</td>
-                    <td>{item.amount ? formatCurrency(item.amount) : '-'}</td>
-                    <td>
-                      <span className={`billing-status ${item.status.toLowerCase()}`}>{item.status}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </article>
-        </section>
-
-        <section className="client-note-box">
-          <p>
-            <FileText size={18} />
-            <strong>NOTES</strong>
-          </p>
-          <span>{selectedClient.note}</span>
-        </section>
-      </div>
-    );
-  }
-
   return (
-    <div className="clients-page">
-      <header className="clients-header">
-        <div>
-          <h1>Clients</h1>
-          <p>Client relationships and engagement health</p>
-        </div>
-      </header>
-
-      <section className="clients-kpi-grid">
-        <article className="clients-kpi-card">
-          <span className="clients-kpi-icon blue"><Handshake size={20} /></span>
+    <div className="clients-page clients-dashboard">
+      <section className="clients-kpi-grid modern">
+        <article className="clients-kpi-card modern">
+          <span className="clients-kpi-icon blue"><Users size={18} /></span>
           <div>
             <p>Total Clients</p>
             <h3>{clients.length}</h3>
+            <small>{activeClients} active clients</small>
           </div>
         </article>
-        <article className="clients-kpi-card">
-          <span className="clients-kpi-icon green"><Building2 size={20} /></span>
+        <article className="clients-kpi-card modern">
+          <span className="clients-kpi-icon green"><BadgeDollarSign size={18} /></span>
           <div>
-            <p>Active Clients</p>
-            <h3>{activeClients}</h3>
-          </div>
-        </article>
-        <article className="clients-kpi-card">
-          <span className="clients-kpi-icon teal"><IndianRupee size={20} /></span>
-          <div>
-            <p>Total MRR</p>
+            <p>Total Revenue</p>
             <h3>{formatCurrency(totalMrr)}</h3>
+            <small>monthly recurring</small>
+          </div>
+        </article>
+        <article className="clients-kpi-card modern">
+          <span className="clients-kpi-icon teal"><TrendingUp size={18} /></span>
+          <div>
+            <p>Avg Engagement</p>
+            <h3>{avgEngagement}%</h3>
+            <small>across all accounts</small>
+          </div>
+        </article>
+        <article className="clients-kpi-card modern">
+          <span className="clients-kpi-icon amber"><Star size={18} /></span>
+          <div>
+            <p>Satisfaction</p>
+            <h3>{(avgEngagement / 20).toFixed(1)}/5</h3>
+            <small>client sentiment</small>
           </div>
         </article>
       </section>
 
-      <section className="clients-list-wrap">
-        {clients.map((client) => (
-          <button
-            key={client.id}
-            type="button"
-            className="client-row"
-            onClick={() => setSelectedClientId(client.id)}
-          >
-            <div className="client-left">
-              <span className={`client-logo ${client.iconTone}`}><Handshake size={18} /></span>
-              <div>
-                <h3>
-                  {client.name}
-                  <span className={`client-status-pill ${client.statusTone}`}>
-                    <Circle size={8} fill="currentColor" />
-                    {client.statusLabel}
-                  </span>
-                </h3>
-                <p>{client.industry} - Since {client.since}</p>
-              </div>
-            </div>
+      <section className="clients-toolbar">
+        <label className="clients-search-wrap" htmlFor="client-search">
+          <Search size={15} />
+          <input
+            id="client-search"
+            type="text"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search clients by name, industry or email..."
+          />
+        </label>
 
-            <div className="client-right">
-              <div>
-                <small>Engagement</small>
-                <div className="engagement-inline">
-                  <div className="engagement-track">
-                    <span
-                      className={`engagement-fill ${client.statusTone}`}
-                      style={{ width: `${client.engagement}%` }}
-                    />
+        <select
+          className="clients-select"
+          value={statusFilter}
+          onChange={(event) => setStatusFilter(event.target.value)}
+          aria-label="Filter clients by status"
+        >
+          <option value="all">All Status</option>
+          <option value="good">Good</option>
+          <option value="warning">Needs Attention</option>
+          <option value="risk">At Risk</option>
+          <option value="new">New</option>
+        </select>
+
+        <button type="button" className="toolbar-btn">
+          <SlidersHorizontal size={14} />
+          <span>More Filters</span>
+        </button>
+        <button type="button" className="toolbar-btn">
+          <Download size={14} />
+          <span>Export</span>
+        </button>
+      </section>
+
+      <section className="clients-card-grid">
+        {filteredClients.map((client) => {
+          const initials = client.name
+            .split(' ')
+            .slice(0, 2)
+            .map((item) => item[0])
+            .join('')
+            .toUpperCase();
+          const growth = ((client.engagement - 60) / 4).toFixed(1);
+
+          return (
+            <button
+              key={client.id}
+              type="button"
+              className="client-modern-card"
+              onClick={() => openClient(client.id)}
+            >
+              <div className="client-card-accent" />
+              <div className="client-card-head">
+                <span className={`client-avatar ${client.iconTone}`}>{initials}</span>
+                <div className="client-head-copy">
+                  <h3>{client.name}</h3>
+                  <div>
+                    <span className={`client-status-pill ${client.statusTone}`}>{client.statusLabel.toLowerCase()}</span>
+                    <small>{client.industry}</small>
                   </div>
-                  <strong className={client.statusTone}>{client.engagement}%</strong>
                 </div>
               </div>
-              <div className="client-mrr-wrap">
-                <strong>{formatCurrency(client.mrr)}</strong>
-                <span>{client.projects} projects</span>
+
+              <div className="client-contact-lines">
+                <p><Mail size={13} /> {client.contact.email}</p>
+                <p><Phone size={13} /> {client.contact.phone}</p>
+                <p><MapPin size={13} /> {client.contact.location}</p>
               </div>
-              <ArrowRight size={18} />
-            </div>
-          </button>
-        ))}
+
+              <div className="client-metrics-row">
+                <article>
+                  <strong>{formatCurrency(client.mrr)}</strong>
+                  <span>Revenue</span>
+                </article>
+                <article>
+                  <strong className={Number(growth) >= 0 ? 'good' : 'risk'}>{Number(growth) >= 0 ? '+' : ''}{growth}%</strong>
+                  <span>Growth</span>
+                </article>
+                <article>
+                  <strong>{client.projects}</strong>
+                  <span>Projects</span>
+                </article>
+              </div>
+
+              <div className="client-card-footer">
+                <span>{client.since}</span>
+                <span className="client-rating"><Star size={12} /> {(client.engagement / 20).toFixed(1)}</span>
+              </div>
+            </button>
+          );
+        })}
       </section>
+
+      {selectedClient ? (
+        <div className="client-modal-overlay" onClick={() => setSelectedClientId(null)}>
+          <section className="client-modal" onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className="client-modal-close"
+              onClick={() => {
+                setSelectedClientId(null);
+                setSelectedClientTab('overview');
+              }}
+              aria-label="Close client details"
+            >
+              <X size={16} />
+            </button>
+
+            <header className="client-modal-head">
+              <div className="client-modal-title">
+                <span className={`client-avatar ${selectedClient.iconTone}`}>
+                  {selectedClient.name
+                    .split(' ')
+                    .slice(0, 2)
+                    .map((item) => item[0])
+                    .join('')
+                    .toUpperCase()}
+                </span>
+                <div>
+                  <h3>{selectedClient.name}</h3>
+                  <div className="client-modal-meta">
+                    <span className={`client-status-pill ${selectedClient.statusTone}`}>{selectedClient.statusLabel.toLowerCase()}</span>
+                    <small>{selectedClient.industry}</small>
+                    <small>Joined {selectedClient.since}</small>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <div className="client-modal-tabs">
+              <button type="button" className={selectedClientTab === 'overview' ? 'active' : ''} onClick={() => setSelectedClientTab('overview')}>Overview</button>
+              <button type="button" className={selectedClientTab === 'analytics' ? 'active' : ''} onClick={() => setSelectedClientTab('analytics')}>Analytics</button>
+              <button type="button" className={selectedClientTab === 'projects' ? 'active' : ''} onClick={() => setSelectedClientTab('projects')}>Projects</button>
+            </div>
+
+            {selectedClientTab === 'overview' ? (
+              <>
+                <section className="client-modal-stats">
+                  <article>
+                    <strong>{formatCurrency(selectedClient.mrr)}</strong>
+                    <span>Total Revenue</span>
+                  </article>
+                  <article>
+                    <strong className={selectedClient.engagement >= 60 ? 'good' : 'risk'}>{selectedClient.engagement}%</strong>
+                    <span>Engagement</span>
+                  </article>
+                  <article>
+                    <strong>{selectedClient.projects}</strong>
+                    <span>Active Projects</span>
+                  </article>
+                  <article>
+                    <strong>{(selectedClient.engagement / 20).toFixed(1)}</strong>
+                    <span>Satisfaction</span>
+                  </article>
+                </section>
+
+                <section className="client-modal-contact">
+                  <h4>Contact Information</h4>
+                  <div>
+                    <p><Mail size={14} /> {selectedClient.contact.email}</p>
+                    <p><Phone size={14} /> {selectedClient.contact.phone}</p>
+                    <p><MapPin size={14} /> {selectedClient.contact.location}</p>
+                    <p><User size={14} /> {selectedClient.contact.name}</p>
+                    <p><CalendarDays size={14} /> Since {selectedClient.contact.since}</p>
+                    <p>{selectedClient.accountStatus}</p>
+                  </div>
+                </section>
+
+                <section className="client-modal-note">
+                  <strong>Notes</strong>
+                  <p>{selectedClient.note}</p>
+                </section>
+              </>
+            ) : null}
+
+            {selectedClientTab === 'analytics' ? (
+              <section className="client-modal-analytics">
+                <article className="analytics-split-card">
+                  <div>
+                    <p>Revenue</p>
+                    <strong>{formatCurrency(selectedClient.mrr)}</strong>
+                  </div>
+                  <div>
+                    <p>Engagement</p>
+                    <strong className={selectedClient.engagement >= 60 ? 'good' : 'risk'}>{selectedClient.engagement}%</strong>
+                  </div>
+                  <div>
+                    <p>Projects</p>
+                    <strong>{selectedClient.projects}</strong>
+                  </div>
+                </article>
+
+                <article className="analytics-list-card">
+                  <h4>Billing History</h4>
+                  <div className="analytics-list">
+                    {selectedClient.billingHistory.map((item) => (
+                      <div key={item.month} className="analytics-list-row">
+                        <span>{item.month}</span>
+                        <strong>{item.amount ? formatCurrency(item.amount) : '-'}</strong>
+                        <em className={`billing-status ${item.status.toLowerCase()}`}>{item.status}</em>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </section>
+            ) : null}
+
+            {selectedClientTab === 'projects' ? (
+              <section className="client-modal-projects">
+                <article className="analytics-list-card">
+                  <h4>Projects</h4>
+                  <div className="client-project-list modal-project-list">
+                    {selectedClient.projectList.length > 0 ? selectedClient.projectList.map((project) => (
+                      <div key={project} className="client-project-item">
+                        <BadgeDollarSign size={14} />
+                        <span>{project}</span>
+                      </div>
+                    )) : <p className="empty-copy">No active projects assigned.</p>}
+                  </div>
+                </article>
+
+                <article className="analytics-list-card">
+                  <h4>Account Summary</h4>
+                  <div className="client-modal-summary">
+                    <p><strong>Manager:</strong> {selectedClient.accountManager}</p>
+                    <p><strong>Status:</strong> {selectedClient.accountStatus}</p>
+                    <p><strong>Industry:</strong> {selectedClient.industry}</p>
+                  </div>
+                </article>
+              </section>
+            ) : null}
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 };
