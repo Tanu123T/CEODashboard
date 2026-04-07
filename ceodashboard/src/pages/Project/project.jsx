@@ -285,14 +285,14 @@ const Projects = () => {
                 <span className={`project-icon ${project.iconTone}`}>
                   <BriefcaseBusiness size={17} />
                 </span>
-                <div>
-                  <h3>
-                    {project.name}
+                <div className="project-head-copy">
+                  <div className="project-title-row">
+                    <h3 className="project-name">{project.name}</h3>
                     <span className={`project-status-pill ${project.statusTone}`}>
                       <Circle size={8} fill="currentColor" />
                       {project.statusLabel}
                     </span>
-                  </h3>
+                  </div>
                   <p>{project.client}</p>
                 </div>
               </div>

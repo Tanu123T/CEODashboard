@@ -1,6 +1,6 @@
 .projects-page {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   color: #0f1f3d;
   font-size: 13px;
   line-height: 1.4;
@@ -31,7 +31,8 @@
   background: #ffffff;
   border: 1px solid #e7edf3;
   border-radius: 14px;
-  padding: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 2px rgba(15, 31, 61, 0.04);
 }
 
 .projects-kpi-card p {
@@ -41,8 +42,8 @@
 }
 
 .projects-kpi-card h3 {
-  margin: 2px 0 0;
-  font-size: 24px;
+  margin: 4px 0 0;
+  font-size: 28px;
   line-height: 1;
 }
 
@@ -68,11 +69,18 @@
   background: #ffffff;
   border: 1px solid #e7edf3;
   border-radius: 14px;
-  padding: 12px;
+  padding: 12px 14px;
   text-align: left;
   width: 100%;
   color: inherit;
   cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.project-card:hover {
+  border-color: #d8e2ee;
+  box-shadow: 0 8px 20px rgba(16, 35, 66, 0.08);
+  transform: translateY(-1px);
 }
 
 .project-row-top {
@@ -84,9 +92,21 @@
 
 .project-head-left {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   min-width: 0;
+}
+
+.project-head-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.project-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .project-icon {
@@ -100,28 +120,29 @@
 }
 
 .project-icon.green {
-  color: #2ec773;
-  background: #e9f9ef;
+  color: #2f8a63;
+  background: #edf7f1;
 }
 
 .project-icon.amber {
-  color: #f2b12b;
-  background: #fff5e4;
+  color: #b27a2d;
+  background: #faf3e6;
 }
 
 .project-icon.red {
-  color: #f06a6a;
-  background: #ffeded;
+  color: #b95f5f;
+  background: #fbeeee;
 }
 
-.project-head-left h3 {
+.project-name {
   margin: 0;
   color: #0b1f44;
   font-size: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .project-head-left p {
@@ -135,37 +156,36 @@
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  padding: 4px 12px;
+  padding: 3px 10px;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: none;
 }
 
 .project-status-pill.on-track {
-  color: #15803d;
-  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.1);
+  color: #2f8a63;
+  background: #edf7f1;
+  border: 1px solid #d4e9dd;
 }
 
 .project-status-pill.needs-attention {
-  color: #b45309;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.1);
+  color: #a36d20;
+  background: #fbf4e6;
+  border: 1px solid #eadcbc;
 }
 
 .project-status-pill.at-risk {
-  color: #991b1b;
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+  color: #9c5858;
+  background: #fbeeee;
+  border: 1px solid #efdadb;
 }
 
 .project-arrow {
-  color: #bac8da;
+  color: #b8c4d5;
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .project-progress-block {
@@ -201,18 +221,15 @@
 }
 
 .project-progress-fill.on-track {
-  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+  background: linear-gradient(90deg, #43b883 0%, #2f8a63 100%);
 }
 
 .project-progress-fill.needs-attention {
-  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+  background: linear-gradient(90deg, #d6a75d 0%, #b07f32 100%);
 }
 
 .project-progress-fill.at-risk {
-  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+  background: linear-gradient(90deg, #d38b8b 0%, #b56363 100%);
 }
 
 .project-meta-row {
@@ -220,9 +237,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
-  color: #879db8;
-  font-size: 14px;
+  gap: 14px;
+  color: #7f93ad;
+  font-size: 13px;
 }
 
 .project-meta-row strong {
@@ -231,7 +248,7 @@
 }
 
 .risk-meta {
-  color: #e8892f;
+  color: #a9782f;
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -738,13 +755,13 @@
 
 @media (max-width: 1024px) {
   .projects-header h1 {
-    font-size: 34px;
+    font-size: 22px;
   }
 
   .projects-kpi-card h3,
   .project-detail-hero-content h1,
   .budget-head-row strong {
-    font-size: 32px;
+    font-size: 24px;
   }
 
   .project-detail-meta-cards {
@@ -762,7 +779,7 @@
 
   .projects-header h1,
   .project-detail-hero-content h1 {
-    font-size: 26px;
+    font-size: 21px;
   }
 
   .projects-header p,
@@ -782,10 +799,10 @@
   .projects-kpi-card h3,
   .budget-head-row strong,
   .progress-ring-copy strong {
-    font-size: 30px;
+    font-size: 22px;
   }
 
-  .project-head-left h3 {
+  .project-name {
     font-size: 15px;
   }
 
