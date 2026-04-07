@@ -273,6 +273,90 @@
   font-size: 13px;
 }
 
+.project-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.project-detail-link {
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.project-sprint-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.project-sprint-card {
+  background: #f8fbff;
+  border: 1px solid #e7edf3;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  gap: 12px;
+}
+
+.project-sprint-card-title strong {
+  display: block;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.project-sprint-card-title span {
+  color: #475569;
+  font-size: 13px;
+}
+
+.project-sprint-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.project-sprint-pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.project-sprint-pill-active {
+  color: #065f46;
+  background: #d1fae5;
+}
+
+.project-sprint-pill-completed {
+  color: #115e59;
+  background: #d1fae5;
+}
+
+.project-sprint-pill-delayed {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.project-sprint-pill-upcoming {
+  color: #78350f;
+  background: #ffedd5;
+}
+
+.project-no-sprints {
+  color: #647d9d;
+}
+
 .risk-meta {
   color: #a76807;
   display: inline-flex;
