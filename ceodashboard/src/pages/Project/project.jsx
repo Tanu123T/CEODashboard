@@ -8,7 +8,6 @@ import {
   CalendarDays,
   CheckCircle,
   Circle,
-  Clock3,
   TriangleAlert,
   UserRound,
   Zap,
@@ -212,18 +211,32 @@ const Projects = () => {
           </div>
         </section>
 
-        <section className="project-detail-panel">
-          <h3>RECENT ACTIVITY</h3>
-          <div className="activity-list">
-            {selectedProject.activity.map((item) => (
-              <article key={`${item.actor}-${item.time}`} className="activity-item">
-                <Clock3 size={16} />
-                <div>
-                  <p><strong>{item.actor}</strong> {item.action}</p>
-                  <span>{item.time}</span>
-                </div>
-              </article>
-            ))}
+        <section className="project-detail-panel sprint-insight-panel">
+          <div className="sprint-insight-header">
+            <h3>SPRINT INSIGHT</h3>
+            <button
+              type="button"
+              className="view-sprint-btn"
+              onClick={() => navigate('/sprints')}
+            >
+              <span>View Sprint</span>
+              <ArrowRight size={16} />
+            </button>
+          </div>
+          
+          <div className="sprint-insight-content">
+            <article className="sprint-stat">
+              <p>Total Sprints</p>
+              <h4>{selectedProject.sprints}</h4>
+            </article>
+            <article className="sprint-stat">
+              <p>Milestones Completed</p>
+              <h4>{selectedProject.milestonesDone} of {selectedProject.milestones.length}</h4>
+            </article>
+            <article className="sprint-stat">
+              <p>Progress</p>
+              <h4>{selectedProject.progress}%</h4>
+            </article>
           </div>
         </section>
       </div>

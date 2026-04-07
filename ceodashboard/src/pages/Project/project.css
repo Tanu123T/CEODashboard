@@ -548,6 +548,74 @@
 .risk-item.neutral {
   background: #e9f9ef;
   border-color: #cdeedb;
+  color: #2ec773;
+}
+
+/* Sprint Insight Panel */
+.sprint-insight-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sprint-insight-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sprint-insight-header h3 {
+  margin: 0;
+  flex: 1;
+}
+
+.view-sprint-btn {
+  background: #3b7cf6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+
+.view-sprint-btn:hover {
+  background: #2d5fd9;
+}
+
+.sprint-insight-content {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sprint-stat {
+  background: #f8fafb;
+  border: 1px solid #e7edf3;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.sprint-stat p {
+  margin: 0;
+  color: #7389a6;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sprint-stat h4 {
+  margin: 6px 0 0;
+  font-size: 20px;
+  color: #2d4669;
+}
   color: #2b9f63;
 }
 
