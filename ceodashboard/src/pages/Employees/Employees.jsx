@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Employees.css';
 import TopBar from '../../components/layout/TopBar';
 import OverviewTab from '../../components/team/tabs/OverviewTab';
 import MembersTab from '../../components/team/tabs/MembersTab';
 import AttendanceTab from '../../components/team/tabs/AttendanceTab';
-import { Building2, Clock3, Users } from 'lucide-react';
+import PerformanceTab from '../../components/team/tabs/PerformanceTab';
+import { BarChart3, Building2, Clock3, Users } from 'lucide-react';
 
 const TABS = [
-  { id: 'overview', label: 'Overview', icon: Building2 },
-  { id: 'members', label: 'Members', icon: Users, badge: '247' },
+  { id: 'overview', label: 'Executive Overview', icon: Building2 },
+  { id: 'members', label: 'Workforce', icon: Users, badge: '247' },
+  { id: 'performance', label: 'Performance', icon: BarChart3, badge: 'Q1' },
   { id: 'attendance', label: 'Attendance', icon: Clock3, live: true },
 ];
 
@@ -61,6 +64,7 @@ const Employees = () => {
 
       {tab === 'overview' ? <OverviewTab /> : null}
       {tab === 'members' ? <MembersTab /> : null}
+      {tab === 'performance' ? <PerformanceTab /> : null}
       {tab === 'attendance' ? <AttendanceTab /> : null}
     </div>
   );
