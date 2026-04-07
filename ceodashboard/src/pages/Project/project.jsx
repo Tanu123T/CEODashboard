@@ -129,6 +129,13 @@ const Projects = () => {
           <article className="project-detail-panel project-completion-panel">
             <div className="progress-ring-wrap">
               <svg viewBox="0 0 180 180" className="progress-ring" aria-label="Project completion">
+                <defs>
+                  <linearGradient id="gradientStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#38bdf8" />
+                    <stop offset="50%" stopColor="#22c55e" />
+                    <stop offset="100%" stopColor="#18b7a6" />
+                  </linearGradient>
+                </defs>
                 <circle cx="90" cy="90" r={radius} className="progress-ring-track" />
                 <circle
                   cx="90"
