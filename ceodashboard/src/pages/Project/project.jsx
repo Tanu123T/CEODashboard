@@ -16,6 +16,7 @@ import {
 import PageLoader from '../../components/common/PageLoader';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 import { projectRecords } from '../../data/projectsData';
+import { sprintDetails } from '../Sprints/sprintData';
 
 const formatCurrency = (value) => `₹${value.toLocaleString('en-IN')}`;
 
@@ -61,6 +62,14 @@ const Projects = () => {
   }
 
   if (selectedProject) {
+    const sprintProject = selectedProject.sprintProjectId ? sprintDetails[selectedProject.sprintProjectId] : null;
+    const sprintStatusClass = (status) => {
+      if (status === 'active') return 'project-sprint-pill-active';
+      if (status === 'completed') return 'project-sprint-pill-completed';
+      if (status === 'delayed') return 'project-sprint-pill-delayed';
+      return 'project-sprint-pill-upcoming';
+    };
+
     const radius = 66;
     const circumference = 2 * Math.PI * radius;
     const progress = Math.max(0, Math.min(100, selectedProject.progress));
@@ -210,6 +219,46 @@ const Projects = () => {
               </div>
             )}
           </div>
+        </section>
+
+        <section className="project-detail-panel">
+          <div className="project-section-heading">
+            <h3>Active Sprint Work</h3>
+            {sprintProject && (
+              <button
+                type="button"
+                className="project-detail-link"
+                onClick={() => navigate(`/sprints/${selectedProject.sprintProjectId}`)}
+              >
+                View all sprints
+              </button>
+            )}
+          </div>
+          {sprintProject ? (
+            <div className="project-sprint-grid">
+              {sprintProject.sprints.slice(0, 4).map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="project-sprint-card"
+                  onClick={() => navigate(`/sprints/${selectedProject.sprintProjectId}/${item.id}`)}
+                >
+                  <div className="project-sprint-card-title">
+                    <strong>{item.id}</strong>
+                    <span>{item.title}</span>
+                  </div>
+                  <div className="project-sprint-card-meta">
+                    <span className={`project-sprint-pill ${sprintStatusClass(item.status)}`}>
+                      {item.status === 'active' ? 'Active' : item.status === 'completed' ? 'Completed' : item.status === 'delayed' ? 'Delayed' : 'Upcoming'}
+                    </span>
+                    <span>{item.progress}% progress</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="project-no-sprints">Sprint details are not available for this project.</p>
+          )}
         </section>
 
         <section className="project-detail-panel">

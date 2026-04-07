@@ -9,45 +9,19 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   BarChart,
   Bar,
   PieChart,
   Pie,
   Cell,
 } from 'recharts';
-import {
-  ArrowLeft,
-  CalendarClock,
-  Users,
-  Target,
-  AlertTriangle,
-  CircleDashed,
-  Activity,
-  Rocket,
-  CheckCircle2,
-  UserRound,
-} from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { sprintProjects, sprintDetails } from './sprintData';
-
-const statusClass = (status) => {
-  if (status === 'Done') return 'sprint-status-done';
-  if (status === 'In Progress') return 'sprint-status-progress';
-  if (status === 'Review') return 'sprint-status-review';
-  if (status === 'Blocked') return 'sprint-status-blocked';
-  return 'sprint-status-backlog';
-};
 
 const priorityClass = (priority) => {
   if (priority === 'High') return 'sprint-priority-high';
   if (priority === 'Medium') return 'sprint-priority-medium';
   return 'sprint-priority-low';
-};
-
-const toneClass = (tone) => {
-  if (tone === 'good') return 'sprint-kpi-good';
-  if (tone === 'warning') return 'sprint-kpi-warning';
-  return 'sprint-kpi-risk';
 };
 
 const healthClass = (health) => {
@@ -71,7 +45,7 @@ const SprintProjectDetail = () => {
             <p>The requested project sprint was not found.</p>
           </div>
         </header>
-          <button type="button" className="action-btn primary-btn" onClick={() => navigate('/sprints')}>
+        <button type="button" className="action-btn primary-btn" onClick={() => navigate('/sprints')}>
           <ArrowLeft size={16} /> Back To Sprint Projects
         </button>
       </div>
@@ -80,19 +54,27 @@ const SprintProjectDetail = () => {
 
   const details = sprintDetails[project.id];
   const selectedVelocity = details.velocity.find((item) => item.sprint === sprintId) || details.velocity[details.velocity.length - 1];
+  const selectedSprint = details.sprints?.find((item) => item.id === sprintId) || details.sprints?.[0] || { id: sprintId, title: sprintId, status: 'active' };
   const totalTasks = details.board.length;
   const completedTasks = details.board.filter((item) => item.status === 'Done').length;
   const blockedTasks = details.board.filter((item) => item.status === 'Blocked').length;
-  const pendingTasks = totalTasks - completedTasks - blockedTasks;
+  const pendingTasks = details.board.filter((item) => item.status === 'To Do').length;
+  const reviewTasks = details.board.filter((item) => item.status === 'Review').length;
   const sprintCompletion = Math.round((completedTasks / Math.max(totalTasks, 1)) * 100);
 
-  const taskKpis = [
-    { title: 'Total Tasks', value: totalTasks, detail: 'All sprint backlog items' },
-    { title: 'Completed Tasks', value: completedTasks, detail: 'Stories moved to done' },
-    { title: 'Pending Tasks', value: pendingTasks, detail: 'Remaining non-blocked work' },
-    { title: 'Blocked Tasks', value: blockedTasks, detail: 'Needs escalation/support' },
-    { title: 'Sprint Completion %', value: `${sprintCompletion}%`, detail: `${completedTasks}/${totalTasks} completed` },
-  ];
+  const selectedSprintStatusClass = (status) => {
+    if (status === 'active' || status === 'completed') return 'sprint-health-good';
+    if (status === 'delayed') return 'sprint-health-risk';
+    return 'sprint-health-warning';
+  };
+
+  const sprintStatusLabel = selectedSprint.status === 'active'
+    ? 'Active'
+    : selectedSprint.status === 'completed'
+      ? 'Completed'
+      : selectedSprint.status === 'delayed'
+        ? 'Delayed'
+        : 'Upcoming';
 
   const ownerAllocation = useMemo(() => {
     const summary = details.board.reduce((acc, item) => {
@@ -115,258 +97,263 @@ const SprintProjectDetail = () => {
     }));
   }, [details.board]);
 
-  const completedTaskList = details.board.filter((item) => item.status === 'Done');
+  const countByStatus = (status) => details.board.filter((task) => task.status === status).length;
+
+  const today = new Date();
+  const getDaysRemaining = (dateString) => {
+    const [day, monthShort, year] = dateString.split(' ');
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = monthNames.indexOf(monthShort);
+    const target = new Date(Number(year), month, Number(day));
+    const diff = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+    return Math.max(diff, 0);
+  };
+
+  const boardColumns = [
+    { title: 'To Do', status: 'To Do' },
+    { title: 'In Progress', status: 'In Progress' },
+    { title: 'Review / QA', status: 'Review' },
+    { title: 'Done', status: 'Done' },
+  ];
 
   return (
-    <div className="dashboard-wrapper sprint-page">
-      <header className="main-header sprint-detail-header">
+    <div className="dashboard-wrapper sprint-page sprint-detail-page">
+      <header className="sprint-detail-top">
         <div>
           <button type="button" className="sprint-back-link" onClick={() => navigate(`/sprints/${project.id}`)}>
             <ArrowLeft size={14} /> All {project.name} Sprints
           </button>
-          <h1>{project.name} - {selectedVelocity.sprint}</h1>
-          <p>{details.about}</p>
+          <div className="sprint-detail-title-row">
+            <div>
+              <h1>{selectedSprint.id} — {selectedSprint.title}</h1>
+              <p className="sprint-detail-goal"><strong>Goal:</strong> {details.goals?.[0]}</p>
+              <p className="sprint-detail-description">{details.about}</p>
+            </div>
+            <span className={`sprint-health-pill ${selectedSprintStatusClass(selectedSprint.status)}`}>
+              {sprintStatusLabel}
+            </span>
+          </div>
+
+          <div className="sprint-detail-meta-grid">
+            <article className="sprint-summary-card">
+              <p className="sprint-summary-label">Timeline</p>
+              <h3>{project.startDate} — {project.endDate}</h3>
+            </article>
+            <article className="sprint-summary-card">
+              <p className="sprint-summary-label">Days Remaining</p>
+              <h3>{getDaysRemaining(project.endDate)} days</h3>
+            </article>
+            <article className="sprint-summary-card">
+              <p className="sprint-summary-label">Scrum Master</p>
+              <h3>{project.scrumMaster}</h3>
+            </article>
+            <article className="sprint-summary-card">
+              <p className="sprint-summary-label">Project</p>
+              <h3>{project.name}</h3>
+            </article>
+            <article className="sprint-summary-card sprint-summary-card-small">
+              <p className="sprint-summary-label">Story Points</p>
+              <h3>{selectedVelocity.completed}/{project.totalPoints}</h3>
+            </article>
+          </div>
+
+          <div className="sprint-detail-team-row">
+            <p className="sprint-summary-label">Team</p>
+            <div className="sprint-detail-team-chips">
+              {[...new Set(details.board.map((item) => item.owner))].map((owner) => (
+                <span key={owner} className="sprint-team-chip">
+                  <span>{owner.split(' ').map((part) => part[0]).join('')}</span>
+                  {owner}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className={`sprint-health-pill ${healthClass(project.health)}`}>
-          <Activity size={15} /> {project.health}
+
+        <div className="sprint-detail-progress-card">
+          <div className="sprint-progress-ring" style={{ '--progress': `${sprintCompletion}` }}>
+            <span>{sprintCompletion}%</span>
+          </div>
+          <div className="sprint-progress-copy">
+            <p className="sprint-summary-label">Story Points</p>
+            <h3>{selectedVelocity.completed}/{project.totalPoints}</h3>
+            <p>Completed from plan</p>
+          </div>
         </div>
       </header>
 
-      <section className="sprint-meta-row">
-        <div className="sprint-meta-chip">
-          <CalendarClock size={15} /> {project.startDate} to {project.endDate}
-        </div>
-        <div className="sprint-meta-chip">
-          <Users size={15} /> {project.contributors} contributors
-        </div>
-        <div className="sprint-meta-chip">
-          <UserRound size={15} /> Scrum Master: {project.scrumMaster}
-        </div>
-        <div className="sprint-meta-chip">
-          <Rocket size={15} /> Cycle: {selectedVelocity.sprint} ({selectedVelocity.completed}/{selectedVelocity.planned} pts)
-        </div>
-      </section>
-
-      <section className="sprint-detail-grid sprint-allocation-grid">
-        <article className="sprint-panel">
-          <h2 className="sprint-section-title">Task Allocation By Owner</h2>
-          <div className="sprint-allocation-table-wrap">
-            <table className="sprint-allocation-table">
-              <thead>
-                <tr>
-                  <th>Owner</th>
-                  <th>Assigned</th>
-                  <th>Completed</th>
-                  <th>In Progress</th>
-                  <th>Blocked</th>
-                  <th>Completion</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ownerAllocation.map((item) => (
-                  <tr key={item.owner}>
-                    <td>{item.owner}</td>
-                    <td>{item.assigned}</td>
-                    <td>{item.completed}</td>
-                    <td>{item.inProgress}</td>
-                    <td>{item.blocked}</td>
-                    <td>{item.completionRate}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <section className="sprint-detail-metrics-grid">
+        <article className="sprint-kpi-card sprint-kpi-simple">
+          <p>Total Tasks</p>
+          <h2>{totalTasks}</h2>
         </article>
-
-        <article className="sprint-panel">
-          <h2 className="sprint-section-title">Completed Tasks</h2>
-          <div className="sprint-completed-list">
-            {completedTaskList.length > 0 ? (
-              completedTaskList.map((item) => (
-                <div key={item.id} className="sprint-completed-item">
-                  <span><CheckCircle2 size={15} /> {item.id}</span>
-                  <strong>{item.title}</strong>
-                  <em>Completed by {item.owner}</em>
-                </div>
-              ))
-            ) : (
-              <p className="sprint-empty-copy">No completed tasks yet for this sprint cycle.</p>
-            )}
-          </div>
+        <article className="sprint-kpi-card sprint-kpi-simple">
+          <p>Completed</p>
+          <h2>{completedTasks}</h2>
+        </article>
+        <article className="sprint-kpi-card sprint-kpi-simple">
+          <p>In Progress</p>
+          <h2>{countByStatus('In Progress')}</h2>
+        </article>
+        <article className="sprint-kpi-card sprint-kpi-simple">
+          <p>Pending</p>
+          <h2>{pendingTasks}</h2>
+        </article>
+        <article className="sprint-kpi-card sprint-kpi-simple">
+          <p>In Review</p>
+          <h2>{reviewTasks}</h2>
+        </article>
+        <article className="sprint-kpi-card sprint-kpi-simple">
+          <p>Completion Rate</p>
+          <h2>{sprintCompletion}%</h2>
         </article>
       </section>
 
-      <section className="sprint-kpi-grid sprint-required-kpis">
-        {taskKpis.map((kpi) => (
-          <article key={kpi.title} className="sprint-kpi-card sprint-kpi-good">
-            <p className="sprint-kpi-label">{kpi.title}</p>
-            <h3 className="sprint-kpi-value">{kpi.value}</h3>
-            <p className="sprint-kpi-detail">{kpi.detail}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="sprint-kpi-grid">
-        {details.kpis.map((kpi) => (
-          <article key={kpi.title} className={`sprint-kpi-card ${toneClass(kpi.tone)}`}>
-            <p className="sprint-kpi-label">{kpi.title}</p>
-            <h3 className="sprint-kpi-value">{kpi.value}</h3>
-            <p className="sprint-kpi-detail">{kpi.detail}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="sprint-chart-grid">
-        <article className="sprint-panel">
-          <h3>Burndown Trend</h3>
-          <ResponsiveContainer width="100%" height={270}>
+      <section className="sprint-detail-main-grid">
+        <article className="sprint-panel sprint-chart-panel">
+          <div className="sprint-panel-heading">
+            <div>
+              <h2>Burndown Chart</h2>
+              <p className="sprint-panel-copy">Ideal vs Actual remaining story points</p>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={320}>
             <LineChart data={details.burndown}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9eef4" />
               <XAxis dataKey="day" axisLine={false} tickLine={false} />
               <YAxis axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }} />
-              <Legend />
-              <Line type="monotone" dataKey="ideal" name="Ideal" stroke="#38bdf8" strokeDasharray="5 5" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="actual" name="Actual" stroke="#22c55e" strokeWidth={3} />
+              <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.08)' }} />
+              <Line type="monotone" dataKey="ideal" name="Ideal" stroke="#94a3b8" strokeDasharray="5 5" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="actual" name="Actual" stroke="#2563eb" strokeWidth={3} dot={false} />
             </LineChart>
           </ResponsiveContainer>
+          <div className="sprint-chart-legend">
+            <span><span className="sprint-legend-dot" style={{ background: '#94a3b8' }} /> Ideal</span>
+            <span><span className="sprint-legend-dot" style={{ background: '#2563eb' }} /> Actual</span>
+          </div>
         </article>
 
-        <article className="sprint-panel">
-          <h3>Work Distribution</h3>
-          <ResponsiveContainer width="100%" height={220}>
-            <PieChart>
-              <Pie data={details.workSplit} innerRadius={56} outerRadius={84} paddingAngle={3} dataKey="value" stroke="none">
-                {details.workSplit.map((entry, index) => (
-                  <Cell key={`${entry.name}-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="sprint-legend">
+        <article className="sprint-panel sprint-donut-panel">
+          <div className="sprint-panel-heading">
+            <div>
+              <h2>Work Distribution</h2>
+              <p className="sprint-panel-copy">Task status breakdown</p>
+            </div>
+          </div>
+          <div className="sprint-donut-chart-wrap">
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={details.workSplit} innerRadius={62} outerRadius={94} paddingAngle={4} dataKey="value" stroke="none">
+                  {details.workSplit.map((entry, index) => (
+                    <Cell key={`${entry.name}-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="sprint-donut-center">
+              <strong>{sprintCompletion}%</strong>
+              <span>complete</span>
+            </div>
+          </div>
+          <div className="sprint-legend-column">
             {details.workSplit.map((item) => (
               <div key={item.name} className="sprint-legend-item">
                 <span className="sprint-dot" style={{ background: item.color }} />
-                <span>{item.name} ({item.value}%)</span>
+                <div>
+                  <strong>{item.name}</strong>
+                  <span>{item.value}%</span>
+                </div>
               </div>
             ))}
           </div>
         </article>
       </section>
 
-      <section className="sprint-detail-grid">
-        <article className="sprint-panel sprint-board-panel">
-          <h2 className="sprint-section-title">Detailed Sprint Board</h2>
-          <table className="sprint-board-table">
-            <thead>
-              <tr>
-                <th>Ticket</th>
-                <th>Story</th>
-                <th>Owner</th>
-                <th>Priority</th>
-                <th>Points</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {details.board.map((item) => (
-                <tr key={item.id}>
-                  <td className="sprint-ticket-id">{item.id}</td>
-                  <td>{item.title}</td>
-                  <td className="sprint-owner-cell"><Users size={14} className="sprint-row-icon" />{item.owner}</td>
-                  <td>
-                    <span className={`sprint-priority-badge ${priorityClass(item.priority)}`}>
-                      {item.priority}
-                    </span>
-                  </td>
-                  <td>{item.points}</td>
-                  <td>
-                    <span className={`sprint-status-badge ${statusClass(item.status)}`}>
-                      {item.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <section className="sprint-detail-main-grid sprint-secondary-grid">
+        <article className="sprint-panel sprint-velocity-panel">
+          <div className="sprint-panel-heading sprint-progress-panel-heading">
+            <div>
+              <h2>Sprint Velocity History</h2>
+              <p className="sprint-panel-copy">Committed vs delivered story points</p>
+            </div>
+            <span className="sprint-summary-value">{selectedVelocity.completed}</span>
+          </div>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={details.velocity}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9eef4" />
+              <XAxis dataKey="sprint" axisLine={false} tickLine={false} />
+              <YAxis axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.08)' }} />
+              <Bar dataKey="planned" name="Planned" fill="#38bdf8" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="completed" name="Completed" fill="#22c55e" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </article>
 
-        <aside className="sprint-sidebar">
-          <article className="sprint-info-card">
-            <h3><Target size={17} /> Sprint Goals</h3>
-            <ul className="sprint-goals-list">
-              {details.goals.map((goal) => (
-                <li key={goal}>
-                  <CircleDashed size={14} />
-                  <span>{goal}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="sprint-info-card">
-            <h3><AlertTriangle size={17} /> Blockers</h3>
-            <ul className="sprint-blockers-list">
-              {details.blockers.map((item) => (
-                <li key={item.id}>
-                  <div>
-                    <p className="sprint-list-title">{item.id} - {item.title}</p>
-                    <p className="sprint-list-subtitle">{item.impact}</p>
-                    <p className="sprint-list-subtitle">Owner: {item.owner} | ETA: {item.eta}</p>
-                  </div>
-                  <span className="sprint-severity-tag">{item.severity}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="sprint-info-card">
-            <h3><Users size={17} /> Team Capacity</h3>
-            <ul className="sprint-capacity-list">
-              {details.capacity.map((item) => (
-                <li key={item.team}>
-                  <div>
-                    <p className="sprint-list-title">{item.team}</p>
-                    <p className="sprint-list-subtitle">{item.members} members</p>
-                  </div>
-                  <div className="sprint-capacity-metrics">
-                    <strong>{item.capacity}</strong>
-                    <span>{item.utilization}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </article>
-        </aside>
+        <article className="sprint-panel sprint-capacity-panel">
+          <div className="sprint-panel-heading sprint-progress-panel-heading">
+            <div>
+              <h2>Team Capacity</h2>
+              <p className="sprint-panel-copy">Story point utilization</p>
+            </div>
+            <span className="sprint-summary-value">{project.totalPoints} pts</span>
+          </div>
+          <div className="capacity-bar-wrap">
+            <div className="capacity-bar">
+              <div className="capacity-filled" style={{ width: `${Math.min(Math.round((selectedVelocity.completed / project.totalPoints) * 100), 100)}%` }} />
+            </div>
+            <div className="capacity-meta">
+              <span>{selectedVelocity.completed} used</span>
+              <span>{project.totalPoints - selectedVelocity.completed} remaining</span>
+            </div>
+          </div>
+          <div className="team-capacity-list">
+            {details.capacity.map((item) => (
+              <div key={item.team} className="team-capacity-row">
+                <div>
+                  <strong>{item.team}</strong>
+                  <span>{item.members} members</span>
+                </div>
+                <span>{item.utilization}</span>
+              </div>
+            ))}
+          </div>
+        </article>
       </section>
 
-      <section className="sprint-panel sprint-velocity-block">
-        <h2 className="sprint-section-title">Sprint Velocity History</h2>
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={details.velocity}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9eef4" />
-            <XAxis dataKey="sprint" axisLine={false} tickLine={false} />
-            <YAxis axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }} />
-            <Legend />
-            <Bar dataKey="planned" name="Planned" fill="#38bdf8" radius={[6, 6, 0, 0]} />
-            <Bar dataKey="completed" name="Completed" fill="#22c55e" radius={[6, 6, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </section>
-
-      <section className="sprint-panel">
-        <h2 className="sprint-section-title">Scope Change Summary</h2>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={details.scope}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9eef4" />
-            <XAxis dataKey="metric" axisLine={false} tickLine={false} />
-            <YAxis axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }} />
-            <Bar dataKey="points" name="Story Points" fill="#18b7a6" radius={[6, 6, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+      <section className="sprint-panel sprint-board-section">
+        <div className="sprint-board-title-row">
+          <div>
+            <h2>Sprint Task Board</h2>
+            <p>{totalTasks} total tasks</p>
+          </div>
+        </div>
+        <div className="sprint-board-columns">
+          {boardColumns.map((column) => {
+            const items = details.board.filter((task) => task.status === column.status);
+            return (
+              <div key={column.status} className="sprint-board-column">
+                <div className="sprint-board-column-header">
+                  <span>{column.title}</span>
+                  <strong>{items.length}</strong>
+                </div>
+                <div className="sprint-board-card-list">
+                  {items.map((task) => (
+                    <div key={task.id} className="sprint-task-card">
+                      <div className="sprint-task-card-top">
+                        <span className="sprint-task-title">{task.title}</span>
+                        <span className={`sprint-task-priority ${priorityClass(task.priority)}`}>{task.priority}</span>
+                      </div>
+                      <p className="sprint-task-meta">{task.id} • {task.points}p</p>
+                      <div className="sprint-task-owner">{task.owner}</div>
+                    </div>
+                  ))}
+                  {items.length === 0 && <div className="sprint-task-empty">No tasks</div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
     </div>
   );
