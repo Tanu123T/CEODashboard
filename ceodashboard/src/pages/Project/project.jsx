@@ -184,66 +184,70 @@ const Projects = () => {
           </div>
         </section>
 
-        <section className="project-detail-panel">
-          <h3>MILESTONES</h3>
-          <div className="milestone-list">
-            {selectedProject.milestones.map((item) => (
-              <article key={item.title} className="milestone-item">
-                <div className={`milestone-name ${item.done ? 'done' : ''}`}>
-                  {item.done ? <CheckCircle size={20} /> : <Circle size={20} />}
-                  <span>{item.title}</span>
-                </div>
-                <strong>{item.date}</strong>
-              </article>
-            ))}
-          </div>
-        </section>
+        <section className="project-detail-grid bottom">
+          <section className="project-detail-panel milestones-panel">
+            <h3>MILESTONES</h3>
+            <div className="milestone-list">
+              {selectedProject.milestones.map((item) => (
+                <article key={item.title} className="milestone-item">
+                  <div className={`milestone-name ${item.done ? 'done' : ''}`}>
+                    {item.done ? <CheckCircle size={20} /> : <Circle size={20} />}
+                    <span>{item.title}</span>
+                  </div>
+                  <strong>{item.date}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
 
-        <section className="project-detail-panel">
-          <h3>RISKS</h3>
-          <div className="risk-list">
-            {selectedProject.risks.length > 0 ? (
-              selectedProject.risks.map((risk) => (
-                <div key={risk} className="risk-item">
-                  <TriangleAlert size={18} />
-                  <span>{risk}</span>
-                </div>
-              ))
-            ) : (
-              <div className="risk-item neutral">
-                <CheckCircle size={18} />
-                <span>No active risks logged.</span>
+          <div className="project-detail-side">
+            <section className="project-detail-panel">
+              <h3>RISKS</h3>
+              <div className="risk-list">
+                {selectedProject.risks.length > 0 ? (
+                  selectedProject.risks.map((risk) => (
+                    <div key={risk} className="risk-item">
+                      <TriangleAlert size={18} />
+                      <span>{risk}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="risk-item neutral">
+                    <CheckCircle size={18} />
+                    <span>No active risks logged.</span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </section>
+            </section>
 
-        <section className="project-detail-panel sprint-insight-panel">
-          <div className="sprint-insight-header">
-            <h3>SPRINT INSIGHT</h3>
-            <button
-              type="button"
-              className="view-sprint-btn"
-              onClick={() => navigate('/sprints')}
-            >
-              <span>View Sprint</span>
-              <ArrowRight size={16} />
-            </button>
-          </div>
-          
-          <div className="sprint-insight-content">
-            <article className="sprint-stat">
-              <p>Total Sprints</p>
-              <h4>{selectedProject.sprints}</h4>
-            </article>
-            <article className="sprint-stat">
-              <p>Milestones Completed</p>
-              <h4>{selectedProject.milestonesDone} of {selectedProject.milestones.length}</h4>
-            </article>
-            <article className="sprint-stat">
-              <p>Progress</p>
-              <h4>{selectedProject.progress}%</h4>
-            </article>
+            <section className="project-detail-panel sprint-insight-panel">
+              <div className="sprint-insight-header">
+                <h3>SPRINT INSIGHT</h3>
+                <button
+                  type="button"
+                  className="view-sprint-btn"
+                  onClick={() => navigate('/sprints')}
+                >
+                  <span>View Sprint</span>
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+
+              <div className="sprint-insight-content">
+                <article className="sprint-stat">
+                  <p>Total Sprints</p>
+                  <h4>{selectedProject.sprints}</h4>
+                </article>
+                <article className="sprint-stat">
+                  <p>Milestones Completed</p>
+                  <h4>{selectedProject.milestonesDone} of {selectedProject.milestones.length}</h4>
+                </article>
+                <article className="sprint-stat">
+                  <p>Progress</p>
+                  <h4>{selectedProject.progress}%</h4>
+                </article>
+              </div>
+            </section>
           </div>
         </section>
       </div>
@@ -313,18 +317,22 @@ const Projects = () => {
             </div>
 
             <div className="project-meta-row">
-              <span>
-                Lead: <strong>{project.lead}</strong>
-              </span>
-              <span>
-                Due: <strong>{project.dueDate}</strong>
-              </span>
+              <article className="meta-chip">
+                <p>Lead</p>
+                <strong>{project.lead}</strong>
+              </article>
+              <article className="meta-chip">
+                <p>Due Date</p>
+                <strong>{project.dueDate}</strong>
+              </article>
               {project.riskCount > 0 ? (
                 <span className="risk-meta">
                   <TriangleAlert size={14} />
                   {project.riskCount} {project.riskCount === 1 ? 'risk' : 'risks'}
                 </span>
-              ) : null}
+              ) : (
+                <span className="risk-meta neutral">No risks</span>
+              )}
             </div>
           </button>
         ))}
