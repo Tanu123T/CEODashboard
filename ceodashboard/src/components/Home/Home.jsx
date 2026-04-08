@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 
@@ -68,12 +68,19 @@ const kpiCards = [
 ];
 
 const projectProgressData = [
-  { name: "Enterprise", value: 68, color: "#39c89b" },
-  { name: "AI", value: 38, color: "#f4bd1f" },
-  { name: "Multi-Tenant", value: 86, color: "#39c89b" },
-  { name: "Mobile", value: 24, color: "#f26d6d" },
-  { name: "Patient", value: 60, color: "#39c89b" },
-  { name: "Trade", value: 50, color: "#f4bd1f" },
+  { name: "Enterprise", value: 68, color: "#39c89b", deadline: "May 15", owner: "TechNova" },
+  { name: "AI", value: 38, color: "#f4bd1f", deadline: "Apr 30", owner: "Orbit" },
+  { name: "Multi-Tenant", value: 86, color: "#39c89b", deadline: "Apr 10", owner: "CloudStack" },
+  { name: "Mobile", value: 24, color: "#f26d6d", deadline: "Apr 20", owner: "RetailPro" },
+  { name: "Patient", value: 60, color: "#39c89b", deadline: "May 5", owner: "MediSync" },
+  { name: "Trade", value: 50, color: "#f4bd1f", deadline: "May 30", owner: "FinEdge" },
+];
+
+const projectsOverview = [
+  { title: "Enterprise CRM Overhaul", meta: "TechNova Solutions", deadline: "May 15, 2026", tone: "green" },
+  { title: "AI Analytics Dashboard", meta: "Orbit Dynamics", deadline: "Apr 30, 2026", tone: "amber" },
+  { title: "Multi-Tenant Auth System", meta: "CloudStack Inc.", deadline: "Apr 10, 2026", tone: "green" },
+  { title: "Mobile Commerce App", meta: "RetailPro Group", deadline: "Apr 20, 2026", tone: "red" },
 ];
 
 const workforceTrendData = trendLabels.map((label, index) => ({
@@ -87,13 +94,6 @@ const sprintOverview = [
   { title: "Sprint 24", meta: "TechNova CRM • 3 days left", stats: "32/40 story points", progress: 72, tone: "green" },
   { title: "Sprint 11", meta: "Orbit Analytics • 8 days left", stats: "18/48 story points", progress: 38, tone: "amber" },
   { title: "Sprint 7", meta: "RetailPro Mobile • Delayed", stats: "9/36 story points", progress: 24, tone: "red" },
-];
-
-const projectsOverview = [
-  { title: "Enterprise CRM Overhaul", meta: "TechNova Solutions", deadline: "May 15, 2026", tone: "green" },
-  { title: "AI Analytics Dashboard", meta: "Orbit Dynamics", deadline: "Apr 30, 2026", tone: "amber" },
-  { title: "Multi-Tenant Auth System", meta: "CloudStack Inc.", deadline: "Apr 10, 2026", tone: "green" },
-  { title: "Mobile Commerce App", meta: "RetailPro Group", deadline: "Apr 20, 2026", tone: "red" },
 ];
 
 const holidaysData = [
@@ -118,6 +118,7 @@ const birthdaysAnniversariesData = [
 
 const Home = () => {
   const navigate = useNavigate();
+  const [activeProjectIndex, setActiveProjectIndex] = useState(null);
 
   const currentMonth = useMemo(() => {
     const now = new Date();
@@ -153,10 +154,10 @@ const Home = () => {
     <div className="home">
       <section className="hero">
         <h1>Good morning, CEO</h1>
-        <p>Here&apos;s your business snapshot for March 24, 2026.</p>
+        <p>Live performance, progress, and priorities at a glance.</p>
       </section>
 
-      <section className="dashboard-section">
+      <section className="dashboard-section dashboard-section-projects">
         <header className="section-head">
           <div className="section-title">
             <LayoutDashboard size={16} />
@@ -192,106 +193,97 @@ const Home = () => {
         </header>
 
         <section className="project-section-grid">
-          <article className="panel">
-          <header className="panel-head">
-            <div>
-              <h2>Project Progress</h2>
-              <p>Completion % per project</p>
-            </div>
-          </header>
+          <article className="panel project-visual-panel">
+            <header className="panel-head">
+              <h2>All Projects Progress</h2>
+            </header>
 
-          <div className="chart-wrap chart-wrap-tall">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={projectProgressData} margin={{ top: 8, right: 10, left: -16, bottom: 0 }}>
-                <CartesianGrid vertical={false} stroke="#e8eef7" strokeDasharray="4 4" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#8ca0b8", fontSize: 12 }} />
-                <YAxis
-                  domain={[0, 100]}
-                  ticks={[0, 25, 50, 75, 100]}
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#8ca0b8", fontSize: 12 }}
-                />
-                <Tooltip
-                  formatter={(value) => `${value}%`}
-                  contentStyle={{
-                    border: "1px solid #d8e1ef",
-                    borderRadius: "10px",
-                    boxShadow: "0 10px 20px rgba(29, 45, 70, 0.08)",
-                    fontSize: "12px",
+            <div className="chart-wrap chart-wrap-tall project-chart-wrap project-chart-only">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={projectProgressData}
+                  margin={{ top: 8, right: 10, left: -16, bottom: 0 }}
+                  onMouseMove={(state) => {
+                    if (typeof state?.activeTooltipIndex === 'number') {
+                      setActiveProjectIndex(state.activeTooltipIndex);
+                    }
                   }}
-                />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={42}>
-                  {projectProgressData.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </article>
+                  onMouseLeave={() => setActiveProjectIndex(null)}
+                >
+                  <defs>
+                    <linearGradient id="projectBarFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#5fa2ff" stopOpacity="0.95" />
+                      <stop offset="100%" stopColor="#2fd0ae" stopOpacity="0.95" />
+                    </linearGradient>
+                    <linearGradient id="projectBarHot" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#ff7b7b" stopOpacity="0.98" />
+                      <stop offset="100%" stopColor="#f26d6d" stopOpacity="0.98" />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} stroke="#e8eef7" strokeDasharray="4 4" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#8ca0b8", fontSize: 12 }} />
+                  <YAxis
+                    domain={[0, 100]}
+                    ticks={[0, 25, 50, 75, 100]}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#8ca0b8", fontSize: 12 }}
+                  />
+                  <Tooltip
+                    formatter={(value, name, props) => [
+                      `${value}%`,
+                      `${props.payload.owner} • deadline ${props.payload.deadline}`,
+                    ]}
+                    labelFormatter={(label) => `Project: ${label}`}
+                    cursor={{ fill: 'rgba(95, 162, 255, 0.06)' }}
+                    contentStyle={{
+                      border: "1px solid #d8e1ef",
+                      borderRadius: "12px",
+                      boxShadow: "0 12px 26px rgba(29, 45, 70, 0.10)",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Bar dataKey="value" radius={[10, 10, 0, 0]} barSize={42}>
+                    {projectProgressData.map((entry, index) => {
+                      const isActive = index === activeProjectIndex;
+                      return (
+                        <Cell
+                          key={entry.name}
+                          fill={entry.color === '#f26d6d' ? 'url(#projectBarHot)' : 'url(#projectBarFill)'}
+                          opacity={activeProjectIndex === null || isActive ? 1 : 0.45}
+                          stroke={isActive ? '#0f1f3d' : 'transparent'}
+                          strokeWidth={isActive ? 1.5 : 0}
+                        />
+                      );
+                    })}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </article>
 
-          <article className="panel compact-panel">
-          <header className="panel-head panel-head-link">
-            <h2>Projects Overview</h2>
-            <button className="link-button" type="button" onClick={() => navigate('/projects')}>
-              <span>View all</span>
-              <ArrowRight size={14} />
-            </button>
-          </header>
-
-          <div className="progress-list">
-            {projectsOverview.map((item) => (
-              <article className="progress-item" key={item.title}>
-                <div className={`progress-dot ${item.tone}`} />
-                <div className="progress-copy">
-                  <h4>{item.title}</h4>
-                  <p>{item.meta}</p>
-                  <p className="progress-submeta">Deadline {item.deadline}</p>
-                </div>
-                <div className="progress-value-wrap deadline-wrap">
-                  <strong>{item.deadline}</strong>
-                </div>
-              </article>
-            ))}
-          </div>
-        </article>
-      </section>
-
-      </section>
-
-      <section className="dashboard-section">
-        <header className="section-head">
-          <div className="section-title">
-            <Timer size={16} />
-            <h2>Sprint</h2>
-          </div>
-        </header>
-
-        <section className="sprint-section-grid">
-          <article className="panel compact-panel">
+          <article className="panel project-overview-panel">
             <header className="panel-head panel-head-link">
-              <h2>Sprint Overview</h2>
-              <button className="link-button" type="button" onClick={() => navigate('/sprints')}>
+              <h2>Project Overview</h2>
+              <button className="link-button" type="button" onClick={() => navigate('/projects')}>
                 <span>View all</span>
                 <ArrowRight size={14} />
               </button>
             </header>
 
-            <div className="progress-list">
-              {sprintOverview.map((item) => (
-                <article className="progress-item" key={item.title}>
-                  <div className={`progress-dot ${item.tone}`} />
-                  <div className="progress-copy">
-                    <h4>{item.title}</h4>
-                    <p>{item.meta}</p>
-                    <p className="progress-submeta">{item.stats}</p>
-                  </div>
-                  <div className="progress-value-wrap">
-                    <strong>{item.progress}%</strong>
-                    <div className="progress-track">
-                      <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
+            <div className="project-overview-grid">
+              {projectsOverview.map((item) => (
+                <article className={`project-overview-card ${item.tone}`} key={item.title}>
+                  <div className="project-overview-card-top">
+                    <div>
+                      <h4>{item.title}</h4>
+                      <p>{item.meta}</p>
                     </div>
+                    <span className="project-deadline-pill">{item.deadline}</span>
+                  </div>
+                  <div className="project-overview-card-bottom">
+                    <span className={`project-tone-dot ${item.tone}`} />
+                    <span>Completion status</span>
                   </div>
                 </article>
               ))}
@@ -362,7 +354,7 @@ const Home = () => {
           <article className="panel workforce-insight-panel">
             <header className="panel-head workforce-insight-head stacked">
               <div>
-                <h2>Department Distribution</h2>
+                <h2>Role-wise Distribution</h2>
                 <p>247 total across 8 teams</p>
               </div>
             </header>
@@ -456,6 +448,46 @@ const Home = () => {
                     <h4>{entry.name}</h4>
                     <p>{entry.date}</p>
                     <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <section className="dashboard-section">
+        <header className="section-head">
+          <div className="section-title">
+            <Timer size={16} />
+            <h2>Sprint</h2>
+          </div>
+        </header>
+
+        <section className="sprint-section-grid">
+          <article className="panel compact-panel">
+            <header className="panel-head panel-head-link">
+              <h2>Sprint Overview</h2>
+              <button className="link-button" type="button" onClick={() => navigate('/sprints')}>
+                <span>View all</span>
+                <ArrowRight size={14} />
+              </button>
+            </header>
+
+            <div className="progress-list">
+              {sprintOverview.map((item) => (
+                <article className="progress-item" key={item.title}>
+                  <div className={`progress-dot ${item.tone}`} />
+                  <div className="progress-copy">
+                    <h4>{item.title}</h4>
+                    <p>{item.meta}</p>
+                    <p className="progress-submeta">{item.stats}</p>
+                  </div>
+                  <div className="progress-value-wrap">
+                    <strong>{item.progress}%</strong>
+                    <div className="progress-track">
+                      <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
+                    </div>
                   </div>
                 </article>
               ))}

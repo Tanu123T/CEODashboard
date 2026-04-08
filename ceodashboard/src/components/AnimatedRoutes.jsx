@@ -11,7 +11,6 @@ const Employees = lazy(() => import('../pages/Employees/Employees'));
 const Sprints = lazy(() => import('../pages/Sprints/Sprints'));
 const SprintProjectSprints = lazy(() => import('../pages/Sprints/SprintProjectSprints'));
 const SprintProjectDetail = lazy(() => import('../pages/Sprints/SprintProjectDetail'));
-const Clients = lazy(() => import('../pages/Clients/Clients'));
 const Risks = lazy(() => import('../pages/Risks/Risks'));
 const Settings = lazy(() => import('../pages/Settings/Settings'));
 
@@ -36,7 +35,6 @@ const AnimatedRoutes = () => {
         <Route path="/sprints/:projectId" element={wrappedPage(SprintProjectSprints, 'Project Sprint List')} />
         <Route path="/sprints/:projectId/:sprintId" element={wrappedPage(SprintProjectDetail, 'Sprint Detail')} />
         <Route path="/employees" element={wrappedPage(Employees, 'Team Performance')} />
-        <Route path="/clients" element={wrappedPage(Clients, 'Client Overview')} />
         <Route path="/risks" element={wrappedPage(Risks, 'Risk Monitoring')} />
         <Route path="/settings" element={wrappedPage(Settings, 'Settings')} />
       </Routes>

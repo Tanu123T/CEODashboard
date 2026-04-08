@@ -75,6 +75,15 @@ const Projects = () => {
     const dashOffset = circumference - (progress / 100) * circumference;
     const remaining = Math.max(selectedProject.budgetTotal - selectedProject.budgetSpent, 0);
     const sprintRouteId = sprintRouteByProjectId[selectedProject.id];
+    const plannedSprints = Math.max(1, Number(selectedProject.sprints) || 1);
+    const completedSprints = Math.min(
+      plannedSprints,
+      Math.round((progress / 100) * plannedSprints)
+    );
+    const sprintRoadmapDots = Array.from({ length: plannedSprints }, (_, index) => ({
+      id: index + 1,
+      completed: index < completedSprints,
+    }));
 
     return (
       <div className="projects-page project-detail-page">
@@ -216,14 +225,27 @@ const Projects = () => {
               </div>
 
               <div className="sprint-insight-content">
-                <article className="sprint-stat">
-                  <p>Total Sprints</p>
-                  <h4>{selectedProject.sprints}</h4>
-                </article>
-                <article className="sprint-stat">
-                  <p>Progress</p>
-                  <h4>{selectedProject.progress}%</h4>
-                </article>
+                <div className="sprint-roadmap-header">
+                  <p>
+                    <strong>{completedSprints}</strong> of <strong>{plannedSprints}</strong> sprints completed
+                  </p>
+                  <span>{selectedProject.progress}% overall progress</span>
+                </div>
+
+                <div className="sprint-roadmap-track" aria-label="Sprint roadmap progress">
+                  {sprintRoadmapDots.map((dot) => (
+                    <span
+                      key={dot.id}
+                      className={`sprint-roadmap-dot ${dot.completed ? 'completed' : 'planned'}`}
+                      title={`Sprint ${dot.id} ${dot.completed ? 'completed' : 'planned'}`}
+                    />
+                  ))}
+                </div>
+
+                <div className="sprint-roadmap-legend" aria-hidden="true">
+                  <span><i className="legend-dot completed" /> Completed</span>
+                  <span><i className="legend-dot planned" /> Planned</span>
+                </div>
               </div>
             </section>
           </div>

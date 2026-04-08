@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Users,
   DollarSign,
-  Handshake,
   ShieldAlert,
   Settings,
   LogOut,
@@ -40,11 +39,6 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
         <Link to="/employees" className={`nav-item ${location.pathname === '/employees' ? 'active' : ''}`} onClick={handleNavClick}>
           <Users className="icon"/>
           <span>Team Performance</span>
-        </Link>
-
-        <Link to="/clients" className={`nav-item ${location.pathname === '/clients' ? 'active' : ''}`} onClick={handleNavClick}>
-          <Handshake className="icon"/>
-          <span>Clients</span>
         </Link>
 
         <Link to="/risks" className={`nav-item ${location.pathname === '/risks' ? 'active' : ''}`} onClick={handleNavClick}>
