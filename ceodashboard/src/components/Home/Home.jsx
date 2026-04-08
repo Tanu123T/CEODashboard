@@ -88,6 +88,48 @@ const workforceTrendData = trendLabels.map((label, index) => ({
   total: trendValues[index],
 }));
 
+const scheduleItems = [
+  {
+    time: "09:00 AM",
+    title: "Daily Standup - Platform Squad",
+    meta: "15 min - Arjun, Priya, Ravi, Sneha",
+    icon: Users,
+    tone: "blue",
+    tag: "Standup",
+  },
+  {
+    time: "02:00 PM",
+    title: "Risk Review - Orbit Dynamics",
+    meta: "45 min - Kavya, Rohan, Nisha K.",
+    icon: Briefcase,
+    tone: "red",
+    tag: "Risk Review",
+  },
+  {
+    time: "03:30 PM",
+    title: "1:1 with Sneha Patel",
+    meta: "30 min - Sneha",
+    icon: UserRound,
+    tone: "teal",
+    tag: "1:1",
+  },
+  {
+    time: "04:30 PM",
+    title: "Q1 Board Report - Prep",
+    meta: "1 hr",
+    icon: FileText,
+    tone: "purple",
+    tag: "Deep Work",
+  },
+  {
+    time: "06:00 PM",
+    title: "Proposal Review - FinEdge Capital",
+    meta: "30 min - Rohan, Amit S.",
+    icon: Briefcase,
+    tone: "orange",
+    tag: "Client",
+  },
+];
 
 
 const sprintOverview = [
