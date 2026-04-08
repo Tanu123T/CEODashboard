@@ -9,8 +9,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
@@ -31,18 +29,31 @@ const healthClass = (health) => {
 };
 
 const SprintProjectDetail = () => {
-  const { projectId, sprintId } = useParams();
+  const { sprintId } = useParams();
   const navigate = useNavigate();
 
-  const project = sprintProjects.find((item) => item.id === projectId);
+  let project = null;
+  let details = null;
+  let selectedSprint = null;
 
-  if (!project || !sprintDetails[project.id]) {
+  for (const projectKey in sprintDetails) {
+    const projectData = sprintDetails[projectKey];
+    const foundSprint = projectData.sprints?.find((item) => item.id === sprintId);
+    if (foundSprint) {
+      project = sprintProjects.find((item) => item.id === projectKey);
+      details = projectData;
+      selectedSprint = foundSprint;
+      break;
+    }
+  }
+
+  if (!project || !details || !selectedSprint) {
     return (
       <div className="dashboard-wrapper sprint-page">
         <header className="main-header">
           <div>
             <h1>Sprint Not Found</h1>
-            <p>The requested project sprint was not found.</p>
+            <p>The requested sprint was not found.</p>
           </div>
         </header>
         <button type="button" className="action-btn primary-btn" onClick={() => navigate('/sprints')}>
@@ -52,9 +63,7 @@ const SprintProjectDetail = () => {
     );
   }
 
-  const details = sprintDetails[project.id];
   const selectedVelocity = details.velocity.find((item) => item.sprint === sprintId) || details.velocity[details.velocity.length - 1];
-  const selectedSprint = details.sprints?.find((item) => item.id === sprintId) || details.sprints?.[0] || { id: sprintId, title: sprintId, status: 'active' };
   const totalTasks = details.board.length;
   const completedTasks = details.board.filter((item) => item.status === 'Done').length;
   const blockedTasks = details.board.filter((item) => item.status === 'Blocked').length;
@@ -120,7 +129,7 @@ const SprintProjectDetail = () => {
     <div className="dashboard-wrapper sprint-page sprint-detail-page">
       <header className="sprint-detail-top">
         <div>
-          <button type="button" className="sprint-back-link" onClick={() => navigate(`/sprints/${project.id}`)}>
+          <button type="button" className="sprint-back-link" onClick={() => navigate('/sprints')}>
             <ArrowLeft size={14} /> All {project.name} Sprints
           </button>
           <div className="sprint-detail-title-row">
@@ -270,26 +279,6 @@ const SprintProjectDetail = () => {
       </section>
 
       <section className="sprint-detail-main-grid sprint-secondary-grid">
-        <article className="sprint-panel sprint-velocity-panel">
-          <div className="sprint-panel-heading sprint-progress-panel-heading">
-            <div>
-              <h2>Sprint Velocity History</h2>
-              <p className="sprint-panel-copy">Committed vs delivered story points</p>
-            </div>
-            <span className="sprint-summary-value">{selectedVelocity.completed}</span>
-          </div>
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={details.velocity}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9eef4" />
-              <XAxis dataKey="sprint" axisLine={false} tickLine={false} />
-              <YAxis axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.08)' }} />
-              <Bar dataKey="planned" name="Planned" fill="#38bdf8" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="completed" name="Completed" fill="#22c55e" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </article>
-
         <article className="sprint-panel sprint-capacity-panel">
           <div className="sprint-panel-heading sprint-progress-panel-heading">
             <div>

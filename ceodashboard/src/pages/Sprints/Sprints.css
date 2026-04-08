@@ -137,6 +137,44 @@
   flex-shrink: 0;
 }
 
+/* Sprint Tabs */
+.sprint-tabs-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.sprint-tabs {
+  display: flex;
+  gap: 4px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.sprint-tab {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.sprint-tab:hover {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.sprint-tab.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 /* Metrics Grid - Summary Cards */
 .sprint-metrics-grid {
   display: grid;
@@ -380,18 +418,28 @@
 
 .team-workload-list {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .team-workload-row {
   display: grid;
-  gap: 12px;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #f8fafc;
 }
 
 .team-workload-name {
   margin: 0;
   font-weight: 700;
   color: #0f172a;
+  font-size: 1rem;
+}
+
+.team-workload-row span {
+  display: block;
+  font-size: 0.95rem;
+  color: #475569;
 }
 
 .team-workload-progress {
