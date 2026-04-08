@@ -20,11 +20,9 @@ import {
   Briefcase,
   Users,
   Zap,
-  TriangleAlert,
-  Clock3,
-  UserRound,
-  FileText,
   ArrowRight,
+  Calendar,
+  Cake,
 } from "lucide-react";
 
 import { sprintDetails, sprintProjects } from "../../pages/Sprints/sprintData";
@@ -40,7 +38,7 @@ const kpiCards = [
   },
   {
     icon: Users,
-    title: "TEAM MEMBERS",
+    title: "TOTAL WORKFORCE",
     value: "8",
     meta: "All squads",
     color: "green",
@@ -53,14 +51,6 @@ const kpiCards = [
     meta: "2 in progress",
     color: "teal",
     to: "/sprints",
-  },
-  {
-    icon: TriangleAlert,
-    title: "OPEN BLOCKERS",
-    value: "4",
-    meta: "Needs action",
-    color: "red",
-    to: "/risks",
   },
 ];
 
@@ -89,48 +79,7 @@ const projectProgressData = [
   { name: "Trade", value: 50, color: "#f4bd1f" },
 ];
 
-const scheduleItems = [
-  {
-    time: "09:00 AM",
-    title: "Daily Standup - Platform Squad",
-    meta: "15 min - Arjun, Priya, Ravi, Sneha",
-    icon: Users,
-    tone: "blue",
-    tag: "Standup",
-  },
-  {
-    time: "02:00 PM",
-    title: "Risk Review - Orbit Dynamics",
-    meta: "45 min - Kavya, Rohan, Nisha K.",
-    icon: TriangleAlert,
-    tone: "red",
-    tag: "Risk Review",
-  },
-  {
-    time: "03:30 PM",
-    title: "1:1 with Sneha Patel",
-    meta: "30 min - Sneha",
-    icon: UserRound,
-    tone: "teal",
-    tag: "1:1",
-  },
-  {
-    time: "04:30 PM",
-    title: "Q1 Board Report - Prep",
-    meta: "1 hr",
-    icon: FileText,
-    tone: "purple",
-    tag: "Deep Work",
-  },
-  {
-    time: "06:00 PM",
-    title: "Proposal Review - FinEdge Capital",
-    meta: "30 min - Rohan, Amit S.",
-    icon: Briefcase,
-    tone: "orange",
-    tag: "Client",
-  },
-];
+
 
 const sprintOverview = [
   { title: "Enterprise CRM Overhaul", meta: "Sprint 24 - TechNova Solutions", progress: 72, tone: "green" },
@@ -142,6 +91,26 @@ const projectsOverview = [
   { title: "AI Analytics Dashboard", meta: "Orbit Dynamics", progress: 38, tone: "amber" },
   { title: "Multi-Tenant Auth System", meta: "CloudStack Inc.", progress: 85, tone: "green" },
   { title: "Mobile Commerce App", meta: "RetailPro Group", progress: 24, tone: "red" },
+];
+
+const holidaysData = [
+  { date: "April 14, 2026", name: "Ambedkar Jayanti", type: "National Holiday" },
+  { date: "April 17, 2026", name: "Ram Navami", type: "Religious Festival" },
+  { date: "April 19, 2026", name: "Easter Sunday", type: "Religious Festival" },
+  { date: "May 1, 2026", name: "Labour Day", type: "National Holiday" },
+];
+
+const parseHolidayDate = (dateLabel) => {
+  const parsedDate = new Date(dateLabel);
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+};
+
+const birthdaysAnniversariesData = [
+  { date: "April 10", name: "Priya Sharma", type: "Birthday", tone: "blue" },
+  { date: "April 12", name: "Arjun Kumar", type: "Work Anniversary (3 years)", tone: "purple" },
+  { date: "April 15", name: "Sneha Patel", type: "Birthday", tone: "blue" },
+  { date: "April 18", name: "Rohan Verma", type: "Work Anniversary (2 years)", tone: "purple" },
+  { date: "April 22", name: "Kavya Singh", type: "Birthday", tone: "blue" },
 ];
 
 const Home = () => {
@@ -167,6 +136,28 @@ const Home = () => {
   const sprintContextLabel = selectedProject
     ? `${selectedProject.name} - ${selectedProject.sprint}`
     : "Current Sprint";
+
+  const currentMonth = useMemo(() => {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() };
+  }, []);
+
+  const monthLabel = useMemo(() => new Date(currentMonth.year, currentMonth.month, 1).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  }), [currentMonth.month, currentMonth.year]);
+
+  const monthlyHolidays = useMemo(() => {
+    return holidaysData
+      .map((holiday) => {
+        const parsedDate = parseHolidayDate(holiday.date);
+        return parsedDate ? { ...holiday, parsedDate } : null;
+      })
+      .filter((holiday) => holiday && holiday.parsedDate.getFullYear() === currentMonth.year && holiday.parsedDate.getMonth() === currentMonth.month)
+      .sort((a, b) => a.parsedDate - b.parsedDate);
+  }, [currentMonth.month, currentMonth.year]);
+
+  const priorityBirthdays = birthdaysAnniversariesData.slice(0, 3);
 
   return (
     <div className="home">
@@ -295,36 +286,6 @@ const Home = () => {
         </article>
       </section>
 
-      <section className="panel schedule-panel">
-        <header className="panel-head">
-          <div>
-            <h2>Today&apos;s Schedule</h2>
-            <p>Monday, March 30, 2026</p>
-          </div>
-          <Clock3 className="schedule-clock" size={20} />
-        </header>
-
-        <div className="schedule-list">
-          {scheduleItems.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <article className="schedule-item" key={`${item.time}-${item.title}`}>
-                <span className="schedule-time">{item.time}</span>
-                <span className={`schedule-icon ${item.tone}`}>
-                  <Icon size={16} />
-                </span>
-                <div className="schedule-copy">
-                  <h4>{item.title}</h4>
-                  <p>{item.meta}</p>
-                </div>
-                <span className={`schedule-tag ${item.tone}`}>{item.tag}</span>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
       <section className="bottom-grid">
         <article className="panel compact-panel">
           <header className="panel-head panel-head-link">
@@ -376,6 +337,61 @@ const Home = () => {
                   <div className="progress-track">
                     <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
                   </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </article>
+      </section>
+
+      <section className="info-grid">
+        <article className="panel compact-panel compact-panel-small">
+          <header className="panel-head">
+            <div className="header-with-icon">
+              <Calendar size={20} style={{ color: "#5fa2ff" }} />
+              <h2>Holidays in {monthLabel}</h2>
+            </div>
+          </header>
+          <div className="info-list info-list-compact">
+            {monthlyHolidays.length > 0 ? (
+              monthlyHolidays.slice(0, 3).map((holiday) => (
+                <article className="info-item info-item-small" key={`${holiday.date}-${holiday.name}`}>
+                  <div className="info-dot green" />
+                  <div className="info-copy">
+                    <h4>{holiday.name}</h4>
+                    <p>{holiday.date}</p>
+                  </div>
+                  <span className="info-tag">{holiday.type}</span>
+                </article>
+              ))
+            ) : (
+              <article className="info-item info-item-small">
+                <div className="info-dot green" />
+                <div className="info-copy">
+                  <h4>No holidays this month</h4>
+                  <p>Calendar updated</p>
+                </div>
+                <span className="info-tag">Info</span>
+              </article>
+            )}
+          </div>
+        </article>
+
+        <article className="panel compact-panel compact-panel-small">
+          <header className="panel-head">
+            <div className="header-with-icon">
+              <Cake size={20} style={{ color: "#f4bd1f" }} />
+              <h2>Birthdays & Anniversaries</h2>
+            </div>
+          </header>
+          <div className="info-list info-list-compact">
+            {priorityBirthdays.map((entry) => (
+              <article className="info-item info-item-small" key={`${entry.date}-${entry.name}`}>
+                <div className={`info-dot ${entry.tone}`} />
+                <div className="info-copy">
+                  <h4>{entry.name}</h4>
+                  <p>{entry.date}</p>
+                  <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
                 </div>
               </article>
             ))}

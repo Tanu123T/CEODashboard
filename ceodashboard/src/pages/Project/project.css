@@ -29,7 +29,7 @@
 
 .projects-kpi-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -59,6 +59,10 @@
 
 .kpi-green {
   color: var(--proj-success);
+}
+
+.kpi-amber {
+  color: var(--proj-warning);
 }
 
 .kpi-red {
@@ -170,19 +174,19 @@
   box-shadow: none;
 }
 
-.project-status-pill.on-track {
+.project-status-pill.complete {
   color: #0f9166;
   background: linear-gradient(135deg, #e8f8f1 0%, #dcf3e8 100%);
   border: 1px solid #bfe7d5;
 }
 
-.project-status-pill.needs-attention {
+.project-status-pill.in-progress {
   color: #a76807;
   background: linear-gradient(135deg, #fff5e2 0%, #feedd0 100%);
   border: 1px solid #f1deb4;
 }
 
-.project-status-pill.at-risk {
+.project-status-pill.delayed {
   color: #b03e47;
   background: linear-gradient(135deg, #feebee 0%, #fddde2 100%);
   border: 1px solid #efc8d0;
@@ -228,22 +232,22 @@
   border-radius: inherit;
 }
 
-.project-progress-fill.on-track {
+.project-progress-fill.complete {
   background: linear-gradient(90deg, #24c78d 0%, #149f70 100%);
 }
 
-.project-progress-fill.needs-attention {
+.project-progress-fill.in-progress {
   background: linear-gradient(90deg, #f5b328 0%, #e08d14 100%);
 }
 
-.project-progress-fill.at-risk {
+.project-progress-fill.delayed {
   background: linear-gradient(90deg, #ef5d6c 0%, #d84a58 100%);
 }
 
 .project-meta-row {
   margin-top: 12px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
   gap: 8px;
   font-size: 13px;
