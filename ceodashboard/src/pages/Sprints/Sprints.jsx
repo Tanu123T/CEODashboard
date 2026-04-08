@@ -1,165 +1,311 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Sprints.css';
 import {
-  Search,
   ArrowRight,
-  CalendarClock,
-  Users,
-  FolderKanban,
-  Target,
+  Activity,
   AlertTriangle,
   CheckCircle2,
+  Clock3,
+  TrendingUp,
+  Calendar,
+  ChevronDown,
 } from 'lucide-react';
-import { sprintProjects } from './sprintData';
-import EmptyState from '../../components/common/EmptyState';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  Cell,
+  ComposedChart,
+  Line,
+  Area,
+  AreaChart,
+} from 'recharts';
+import { sprintDashboardData } from './sprintData';
 import PageLoader from '../../components/common/PageLoader';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 
-const healthClass = (health) => {
-  if (health === 'On Track') return 'sprint-health-good';
-  if (health === 'Needs Attention') return 'sprint-health-warning';
-  return 'sprint-health-risk';
+const metricIcons = {
+  'Total Sprints': <Activity size={22} />,
+  'Active': <Clock3 size={22} />,
+  'Completed': <CheckCircle2 size={22} />,
+  'Delayed': <AlertTriangle size={22} />,
+  'Avg. Completion': <TrendingUp size={22} />,
 };
 
-const progress = (done, total) => {
-  if (!total) return 0;
-  return Math.round((done / total) * 100);
+const statusClass = {
+  active: 'sprint-status-active',
+  completed: 'sprint-status-completed',
+  delayed: 'sprint-status-delayed',
+  upcoming: 'sprint-status-upcoming',
+};
+
+const statusColors = {
+  active: '#06b6d4',
+  completed: '#4f46e5',
+  delayed: '#ef4444',
+  upcoming: '#f59e0b',
 };
 
 const Sprints = () => {
   const isLoading = useSimulatedLoading(600);
   const navigate = useNavigate();
-  const [query, setQuery] = useState('');
-  const [healthFilter, setHealthFilter] = useState('All');
+  const [projectFilter, setProjectFilter] = useState('all');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const filteredProjects = useMemo(() => {
-    return sprintProjects.filter((project) => {
-      const matchesQuery =
-        project.name.toLowerCase().includes(query.toLowerCase()) ||
-        project.client.toLowerCase().includes(query.toLowerCase()) ||
-        project.squad.toLowerCase().includes(query.toLowerCase());
+  const getProjectColor = (projectId) => {
+    const colors = {
+      'all': '#6b7280',
+      'data-analytics-engine': '#f59e0b',
+      'platform-api-v3': '#06b6d4',
+      'mobile-app-redesign': '#3b82f6',
+    };
+    return colors[projectId] || '#6b7280';
+  };
 
-      const matchesHealth = healthFilter === 'All' || project.health === healthFilter;
+  const getProjectLabel = (projectId) => {
+    const project = sprintDashboardData.projects.find((p) => p.id === projectId);
+    return project ? project.label : 'All Projects';
+  };
 
-      return matchesQuery && matchesHealth;
-    });
-  }, [query, healthFilter]);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredDeadlines = useMemo(() => {
+    if (projectFilter === 'all') return sprintDashboardData.upcomingDeadlines;
+    return sprintDashboardData.upcomingDeadlines.filter((item) => item.projectId === projectFilter);
+  }, [projectFilter]);
+
+  const filteredActivity = useMemo(() => {
+    if (projectFilter === 'all') return sprintDashboardData.activity;
+    return sprintDashboardData.activity.filter((item) => item.projectId === projectFilter);
+  }, [projectFilter]);
 
   if (isLoading) {
-    return <PageLoader title="Loading Sprint Explorer..." />;
+    return <PageLoader title="Loading Sprint Dashboard..." />;
   }
 
   return (
-    <div className="dashboard-wrapper sprint-selector-page">
-      <header className="main-header">
+    <div className="dashboard-wrapper sprint-dashboard-page">
+      <header className="main-header sprint-dashboard-header">
         <div>
-          <h1>Sprint Explorer</h1>
-          <p>Select a project to open its full detailed sprint command center.</p>
+          <p className="sprint-dashboard-eyebrow">Sprint Dashboard</p>
+          <h1>Executive overview across all projects</h1>
+        </div>
+        <div className="sprint-dashboard-filter">
+          <div className="sprint-project-dropdown" ref={dropdownRef}>
+            <button
+              className="sprint-project-select-button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <span>{getProjectLabel(projectFilter)}</span>
+              <ChevronDown size={20} />
+            </button>
+
+            {isDropdownOpen && (
+              <div className="sprint-project-dropdown-menu">
+                {sprintDashboardData.projects.map((project) => (
+                  <button
+                    key={project.id}
+                    className={`sprint-project-dropdown-item ${projectFilter === project.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setProjectFilter(project.id);
+                      setIsDropdownOpen(false);
+                      navigate(project.id === 'all' ? '/sprints' : `/sprints/${project.id}`);
+                    }}
+                  >
+                    <span
+                      className="sprint-project-dot"
+                      style={{ backgroundColor: getProjectColor(project.id) }}
+                    />
+                    <span>{project.label}</span>
+                    {projectFilter === project.id && <CheckCircle2 size={18} />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
-      <section className="sprint-selector-controls table-container">
-        <div className="sprint-search-wrap">
-          <Search size={16} />
-          <input
-            type="text"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search by project, client, or squad"
-          />
-        </div>
-
-        <div className="sprint-filter-row">
-          {['All', 'On Track', 'Needs Attention', 'At Risk'].map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={`sprint-filter-chip ${healthFilter === item ? 'active' : ''}`}
-              onClick={() => setHealthFilter(item)}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+      <section className="sprint-metrics-grid">
+        {sprintDashboardData.metrics.map((item) => (
+          <article key={item.label} className="sprint-stat-card">
+            <div className="sprint-stat-card-body">
+              <div className="sprint-stat-card-content">
+                <p>{item.label}</p>
+                <h2>{item.value}</h2>
+              </div>
+              <span className="sprint-stat-icon">{metricIcons[item.label]}</span>
+            </div>
+          </article>
+        ))}
       </section>
 
-      <section className="sprint-project-grid">
-        {filteredProjects.map((project) => {
-          const completion = progress(project.donePoints, project.totalPoints);
-
-          return (
-            <button
-              key={project.id}
-              type="button"
-              className="sprint-project-card"
-              onClick={() => navigate(`/sprints/${project.id}`)}
+      <section className="sprint-dashboard-main-grid">
+        <article className="sprint-panel sprint-progress-card">
+          <div className="sprint-panel-heading">
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <TrendingUp size={24} style={{ color: '#3b82f6' }} />
+                <div>
+                  <h2>Sprint Performance Comparison</h2>
+                  <p className="sprint-panel-copy">Completion progress for each project</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={340}>
+            <ComposedChart
+              layout="vertical"
+              data={[
+                { name: 'Mobile App Redesign', completed: 50, target: 80, fill: '#38bdf8' },
+                { name: 'Data Analytics Engine', completed: 27, target: 80, fill: '#18b7a6' },
+                { name: 'Platform API v3', completed: 44, target: 80, fill: '#22c55e' },
+                { name: 'Hospital CRM', completed: 74, target: 80, fill: '#0ea5e9' },
+                { name: 'Banking Portal', completed: 57, target: 80, fill: '#06b6d4' },
+              ]}
+              margin={{ top: 20, right: 80, bottom: 20, left: 180 }}
             >
-              <div className="sprint-project-head">
-                <div>
-                  <p className="sprint-project-client">{project.client}</p>
-                  <h3>{project.name}</h3>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12, fill: '#64748b' }} />
+              <YAxis 
+                dataKey="name" 
+                type="category" 
+                tick={{ fontSize: 12, fill: '#1f2937', fontWeight: 500 }}
+                width={170}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#ffffff',
+                  border: '2px solid #cbd5e1',
+                  borderRadius: '12px',
+                  padding: '12px 16px',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                }}
+                formatter={(value) => `${value}%`}
+                labelFormatter={(label) => label}
+              />
+              <Bar dataKey="target" fill="#f3f4f6" radius={[0, 6, 6, 0]} name="Target (80%)" />
+              <Bar 
+                dataKey="completed" 
+                radius={[0, 6, 6, 0]}
+                name="Completed"
+              >
+                {[
+                  { name: 'Mobile App Redesign', completed: 50, target: 80, fill: '#38bdf8' },
+                  { name: 'Data Analytics Engine', completed: 27, target: 80, fill: '#18b7a6' },
+                  { name: 'Platform API v3', completed: 44, target: 80, fill: '#22c55e' },
+                  { name: 'Hospital CRM', completed: 74, target: 80, fill: '#0ea5e9' },
+                  { name: 'Banking Portal', completed: 57, target: 80, fill: '#06b6d4' },
+                ].map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Bar>
+              <Legend wrapperStyle={{ paddingTop: '12px' }} />
+            </ComposedChart>
+          </ResponsiveContainer>
+          <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+            <div style={{ padding: '12px', backgroundColor: '#cffafe', borderRadius: '12px', border: '1px solid #a5f3fc' }}>
+              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#0369a1', fontWeight: 700 }}>LEADING</p>
+              <p style={{ margin: 0, fontSize: '14px', color: '#164e63', fontWeight: 600 }}>Hospital CRM</p>
+              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>74% complete</p>
+            </div>
+            <div style={{ padding: '12px', backgroundColor: '#ccfbf1', borderRadius: '12px', border: '1px solid #99f6e4' }}>
+              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#0d9488', fontWeight: 700 }}>ON TRACK</p>
+              <p style={{ margin: 0, fontSize: '14px', color: '#134e4a', fontWeight: 600 }}>3 Projects</p>
+              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>40-60% range</p>
+            </div>
+            <div style={{ padding: '12px', backgroundColor: '#dcfce7', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#15803d', fontWeight: 700 }}>FOCUS AREA</p>
+              <p style={{ margin: 0, fontSize: '14px', color: '#166534', fontWeight: 600 }}>Data Analytics</p>
+              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>27% complete</p>
+            </div>
+          </div>
+        </article>
+
+        <article className="sprint-panel sprint-upcoming-card">
+          <div className="sprint-panel-heading">
+            <div className="sprint-panel-heading-top">
+              <Calendar size={18} />
+              <h2>Upcoming Deadlines</h2>
+            </div>
+          </div>
+          <div className="sprint-upcoming-list">
+            {filteredDeadlines.map((item) => (
+              <div key={item.id} className="sprint-upcoming-item">
+                <div className="sprint-upcoming-item-content">
+                  <div className="sprint-upcoming-item-border" style={{ borderLeftColor: statusColors[item.status] }} />
+                  <div>
+                    <strong>{item.title}</strong>
+                    <p>{item.subtitle}</p>
+                  </div>
                 </div>
-                <span className={`sprint-health-pill ${healthClass(project.health)}`}>{project.health}</span>
+                <span className={`sprint-upcoming-badge ${statusClass[item.status]}`}>{item.due}</span>
               </div>
-
-              <p className="sprint-project-meta-line">
-                <FolderKanban size={14} /> {project.sprint} | {project.squad}
-              </p>
-              <p className="sprint-project-meta-line">
-                <CalendarClock size={14} /> {project.startDate} to {project.endDate}
-              </p>
-
-              <div className="sprint-project-stats">
-                <div>
-                  <p>Progress</p>
-                  <strong>{project.donePoints}/{project.totalPoints} pts ({completion}%)</strong>
-                </div>
-                <div>
-                  <p>Blockers</p>
-                  <strong>{project.blockers}</strong>
-                </div>
-                <div>
-                  <p>Contributors</p>
-                  <strong>{project.contributors}</strong>
-                </div>
-              </div>
-
-              <div className="sprint-project-progress-bar">
-                <div style={{ width: `${completion}%` }} />
-              </div>
-
-              <div className="sprint-project-actions">
-                <span className="sprint-project-link">
-                  Open sprint details <ArrowRight size={15} />
-                </span>
-              </div>
-            </button>
-          );
-        })}
-      </section>
-
-      {filteredProjects.length === 0 ? (
-        <EmptyState
-          title="No sprint projects found"
-          description="Adjust search keywords or health filter to view sprint project options."
-        />
-      ) : null}
-
-      <section className="sprint-summary-row">
-        <article className="info-card">
-          <h3><Target size={17} /> Portfolio Snapshot</h3>
-          <p className="sprint-summary-copy">
-            Choose any project above to open a detailed sprint page with burndown, velocity trend,
-            blockers, sprint board, capacity, and scope-change visibility.
-          </p>
-          <div className="sprint-summary-metrics">
-            <span><CheckCircle2 size={14} /> {sprintProjects.filter((p) => p.health === 'On Track').length} on-track</span>
-            <span><AlertTriangle size={14} /> {sprintProjects.reduce((acc, p) => acc + p.blockers, 0)} total blockers</span>
-            <span><Users size={14} /> {sprintProjects.reduce((acc, p) => acc + p.contributors, 0)} total contributors</span>
+            ))}
           </div>
         </article>
       </section>
+
+      <article className="sprint-panel sprint-activity-panel">
+        <div className="sprint-panel-heading sprint-activity-heading">
+          <h2>Recent Sprint Activity</h2>
+          <span>{filteredActivity.length} total sprints</span>
+        </div>
+        <div className="sprint-activity-list">
+          {filteredActivity.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className="sprint-activity-row sprint-activity-button"
+              onClick={() => {
+                const sprintId = item.title.split(' — ')[0];
+                navigate(`/sprints/${item.projectId}/${sprintId}`);
+              }}
+            >
+              <div className="sprint-activity-left">
+                <span className={`sprint-activity-dot ${statusClass[item.status]}`} />
+                <div className="sprint-activity-content">
+                  <strong>{item.title}</strong>
+                  <p>{item.subtitle}</p>
+                </div>
+              </div>
+
+              <span className={`sprint-activity-pill ${statusClass[item.status]}`}>{item.status}</span>
+
+              <div className="sprint-activity-progress-section">
+                <span className="sprint-progress-label">Progress</span>
+                <div className="sprint-activity-progress-bar">
+                  <div className="sprint-activity-progress-fill" style={{ width: `${item.progress}%` }} />
+                </div>
+              </div>
+
+              <span className="sprint-activity-percentage">{item.progress}%</span>
+
+              <div className="sprint-activity-tasks-section">
+                <span className="sprint-activity-tasks">{item.tasks} tasks done</span>
+                <ArrowRight size={16} className="sprint-activity-arrow" />
+              </div>
+            </button>
+          ))}
+        </div>
+      </article>
     </div>
   );
 };
