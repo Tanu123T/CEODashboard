@@ -1,10 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 
 import {
   ResponsiveContainer,
-  ComposedChart,
   LineChart,
   Area,
   Line,
@@ -25,9 +24,12 @@ import {
   ArrowRight,
   Calendar,
   Cake,
+  LayoutDashboard,
+  Building2,
+  FolderKanban,
+  Timer,
 } from "lucide-react";
 
-import { sprintDetails, sprintProjects } from "../../pages/Sprints/sprintData";
 import { departmentDistribution, trendLabels, trendValues } from "../team/teamData";
 
 const kpiCards = [
@@ -65,22 +67,6 @@ const kpiCards = [
   },
 ];
 
-const velocityData = [
-  { week: "W1", planned: 40, actual: 38 },
-  { week: "W2", planned: 45, actual: 42 },
-  { week: "W3", planned: 50, actual: 44 },
-  { week: "W4", planned: 49, actual: 53 },
-  { week: "W5", planned: 55, actual: 50 },
-  { week: "W6", planned: 60, actual: 58 },
-];
-
-const sprintFilterOptions = [
-  ...sprintProjects.map((project) => ({
-    value: project.id,
-    label: `${project.name} - ${project.sprint}`,
-  })),
-];
-
 const projectProgressData = [
   { name: "Enterprise", value: 68, color: "#39c89b" },
   { name: "AI", value: 38, color: "#f4bd1f" },
@@ -98,15 +84,16 @@ const workforceTrendData = trendLabels.map((label, index) => ({
 
 
 const sprintOverview = [
-  { title: "Enterprise CRM Overhaul", meta: "Sprint 24 - TechNova Solutions", progress: 72, tone: "green" },
-  { title: "AI Analytics Dashboard", meta: "Sprint 11 - Orbit Dynamics", progress: 38, tone: "amber" },
+  { title: "Sprint 24", meta: "TechNova CRM • 3 days left", stats: "32/40 story points", progress: 72, tone: "green" },
+  { title: "Sprint 11", meta: "Orbit Analytics • 8 days left", stats: "18/48 story points", progress: 38, tone: "amber" },
+  { title: "Sprint 7", meta: "RetailPro Mobile • Delayed", stats: "9/36 story points", progress: 24, tone: "red" },
 ];
 
 const projectsOverview = [
-  { title: "Enterprise CRM Overhaul", meta: "TechNova Solutions", progress: 68, tone: "green" },
-  { title: "AI Analytics Dashboard", meta: "Orbit Dynamics", progress: 38, tone: "amber" },
-  { title: "Multi-Tenant Auth System", meta: "CloudStack Inc.", progress: 85, tone: "green" },
-  { title: "Mobile Commerce App", meta: "RetailPro Group", progress: 24, tone: "red" },
+  { title: "Enterprise CRM Overhaul", meta: "TechNova Solutions", deadline: "May 15, 2026", tone: "green" },
+  { title: "AI Analytics Dashboard", meta: "Orbit Dynamics", deadline: "Apr 30, 2026", tone: "amber" },
+  { title: "Multi-Tenant Auth System", meta: "CloudStack Inc.", deadline: "Apr 10, 2026", tone: "green" },
+  { title: "Mobile Commerce App", meta: "RetailPro Group", deadline: "Apr 20, 2026", tone: "red" },
 ];
 
 const holidaysData = [
@@ -131,27 +118,6 @@ const birthdaysAnniversariesData = [
 
 const Home = () => {
   const navigate = useNavigate();
-  const [selectedSprintProject, setSelectedSprintProject] = useState("hospital-crm");
-
-  const selectedProject = sprintProjects.find((project) => project.id === selectedSprintProject);
-
-  const sprintVelocityData = useMemo(() => {
-    const projectVelocity = sprintDetails[selectedSprintProject]?.velocity;
-
-    if (!Array.isArray(projectVelocity) || projectVelocity.length === 0) {
-      return velocityData;
-    }
-
-    return projectVelocity.map((point) => ({
-      week: point.sprint,
-      planned: point.planned,
-      actual: point.completed,
-    }));
-  }, [selectedSprintProject]);
-
-  const sprintContextLabel = selectedProject
-    ? `${selectedProject.name} - ${selectedProject.sprint}`
-    : "Current Sprint";
 
   const currentMonth = useMemo(() => {
     const now = new Date();
@@ -190,87 +156,43 @@ const Home = () => {
         <p>Here&apos;s your business snapshot for March 24, 2026.</p>
       </section>
 
-      <section className="kpi-grid">
-        {kpiCards.map((card) => {
-          const Icon = card.icon;
+      <section className="dashboard-section">
+        <header className="section-head">
+          <div className="section-title">
+            <LayoutDashboard size={16} />
+            <h2>Overview</h2>
+          </div>
+        </header>
+        <section className="kpi-grid">
+          {kpiCards.map((card) => {
+            const Icon = card.icon;
 
-          return (
-            <Link to={card.to} className="kpi-card kpi-card-link" key={card.title}>
-              <div className={`kpi-icon ${card.color}`}>
-                <Icon size={20} />
-              </div>
-              <div>
-                <p className="kpi-title">{card.title}</p>
-                <h3 className="kpi-value">{card.value}</h3>
-                <p className="kpi-meta">{card.meta}</p>
-              </div>
-            </Link>
-          );
-        })}
+            return (
+              <Link to={card.to} className="kpi-card kpi-card-link" key={card.title}>
+                <div className={`kpi-icon ${card.color}`}>
+                  <Icon size={20} />
+                </div>
+                <div>
+                  <p className="kpi-title">{card.title}</p>
+                  <h3 className="kpi-value">{card.value}</h3>
+                  <p className="kpi-meta">{card.meta}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </section>
       </section>
 
-      <section className="charts-grid">
-        <article className="panel">
-          <header className="panel-head">
-            <div>
-              <h2>Sprint Velocity Trend</h2>
-              <p>Planned vs actual story points</p>
-              <p className="panel-context">Showing {sprintContextLabel}</p>
-            </div>
-            <div className="panel-head-actions">
-              <label className="sprint-filter" htmlFor="sprint-project-filter">
-                <select
-                  id="sprint-project-filter"
-                  value={selectedSprintProject}
-                  onChange={(event) => setSelectedSprintProject(event.target.value)}
-                  className="sprint-filter-select"
-                  aria-label="Sprint project filter"
-                >
-                  {sprintFilterOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-          </header>
-
-          <div className="chart-wrap chart-wrap-tall">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={sprintVelocityData} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="actualFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3bc89b" stopOpacity={0.24} />
-                    <stop offset="95%" stopColor="#3bc89b" stopOpacity={0.02} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid vertical={false} stroke="#e8eef7" strokeDasharray="4 4" />
-                <XAxis dataKey="week" axisLine={false} tickLine={false} tick={{ fill: "#8ca0b8", fontSize: 12 }} />
-                <YAxis
-                  domain={[0, 60]}
-                  ticks={[0, 15, 30, 45, 60]}
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#8ca0b8", fontSize: 12 }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    border: "1px solid #d8e1ef",
-                    borderRadius: "10px",
-                    boxShadow: "0 10px 20px rgba(29, 45, 70, 0.08)",
-                    fontSize: "12px",
-                  }}
-                />
-                <Area type="monotone" dataKey="actual" fill="url(#actualFill)" stroke="none" />
-                <Line type="monotone" dataKey="planned" stroke="#5fa2ff" strokeWidth={2.5} strokeDasharray="6 5" dot={false} />
-                <Line type="monotone" dataKey="actual" stroke="#3bc89b" strokeWidth={3} dot={false} />
-              </ComposedChart>
-            </ResponsiveContainer>
+      <section className="dashboard-section">
+        <header className="section-head">
+          <div className="section-title">
+            <FolderKanban size={16} />
+            <h2>Projects</h2>
           </div>
-        </article>
+        </header>
 
-        <article className="panel">
+        <section className="project-section-grid">
+          <article className="panel">
           <header className="panel-head">
             <div>
               <h2>Project Progress</h2>
@@ -308,117 +230,8 @@ const Home = () => {
             </ResponsiveContainer>
           </div>
         </article>
-      </section>
 
-      <section className="workforce-insights-grid">
-        <article className="panel workforce-insight-panel">
-          <header className="panel-head workforce-insight-head">
-            <div>
-              <h2>Headcount Growth Trend</h2>
-              <p>Monthly employee count across all departments</p>
-            </div>
-            <div className="workforce-insight-meta">
-              <span><i /> Total</span>
-              <button type="button">6 Months</button>
-            </div>
-          </header>
-
-          <div className="chart-wrap workforce-chart-wrap">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={workforceTrendData} margin={{ top: 12, right: 24, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="workforceArea" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.24} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0.03} />
-                  </linearGradient>
-                  <linearGradient id="workforceStroke" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#38bdf8" />
-                    <stop offset="100%" stopColor="#22c55e" />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid vertical={false} stroke="#e8eef7" strokeDasharray="4 4" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "#8ca0b8", fontSize: 12 }} />
-                <YAxis
-                  domain={[200, 260]}
-                  ticks={[200, 215, 230, 245, 260]}
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#8ca0b8", fontSize: 12 }}
-                />
-                <Tooltip
-                  formatter={(value) => [`${value}`, "Headcount"]}
-                  contentStyle={{
-                    border: "1px solid #d8e1ef",
-                    borderRadius: "10px",
-                    boxShadow: "0 10px 20px rgba(29, 45, 70, 0.08)",
-                    fontSize: "12px",
-                  }}
-                />
-                <Area type="monotone" dataKey="total" stroke="none" fill="url(#workforceArea)" />
-                <Line type="monotone" dataKey="total" stroke="url(#workforceStroke)" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </article>
-
-        <article className="panel workforce-insight-panel">
-          <header className="panel-head workforce-insight-head stacked">
-            <div>
-              <h2>Department Distribution</h2>
-              <p>247 total across 8 teams</p>
-            </div>
-          </header>
-
-          <ul className="workforce-dept-list">
-            {departmentDistribution.map((dept) => (
-              <li key={dept.name} className="workforce-dept-item">
-                <span>{dept.name}</span>
-                <div className="workforce-bar-track">
-                  <div
-                    className="workforce-bar-fill"
-                    style={{
-                      width: `${(dept.count / maxDeptCount) * 100}%`,
-                      background: `linear-gradient(90deg, ${dept.color}B3 0%, ${dept.color} 100%)`,
-                    }}
-                  />
-                </div>
-                <strong>{dept.count}</strong>
-              </li>
-            ))}
-          </ul>
-        </article>
-      </section>
-
-      <section className="bottom-grid">
-        <article className="panel compact-panel">
-          <header className="panel-head panel-head-link">
-            <h2>Active Sprints</h2>
-            <button className="link-button" type="button" onClick={() => navigate('/sprints')}>
-              <span>View all</span>
-              <ArrowRight size={14} />
-            </button>
-          </header>
-
-          <div className="progress-list">
-            {sprintOverview.map((item) => (
-              <article className="progress-item" key={item.title}>
-                <div className={`progress-dot ${item.tone}`} />
-                <div className="progress-copy">
-                  <h4>{item.title}</h4>
-                  <p>{item.meta}</p>
-                </div>
-                <div className="progress-value-wrap">
-                  <strong>{item.progress}%</strong>
-                  <div className="progress-track">
-                    <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </article>
-
-        <article className="panel compact-panel">
+          <article className="panel compact-panel">
           <header className="panel-head panel-head-link">
             <h2>Projects Overview</h2>
             <button className="link-button" type="button" onClick={() => navigate('/projects')}>
@@ -434,12 +247,10 @@ const Home = () => {
                 <div className="progress-copy">
                   <h4>{item.title}</h4>
                   <p>{item.meta}</p>
+                  <p className="progress-submeta">Deadline {item.deadline}</p>
                 </div>
-                <div className="progress-value-wrap">
-                  <strong>{item.progress}%</strong>
-                  <div className="progress-track">
-                    <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
-                  </div>
+                <div className="progress-value-wrap deadline-wrap">
+                  <strong>{item.deadline}</strong>
                 </div>
               </article>
             ))}
@@ -447,80 +258,210 @@ const Home = () => {
         </article>
       </section>
 
-      <section className="info-grid">
-        <article className="panel compact-panel compact-panel-small">
-          <header className="panel-head">
-            <div className="header-with-icon">
-              <Calendar size={20} style={{ color: "#5fa2ff" }} />
-              <h2>Holidays in {monthLabel}</h2>
+      </section>
+
+      <section className="dashboard-section">
+        <header className="section-head">
+          <div className="section-title">
+            <Timer size={16} />
+            <h2>Sprint</h2>
+          </div>
+        </header>
+
+        <section className="sprint-section-grid">
+          <article className="panel compact-panel">
+            <header className="panel-head panel-head-link">
+              <h2>Sprint Overview</h2>
+              <button className="link-button" type="button" onClick={() => navigate('/sprints')}>
+                <span>View all</span>
+                <ArrowRight size={14} />
+              </button>
+            </header>
+
+            <div className="progress-list">
+              {sprintOverview.map((item) => (
+                <article className="progress-item" key={item.title}>
+                  <div className={`progress-dot ${item.tone}`} />
+                  <div className="progress-copy">
+                    <h4>{item.title}</h4>
+                    <p>{item.meta}</p>
+                    <p className="progress-submeta">{item.stats}</p>
+                  </div>
+                  <div className="progress-value-wrap">
+                    <strong>{item.progress}%</strong>
+                    <div className="progress-track">
+                      <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
-          </header>
-          <div className="info-list info-list-compact">
-            {monthlyHolidays.length > 0 ? (
-              monthlyHolidays.slice(0, 3).map((holiday) => (
-                <article className="info-item info-item-small" key={`${holiday.date}-${holiday.name}`}>
+          </article>
+        </section>
+      </section>
+
+      <section className="dashboard-section">
+        <header className="section-head">
+          <div className="section-title">
+            <Building2 size={16} />
+            <h2>Organization</h2>
+          </div>
+        </header>
+
+        <section className="workforce-insights-grid">
+          <article className="panel workforce-insight-panel">
+            <header className="panel-head workforce-insight-head">
+              <div>
+                <h2>Headcount Growth Trend</h2>
+                <p>Monthly employee count across all departments</p>
+              </div>
+              <div className="workforce-insight-meta">
+                <span><i /> Total</span>
+                <button type="button">6 Months</button>
+              </div>
+            </header>
+
+            <div className="chart-wrap workforce-chart-wrap">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={workforceTrendData} margin={{ top: 12, right: 24, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="workforceArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.24} />
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0.03} />
+                    </linearGradient>
+                    <linearGradient id="workforceStroke" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#38bdf8" />
+                      <stop offset="100%" stopColor="#22c55e" />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} stroke="#e8eef7" strokeDasharray="4 4" />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "#8ca0b8", fontSize: 12 }} />
+                  <YAxis
+                    domain={[200, 260]}
+                    ticks={[200, 215, 230, 245, 260]}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#8ca0b8", fontSize: 12 }}
+                  />
+                  <Tooltip
+                    formatter={(value) => [`${value}`, "Headcount"]}
+                    contentStyle={{
+                      border: "1px solid #d8e1ef",
+                      borderRadius: "10px",
+                      boxShadow: "0 10px 20px rgba(29, 45, 70, 0.08)",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Area type="monotone" dataKey="total" stroke="none" fill="url(#workforceArea)" />
+                  <Line type="monotone" dataKey="total" stroke="url(#workforceStroke)" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </article>
+
+          <article className="panel workforce-insight-panel">
+            <header className="panel-head workforce-insight-head stacked">
+              <div>
+                <h2>Department Distribution</h2>
+                <p>247 total across 8 teams</p>
+              </div>
+            </header>
+
+            <ul className="workforce-dept-list">
+              {departmentDistribution.map((dept) => (
+                <li key={dept.name} className="workforce-dept-item">
+                  <span>{dept.name}</span>
+                  <div className="workforce-bar-track">
+                    <div
+                      className="workforce-bar-fill"
+                      style={{
+                        width: `${(dept.count / maxDeptCount) * 100}%`,
+                        background: `linear-gradient(90deg, ${dept.color}B3 0%, ${dept.color} 100%)`,
+                      }}
+                    />
+                  </div>
+                  <strong>{dept.count}</strong>
+                </li>
+              ))}
+            </ul>
+          </article>
+        </section>
+
+        <section className="info-grid">
+          <article className="panel compact-panel compact-panel-small">
+            <header className="panel-head">
+              <div className="header-with-icon">
+                <Calendar size={20} style={{ color: "#5fa2ff" }} />
+                <h2>Holidays in {monthLabel}</h2>
+              </div>
+            </header>
+            <div className="info-list info-list-compact">
+              {monthlyHolidays.length > 0 ? (
+                monthlyHolidays.slice(0, 3).map((holiday) => (
+                  <article className="info-item info-item-small" key={`${holiday.date}-${holiday.name}`}>
+                    <div className="info-dot green" />
+                    <div className="info-copy">
+                      <h4>{holiday.name}</h4>
+                      <p>{holiday.date}</p>
+                    </div>
+                    <span className="info-tag">{holiday.type}</span>
+                  </article>
+                ))
+              ) : (
+                <article className="info-item info-item-small">
                   <div className="info-dot green" />
                   <div className="info-copy">
-                    <h4>{holiday.name}</h4>
-                    <p>{holiday.date}</p>
+                    <h4>No holidays this month</h4>
+                    <p>Calendar updated</p>
                   </div>
-                  <span className="info-tag">{holiday.type}</span>
+                  <span className="info-tag">Info</span>
                 </article>
-              ))
-            ) : (
-              <article className="info-item info-item-small">
-                <div className="info-dot green" />
-                <div className="info-copy">
-                  <h4>No holidays this month</h4>
-                  <p>Calendar updated</p>
-                </div>
-                <span className="info-tag">Info</span>
-              </article>
-            )}
-          </div>
-        </article>
-
-        <article className="panel compact-panel compact-panel-small">
-          <header className="panel-head">
-            <div className="header-with-icon">
-              <Cake size={20} style={{ color: "#f4bd1f" }} />
-              <h2>Birthdays</h2>
+              )}
             </div>
-          </header>
-          <div className="info-list info-list-compact">
-            {priorityBirthdays.map((entry) => (
-              <article className="info-item info-item-small" key={`${entry.date}-${entry.name}`}>
-                <div className={`info-dot ${entry.tone}`} />
-                <div className="info-copy">
-                  <h4>{entry.name}</h4>
-                  <p>{entry.date}</p>
-                  <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
-                </div>
-              </article>
-            ))}
-          </div>
-        </article>
+          </article>
 
-        <article className="panel compact-panel compact-panel-small">
-          <header className="panel-head">
-            <div className="header-with-icon">
-              <Calendar size={20} style={{ color: "#9d86ff" }} />
-              <h2>Anniversaries</h2>
+          <article className="panel compact-panel compact-panel-small">
+            <header className="panel-head">
+              <div className="header-with-icon">
+                <Cake size={20} style={{ color: "#f4bd1f" }} />
+                <h2>Birthdays</h2>
+              </div>
+            </header>
+            <div className="info-list info-list-compact">
+              {priorityBirthdays.map((entry) => (
+                <article className="info-item info-item-small" key={`${entry.date}-${entry.name}`}>
+                  <div className={`info-dot ${entry.tone}`} />
+                  <div className="info-copy">
+                    <h4>{entry.name}</h4>
+                    <p>{entry.date}</p>
+                    <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
+                  </div>
+                </article>
+              ))}
             </div>
-          </header>
-          <div className="info-list info-list-compact">
-            {priorityAnniversaries.map((entry) => (
-              <article className="info-item info-item-small" key={`${entry.date}-${entry.name}`}>
-                <div className={`info-dot ${entry.tone}`} />
-                <div className="info-copy">
-                  <h4>{entry.name}</h4>
-                  <p>{entry.date}</p>
-                  <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
-                </div>
-              </article>
-            ))}
-          </div>
-        </article>
+          </article>
+
+          <article className="panel compact-panel compact-panel-small">
+            <header className="panel-head">
+              <div className="header-with-icon">
+                <Calendar size={20} style={{ color: "#9d86ff" }} />
+                <h2>Anniversaries</h2>
+              </div>
+            </header>
+            <div className="info-list info-list-compact">
+              {priorityAnniversaries.map((entry) => (
+                <article className="info-item info-item-small" key={`${entry.date}-${entry.name}`}>
+                  <div className={`info-dot ${entry.tone}`} />
+                  <div className="info-copy">
+                    <h4>{entry.name}</h4>
+                    <p>{entry.date}</p>
+                    <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </article>
+        </section>
       </section>
     </div>
   );

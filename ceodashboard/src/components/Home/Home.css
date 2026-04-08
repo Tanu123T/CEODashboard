@@ -2,10 +2,46 @@
     background: #f8fafc;
     min-height: 100%;
     display: grid;
-    gap: 10px;
+    gap: 14px;
     color: #0f1f3d;
     font-size: 13px;
     line-height: 1.4;
+}
+
+.dashboard-section {
+    display: grid;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #e7edf3;
+    border-radius: 16px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(15, 31, 61, 0.04);
+}
+
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+}
+
+.section-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title svg {
+    color: #5f87c9;
+    flex-shrink: 0;
+}
+
+.section-head h2 {
+    margin: 0;
+    color: #0b1f44;
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    font-weight: 700;
 }
 
 .hero h1 {
@@ -199,6 +235,18 @@
 .workforce-insights-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
+    gap: 10px;
+}
+
+.project-section-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.sprint-section-grid {
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 10px;
 }
 
@@ -457,6 +505,13 @@
     margin: 2px 0 0;
     color: #6f86a4;
     font-size: 12px;
+}
+
+.progress-copy .progress-submeta {
+    margin-top: 3px;
+    color: #5a7598;
+    font-weight: 600;
+    font-size: 11px;
 }
 
 .progress-value-wrap {
@@ -831,6 +886,7 @@
 
     .charts-grid,
     .bottom-grid,
+    .project-section-grid,
     .workforce-insights-grid {
         grid-template-columns: 1fr;
     }
@@ -842,6 +898,10 @@
 }
 
 @media (max-width: 860px) {
+    .dashboard-section {
+        padding: 10px;
+    }
+
     .panel,
     .kpi-card {
         padding: 12px;
