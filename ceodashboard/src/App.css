@@ -53,12 +53,12 @@
 }
 
 .main-content-view {
-  border-radius: 16px;
-  border: 1px solid #d9e5f2;
-  background: linear-gradient(180deg, #f9fcff 0%, #f2f7fd 100%);
-  box-shadow: 0 10px 26px rgba(20, 42, 68, 0.06);
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
   min-height: calc(100vh - 168px);
-  padding: 10px;
+  padding: 0;
 }
 
 .sidebar-overlay {
@@ -138,7 +138,7 @@
   }
 
   .main-content-view {
-    padding: 8px;
+    padding: 0;
   }
 
   .sidebar-overlay {

@@ -67,7 +67,6 @@ function AppShell({ isSidebarOpen, onToggleSidebar, onCloseSidebar }) {
         <Navbar isOpen={isSidebarOpen} onCloseSidebar={onCloseSidebar} />
         <div className="sidebar-overlay" onClick={onCloseSidebar} />
         <main className="main-content">
-          <PageHeader title={pageMeta.title} subtitle={pageMeta.subtitle} lastUpdated={lastUpdated} />
           <div className="main-content-view">
             <AnimatedRoutes />
           </div>
