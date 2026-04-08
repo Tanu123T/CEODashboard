@@ -28,6 +28,8 @@ import {
   Building2,
   FolderKanban,
   Timer,
+  UserRound,
+  FileText,
 } from "lucide-react";
 
 import { departmentDistribution, trendLabels, trendValues } from "../team/teamData";
