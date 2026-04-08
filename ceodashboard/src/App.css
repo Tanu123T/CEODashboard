@@ -44,10 +44,21 @@
   margin-left: 260px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 18px;
+  padding: 14px 16px;
   width: calc(100% - 260px);
   box-sizing: border-box;
   background: #eef3f8;
+  display: grid;
+  gap: 12px;
+}
+
+.main-content-view {
+  border-radius: 16px;
+  border: 1px solid #d9e5f2;
+  background: linear-gradient(180deg, #f9fcff 0%, #f2f7fd 100%);
+  box-shadow: 0 10px 26px rgba(20, 42, 68, 0.06);
+  min-height: calc(100vh - 168px);
+  padding: 10px;
 }
 
 .sidebar-overlay {
@@ -94,7 +105,7 @@
   .main-content {
     margin-left: 0;
     width: 100%;
-    padding: 16px;
+    padding: 12px;
   }
 
   .sidebar-overlay {
@@ -124,6 +135,10 @@
 
   .main-content {
     padding: 12px;
+  }
+
+  .main-content-view {
+    padding: 8px;
   }
 
   .sidebar-overlay {

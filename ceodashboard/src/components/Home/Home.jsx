@@ -20,7 +20,6 @@ import {
   Briefcase,
   Users,
   Zap,
-  TriangleAlert,
   Clock3,
   UserRound,
   FileText,
@@ -53,14 +52,6 @@ const kpiCards = [
     meta: "2 in progress",
     color: "teal",
     to: "/sprints",
-  },
-  {
-    icon: TriangleAlert,
-    title: "OPEN BLOCKERS",
-    value: "4",
-    meta: "Needs action",
-    color: "red",
-    to: "/risks",
   },
 ];
 
@@ -102,7 +93,7 @@ const scheduleItems = [
     time: "02:00 PM",
     title: "Risk Review - Orbit Dynamics",
     meta: "45 min - Kavya, Rohan, Nisha K.",
-    icon: TriangleAlert,
+    icon: Briefcase,
     tone: "red",
     tag: "Risk Review",
   },
