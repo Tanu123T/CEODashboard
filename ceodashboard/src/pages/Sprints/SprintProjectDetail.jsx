@@ -178,17 +178,6 @@ const SprintProjectDetail = () => {
             </div>
           </div>
         </div>
-
-        <div className="sprint-detail-progress-card">
-          <div className="sprint-progress-ring" style={{ '--progress': `${sprintCompletion}` }}>
-            <span>{sprintCompletion}%</span>
-          </div>
-          <div className="sprint-progress-copy">
-            <p className="sprint-summary-label">Story Points</p>
-            <h3>{selectedVelocity.completed}/{project.totalPoints}</h3>
-            <p>Completed from plan</p>
-          </div>
-        </div>
       </header>
 
       <section className="sprint-detail-metrics-grid">
@@ -308,6 +297,59 @@ const SprintProjectDetail = () => {
             ))}
           </div>
         </article>
+
+        <article className="sprint-panel sprint-time-estimation-panel">
+          <div className="sprint-panel-heading">
+            <div>
+              <h2>Estimated Time Usage</h2>
+              <p className="sprint-panel-copy">Hours allocated vs hours used</p>
+            </div>
+          </div>
+          <div className="sprint-time-chart-wrap">
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie 
+                  data={[
+                    { name: 'Used', value: details.estimatedHours.used, color: '#3b82f6' },
+                    { name: 'Remaining', value: details.estimatedHours.estimated - details.estimatedHours.used, color: '#e2e8f0' }
+                  ]} 
+                  innerRadius={62} 
+                  outerRadius={94} 
+                  paddingAngle={4} 
+                  dataKey="value" 
+                  stroke="none"
+                >
+                  {[
+                    { name: 'Used', value: details.estimatedHours.used, color: '#3b82f6' },
+                    { name: 'Remaining', value: details.estimatedHours.estimated - details.estimatedHours.used, color: '#e2e8f0' }
+                  ].map((entry, index) => (
+                    <Cell key={`${entry.name}-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="sprint-time-center">
+              <strong>{Math.round((details.estimatedHours.used / details.estimatedHours.estimated) * 100)}%</strong>
+              <span>used</span>
+            </div>
+          </div>
+          <div className="sprint-time-legend">
+            <div className="sprint-time-legend-item">
+              <span className="sprint-time-dot" style={{ background: '#3b82f6' }} />
+              <div>
+                <strong>Used</strong>
+                <span>{details.estimatedHours.used}h</span>
+              </div>
+            </div>
+            <div className="sprint-time-legend-item">
+              <span className="sprint-time-dot" style={{ background: '#e2e8f0' }} />
+              <div>
+                <strong>Remaining</strong>
+                <span>{details.estimatedHours.estimated - details.estimatedHours.used}h</span>
+              </div>
+            </div>
+          </div>
+        </article>
       </section>
 
       <section className="sprint-panel sprint-board-section">
@@ -317,31 +359,38 @@ const SprintProjectDetail = () => {
             <p>{totalTasks} total tasks</p>
           </div>
         </div>
-        <div className="sprint-board-columns">
-          {boardColumns.map((column) => {
-            const items = details.board.filter((task) => task.status === column.status);
-            return (
-              <div key={column.status} className="sprint-board-column">
-                <div className="sprint-board-column-header">
-                  <span>{column.title}</span>
-                  <strong>{items.length}</strong>
+
+        <div className="sprint-team-performance-grid">
+          {ownerAllocation.map((member) => (
+            <div key={member.owner} className="sprint-team-member-card">
+              <div className="sprint-member-avatar">
+                <span>{member.owner.split(' ').map((part) => part[0]).join('')}</span>
+              </div>
+              <div className="sprint-member-info">
+                <h3 className="sprint-member-name">{member.owner}</h3>
+                <p className="sprint-member-role">Team Member</p>
+              </div>
+              <div className="sprint-member-metrics">
+                <div className="sprint-metric-row">
+                  <span className="sprint-metric-label">Tasks Assigned</span>
+                  <span className="sprint-metric-value">{member.assigned}</span>
                 </div>
-                <div className="sprint-board-card-list">
-                  {items.map((task) => (
-                    <div key={task.id} className="sprint-task-card">
-                      <div className="sprint-task-card-top">
-                        <span className="sprint-task-title">{task.title}</span>
-                        <span className={`sprint-task-priority ${priorityClass(task.priority)}`}>{task.priority}</span>
-                      </div>
-                      <p className="sprint-task-meta">{task.id} • {task.points}p</p>
-                      <div className="sprint-task-owner">{task.owner}</div>
-                    </div>
-                  ))}
-                  {items.length === 0 && <div className="sprint-task-empty">No tasks</div>}
+                <div className="sprint-metric-row">
+                  <span className="sprint-metric-label">Tasks Completed</span>
+                  <span className="sprint-metric-value" style={{ color: '#10b981' }}>{member.completed}</span>
+                </div>
+                <div className="sprint-metric-row">
+                  <span className="sprint-metric-label">Completion Rate</span>
+                  <span className="sprint-metric-value">{member.completionRate}%</span>
                 </div>
               </div>
-            );
-          })}
+              <div className="sprint-member-progress">
+                <div className="sprint-progress-bar-container">
+                  <div className="sprint-progress-bar" style={{ width: `${member.completionRate}%` }} />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>

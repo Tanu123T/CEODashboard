@@ -283,13 +283,13 @@ export const sprintDetails = {
       { title: 'Completion Rate', value: '29%', detail: 'Progress of current sprint', tone: 'warning' },
     ],
     burndown: [
-      { day: 'Apr 4', ideal: 45, actual: 45 },
-      { day: 'Apr 5', ideal: 38, actual: 42 },
-      { day: 'Apr 6', ideal: 31, actual: 39 },
-      { day: 'Apr 7', ideal: 24, actual: 34 },
-      { day: 'Apr 8', ideal: 17, actual: 28 },
-      { day: 'Apr 9', ideal: 10, actual: 24 },
-      { day: 'Apr 10', ideal: 3, actual: 18 },
+      { day: 'D1', ideal: 45, actual: 45 },
+      { day: 'D2', ideal: 38, actual: 42 },
+      { day: 'D3', ideal: 31, actual: 39 },
+      { day: 'D4', ideal: 24, actual: 34 },
+      { day: 'D5', ideal: 17, actual: 28 },
+      { day: 'D6', ideal: 10, actual: 24 },
+      { day: 'D7', ideal: 3, actual: 18 },
     ],
     scope: [
       { metric: 'Committed', points: 45 },
@@ -297,6 +297,7 @@ export const sprintDetails = {
       { metric: 'Removed', points: 0 },
       { metric: 'Completed', points: 12 },
     ],
+    estimatedHours: { estimated: 160, used: 118 },
     workSplit: [
       { name: 'Done', value: 29, color: '#22c55e' },
       { name: 'In Progress', value: 29, color: '#f59e0b' },
@@ -365,6 +366,7 @@ export const sprintDetails = {
       { metric: 'Removed', points: 4 },
       { metric: 'Completed', points: 64 },
     ],
+    estimatedHours: { estimated: 280, used: 212 },
     workSplit: [
       { name: 'Done', value: 46, color: '#22c55e' },
       { name: 'In Progress', value: 34, color: '#38bdf8' },
@@ -478,8 +480,7 @@ export const sprintDetails = {
       { metric: 'Added', points: 14 },
       { metric: 'Removed', points: 2 },
       { metric: 'Completed', points: 41 },
-    ],
-    workSplit: [
+    ],    estimatedHours: { estimated: 240, used: 186 },    workSplit: [
       { name: 'Done', value: 28, color: '#22c55e' },
       { name: 'In Progress', value: 38, color: '#38bdf8' },
       { name: 'Review/QA', value: 14, color: '#18b7a6' },
@@ -584,8 +585,7 @@ export const sprintDetails = {
       { metric: 'Added', points: 6 },
       { metric: 'Removed', points: 3 },
       { metric: 'Completed', points: 49 },
-    ],
-    workSplit: [
+    ],    estimatedHours: { estimated: 200, used: 168 },    workSplit: [
       { name: 'Done', value: 52, color: '#22c55e' },
       { name: 'In Progress', value: 29, color: '#38bdf8' },
       { name: 'Review/QA', value: 11, color: '#18b7a6' },
@@ -681,8 +681,7 @@ export const sprintDetails = {
       { metric: 'Added', points: 18 },
       { metric: 'Removed', points: 1 },
       { metric: 'Completed', points: 22 },
-    ],
-    workSplit: [
+    ],    estimatedHours: { estimated: 220, used: 174 },    workSplit: [
       { name: 'Done', value: 19, color: '#22c55e' },
       { name: 'In Progress', value: 43, color: '#38bdf8' },
       { name: 'Review/QA', value: 11, color: '#18b7a6' },
@@ -772,13 +771,13 @@ export const sprintDetails = {
       { title: 'Completion Rate', value: '50%', detail: 'Progress of current sprint', tone: 'warning' },
     ],
     burndown: [
-      { day: 'Apr 1', ideal: 52, actual: 52 },
-      { day: 'Apr 2', ideal: 45, actual: 48 },
-      { day: 'Apr 3', ideal: 38, actual: 46 },
-      { day: 'Apr 4', ideal: 31, actual: 42 },
-      { day: 'Apr 5', ideal: 24, actual: 38 },
-      { day: 'Apr 6', ideal: 17, actual: 33 },
-      { day: 'Apr 7', ideal: 10, actual: 28 },
+      { day: 'D1', ideal: 52, actual: 52 },
+      { day: 'D2', ideal: 45, actual: 48 },
+      { day: 'D3', ideal: 38, actual: 46 },
+      { day: 'D4', ideal: 31, actual: 42 },
+      { day: 'D5', ideal: 24, actual: 38 },
+      { day: 'D6', ideal: 17, actual: 33 },
+      { day: 'D7', ideal: 10, actual: 28 },
     ],
     workSplit: [
       { name: 'Done', value: 50, color: '#22c55e' },
@@ -828,13 +827,13 @@ export const sprintDetails = {
       { title: 'Completion Rate', value: '36%', detail: 'Progress of current sprint', tone: 'warning' },
     ],
     burndown: [
-      { day: 'Apr 5', ideal: 68, actual: 68 },
-      { day: 'Apr 6', ideal: 59, actual: 65 },
-      { day: 'Apr 7', ideal: 50, actual: 62 },
-      { day: 'Apr 8', ideal: 41, actual: 58 },
-      { day: 'Apr 9', ideal: 32, actual: 54 },
-      { day: 'Apr 10', ideal: 23, actual: 48 },
-      { day: 'Apr 11', ideal: 14, actual: 42 },
+      { day: 'D1', ideal: 68, actual: 68 },
+      { day: 'D2', ideal: 59, actual: 65 },
+      { day: 'D3', ideal: 50, actual: 62 },
+      { day: 'D4', ideal: 41, actual: 58 },
+      { day: 'D5', ideal: 32, actual: 54 },
+      { day: 'D6', ideal: 23, actual: 48 },
+      { day: 'D7', ideal: 14, actual: 42 },
     ],
     workSplit: [
       { name: 'Done', value: 36, color: '#22c55e' },
