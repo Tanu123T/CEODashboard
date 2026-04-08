@@ -6,9 +6,7 @@ import {
   ArrowRight,
   BriefcaseBusiness,
   CalendarDays,
-  CheckCircle,
   Circle,
-  TriangleAlert,
   UserRound,
   Zap,
 } from 'lucide-react';
@@ -33,13 +31,15 @@ const Projects = () => {
   const { projectId } = useParams();
 
   const totals = useMemo(() => {
-    const onTrack = projectRecords.filter((item) => item.statusTone === 'on-track').length;
-    const needsAttention = projectRecords.filter((item) => item.statusTone !== 'on-track').length;
+    const complete = projectRecords.filter((item) => item.statusTone === 'complete').length;
+    const inProgress = projectRecords.filter((item) => item.statusTone === 'in-progress').length;
+    const delayed = projectRecords.filter((item) => item.statusTone === 'delayed').length;
 
     return {
       total: projectRecords.length,
-      onTrack,
-      needsAttention,
+      complete,
+      inProgress,
+      delayed,
     };
   }, []);
 
@@ -167,7 +167,6 @@ const Projects = () => {
                 <span>Complete</span>
               </div>
             </div>
-            <p>{selectedProject.milestonesDone} of {selectedProject.milestones.length} milestones done</p>
           </article>
         </section>
 
@@ -179,7 +178,10 @@ const Projects = () => {
             <em>{selectedProject.progress}% utilized</em>
           </div>
           <div className="project-progress-track detail-budget-track">
-            <span className="project-progress-fill on-track" style={{ width: `${selectedProject.progress}%` }} />
+            <span
+              className={`project-progress-fill ${selectedProject.statusTone}`}
+              style={{ width: `${selectedProject.progress}%` }}
+            />
           </div>
 
           <div className="budget-stat-grid">
@@ -199,41 +201,7 @@ const Projects = () => {
         </section>
 
         <section className="project-detail-grid bottom">
-          <section className="project-detail-panel milestones-panel">
-            <h3>MILESTONES</h3>
-            <div className="milestone-list">
-              {selectedProject.milestones.map((item) => (
-                <article key={item.title} className="milestone-item">
-                  <div className={`milestone-name ${item.done ? 'done' : ''}`}>
-                    {item.done ? <CheckCircle size={20} /> : <Circle size={20} />}
-                    <span>{item.title}</span>
-                  </div>
-                  <strong>{item.date}</strong>
-                </article>
-              ))}
-            </div>
-          </section>
-
           <div className="project-detail-side">
-            <section className="project-detail-panel">
-              <h3>RISKS</h3>
-              <div className="risk-list">
-                {selectedProject.risks.length > 0 ? (
-                  selectedProject.risks.map((risk) => (
-                    <div key={risk} className="risk-item">
-                      <TriangleAlert size={18} />
-                      <span>{risk}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="risk-item neutral">
-                    <CheckCircle size={18} />
-                    <span>No active risks logged.</span>
-                  </div>
-                )}
-              </div>
-            </section>
-
             <section className="project-detail-panel sprint-insight-panel">
               <div className="sprint-insight-header">
                 <h3>SPRINT INSIGHT</h3>
@@ -251,10 +219,6 @@ const Projects = () => {
                 <article className="sprint-stat">
                   <p>Total Sprints</p>
                   <h4>{selectedProject.sprints}</h4>
-                </article>
-                <article className="sprint-stat">
-                  <p>Milestones Completed</p>
-                  <h4>{selectedProject.milestonesDone} of {selectedProject.milestones.length}</h4>
                 </article>
                 <article className="sprint-stat">
                   <p>Progress</p>
@@ -281,12 +245,16 @@ const Projects = () => {
           <h3 className="kpi-blue">{totals.total}</h3>
         </article>
         <article className="projects-kpi-card">
-          <p>On Track</p>
-          <h3 className="kpi-green">{totals.onTrack}</h3>
+          <p>Complete</p>
+          <h3 className="kpi-green">{totals.complete}</h3>
         </article>
         <article className="projects-kpi-card">
-          <p>Needs Attention / At Risk</p>
-          <h3 className="kpi-red">{totals.needsAttention}</h3>
+          <p>In Progress</p>
+          <h3 className="kpi-amber">{totals.inProgress}</h3>
+        </article>
+        <article className="projects-kpi-card">
+          <p>Delayed</p>
+          <h3 className="kpi-red">{totals.delayed}</h3>
         </article>
       </section>
 
@@ -339,14 +307,6 @@ const Projects = () => {
                 <p>Due Date</p>
                 <strong>{project.dueDate}</strong>
               </article>
-              {project.riskCount > 0 ? (
-                <span className="risk-meta">
-                  <TriangleAlert size={14} />
-                  {project.riskCount} {project.riskCount === 1 ? 'risk' : 'risks'}
-                </span>
-              ) : (
-                <span className="risk-meta neutral">No risks</span>
-              )}
             </div>
           </button>
         ))}
