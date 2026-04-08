@@ -157,7 +157,7 @@ const birthdaysAnniversariesData = [
   { date: "April 12", name: "Arjun Kumar", type: "Work Anniversary (3 years)", tone: "purple" },
   { date: "April 15", name: "Sneha Patel", type: "Birthday", tone: "blue" },
   { date: "April 18", name: "Rohan Verma", type: "Work Anniversary (2 years)", tone: "purple" },
-  { date: "April 22", name: "Kavya Singh", type: "Birthday", tone: "blue" },
+
 ];
 
 const Home = () => {
