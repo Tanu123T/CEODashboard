@@ -178,8 +178,9 @@
 /* Metrics Grid - Summary Cards */
 .sprint-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
+  align-items: stretch;
 }
 
 .sprint-stat-card {
@@ -410,56 +411,6 @@
   color: #0f172a;
   cursor: pointer;
   font-size: 13px;
-}
-
-.sprint-workload-card {
-  min-height: 420px;
-}
-
-.team-workload-list {
-  display: grid;
-  gap: 18px;
-}
-
-.team-workload-row {
-  display: grid;
-  gap: 8px;
-  padding: 18px;
-  border-radius: 18px;
-  background: #f8fafc;
-}
-
-.team-workload-name {
-  margin: 0;
-  font-weight: 700;
-  color: #0f172a;
-  font-size: 1rem;
-}
-
-.team-workload-row span {
-  display: block;
-  font-size: 0.95rem;
-  color: #475569;
-}
-
-.team-workload-progress {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.team-workload-bar {
-  flex: 1;
-  height: 10px;
-  border-radius: 999px;
-  background: #e2e8f0;
-  overflow: hidden;
-}
-
-.team-workload-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
 }
 
 .sprint-project-bottom-grid {

@@ -67,7 +67,6 @@ const SprintProjectSprints = () => {
   const progressData = details?.burndown || [];
   const completionTrend = details?.velocity?.map((item) => ({ sprint: item.sprint, completed: item.completed })) || [];
   const taskSplit = details?.workSplit || [];
-  const teamWorkload = details?.capacity || [];
 
   if (!project || !details) {
     return (
@@ -170,21 +169,6 @@ const SprintProjectSprints = () => {
           </ResponsiveContainer>
         </article>
 
-        <article className="sprint-panel sprint-workload-card">
-          <div className="sprint-panel-heading">
-            <h2>Team Workload</h2>
-          </div>
-          <div className="team-workload-list">
-            {teamWorkload.map((member) => (
-              <div key={member.team} className="team-workload-row">
-                <div>
-                  <p className="team-workload-name">{member.team}</p>
-                  <span>Planned story points: {member.capacity}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
       </section>
 
       <article className="sprint-panel sprint-sprints-panel">
