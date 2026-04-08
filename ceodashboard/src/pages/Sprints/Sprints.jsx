@@ -34,21 +34,18 @@ const metricIcons = {
   'Total Sprints': <Activity size={22} />,
   'Active': <Clock3 size={22} />,
   'Completed': <CheckCircle2 size={22} />,
-  'Delayed': <AlertTriangle size={22} />,
   'Avg. Completion': <TrendingUp size={22} />,
 };
 
 const statusClass = {
   active: 'sprint-status-active',
   completed: 'sprint-status-completed',
-  delayed: 'sprint-status-delayed',
   upcoming: 'sprint-status-upcoming',
 };
 
 const statusColors = {
   active: '#06b6d4',
   completed: '#4f46e5',
-  delayed: '#ef4444',
   upcoming: '#f59e0b',
 };
 

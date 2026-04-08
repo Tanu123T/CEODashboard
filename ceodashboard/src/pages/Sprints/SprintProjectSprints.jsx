@@ -28,7 +28,6 @@ import SprintSummaryCards from '../../components/SprintSummaryCards';
 const statusTone = (status) => {
   if (status === 'completed') return 'sprint-status-completed';
   if (status === 'active') return 'sprint-status-active';
-  if (status === 'delayed') return 'sprint-status-delayed';
   return 'sprint-status-upcoming';
 };
 
@@ -128,10 +127,9 @@ const SprintProjectSprints = () => {
       <div className="sprint-tabs-container">
         <div className="sprint-tabs">
           {[
-            { key: 'all', label: 'All' },
+            { key: 'all', label: 'All Sprints' },
             { key: 'active', label: 'Active' },
             { key: 'completed', label: 'Completed' },
-            { key: 'delayed', label: 'Delayed' },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -190,9 +188,6 @@ const SprintProjectSprints = () => {
       </section>
 
       <article className="sprint-panel sprint-sprints-panel">
-        <div className="sprint-section-header">
-          <h2>Sprints ({sprintList.length})</h2>
-        </div>
         <div className="sprint-section-header">
           <h2>Sprints ({sprintList.length})</h2>
         </div>

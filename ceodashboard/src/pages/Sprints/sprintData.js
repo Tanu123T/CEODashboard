@@ -6,10 +6,9 @@ export const sprintDashboardData = {
     { id: 'platform-api-v3', label: 'Platform API v3' },
   ],
   metrics: [
-    { label: 'Total Sprints', value: '7' },
-    { label: 'Active', value: '3' },
+    { label: 'Total Sprints', value: '6' },
     { label: 'Completed', value: '2' },
-    { label: 'Delayed', value: '1' },
+    { label: 'Active', value: '1' },
     { label: 'Avg. Completion', value: '54%' },
   ],
   progressTrend: [
@@ -134,15 +133,6 @@ export const sprintDashboardData = {
       status: 'active',
       progress: 44,
       tasks: '3/7',
-    },
-    {
-      id: 'a5',
-      projectId: 'data-analytics-engine',
-      title: 'Sprint 5 — Pipeline Setup',
-      subtitle: 'Data Analytics Engine',
-      status: 'delayed',
-      progress: 39,
-      tasks: '2/6',
     },
     {
       id: 'a6',
@@ -335,7 +325,6 @@ export const sprintDetails = {
       { id: 'Sprint 6', title: 'Dashboard Widgets', subtitle: 'Data Analytics Engine', status: 'active', progress: 27, tasks: '2/7' },
       { id: 'Sprint 11', title: 'Settings UI', subtitle: 'Mobile App Redesign', status: 'completed', progress: 100, tasks: '0/0' },
       { id: 'Sprint 8', title: 'Auth & Endpoints', subtitle: 'Platform API v3', status: 'active', progress: 44, tasks: '3/7' },
-      { id: 'Sprint 5', title: 'Pipeline Setup', subtitle: 'Data Analytics Engine', status: 'delayed', progress: 39, tasks: '2/6' },
       { id: 'Sprint 12', title: 'Onboarding Flow', subtitle: 'Mobile App Redesign', status: 'active', progress: 67, tasks: '5/9' },
     ],
   },
