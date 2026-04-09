@@ -6,7 +6,7 @@ export const sprintDashboardData = {
     { id: 'platform-api-v3', label: 'Platform API v3' },
   ],
   metrics: [
-    { label: 'Total Sprints', value: '7' },
+    { label: 'Total Planned Sprints', value: '7' },
     { label: 'Completed', value: '6' },
     { label: 'Active', value: '1' },
     { label: 'Avg. Completion', value: '86%' },

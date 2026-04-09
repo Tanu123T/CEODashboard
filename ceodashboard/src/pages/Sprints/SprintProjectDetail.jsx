@@ -152,7 +152,7 @@ const SprintProjectDetail = () => {
           <div className="sprint-detail-metrics-wrapper">
             <article className="sprint-detail-meta-grid">
               <article className="sprint-summary-card">
-                <p className="sprint-summary-label">Timeline</p>
+                <p className="sprint-summary-label">Duration</p>
                 <h3>{project.startDate} — {project.endDate}</h3>
               </article>
               <article className="sprint-summary-card">

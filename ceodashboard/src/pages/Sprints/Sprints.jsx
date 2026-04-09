@@ -31,7 +31,7 @@ import PageLoader from '../../components/common/PageLoader';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 
 const metricIcons = {
-  'Total Sprints': <Activity size={22} />,
+  'Total Planned Sprints': <Activity size={22} />,
   'Active': <Clock3 size={22} />,
   'Completed': <CheckCircle2 size={22} />,
   'Avg. Completion': <TrendingUp size={22} />,
@@ -246,7 +246,7 @@ const Sprints = () => {
           </ResponsiveContainer>
           <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
             <div style={{ padding: '12px', backgroundColor: '#cffafe', borderRadius: '12px', border: '1px solid #a5f3fc' }}>
-              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#0369a1', fontWeight: 700 }}>TOTAL SPRINTS</p>
+              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#0369a1', fontWeight: 700 }}>TOTAL PLANNED SPRINTS</p>
               <p style={{ margin: 0, fontSize: '14px', color: '#164e63', fontWeight: 600 }}>{filteredSprintProgress.length}</p>
               <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>This {projectFilter === 'all' ? 'dashboard' : 'project'}</p>
             </div>
