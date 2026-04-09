@@ -77,7 +77,22 @@ const SprintProjectSprints = () => {
     return [...new Set(details.board.map((item) => item.owner))];
   }, [details]);
 
-  const progressData = details?.burndown || [];
+  const progressData = useMemo(() => {
+    if (!details?.sprints?.length) return [];
+
+    return details.sprints
+      .map((item) => {
+        const sprintMatch = String(item.id).match(/Sprint\s*(\d+)/i);
+        const sprintNumber = sprintMatch ? Number(sprintMatch[1]) : Number.MAX_SAFE_INTEGER;
+
+        return {
+          sprintNumber,
+          sprintLabel: Number.isFinite(sprintNumber) ? `Sprint ${sprintNumber}` : item.id,
+          progress: Number(item.progress) || 0,
+        };
+      })
+      .sort((a, b) => a.sprintNumber - b.sprintNumber);
+  }, [details]);
   const completionTrend = details?.velocity?.map((item) => ({ sprint: item.sprint, completed: item.completed })) || [];
   const taskSplit = details?.workSplit || [];
 
@@ -219,10 +234,13 @@ const SprintProjectSprints = () => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#e9eef4" vertical={false} />
-              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+              <XAxis dataKey="sprintLabel" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} domain={[0, 'dataMax + 10']} />
-              <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0' }} />
-              <Area type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={3} fill="url(#progressGradient)" />
+              <Tooltip
+                contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0' }}
+                formatter={(value) => [`${value}%`, 'Progress']}
+              />
+              <Area type="monotone" dataKey="progress" stroke="#3b82f6" strokeWidth={3} fill="url(#progressGradient)" />
             </AreaChart>
           </ResponsiveContainer>
         </article>
