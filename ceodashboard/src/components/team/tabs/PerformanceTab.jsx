@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Award, Star, Target, TrendingDown, TrendingUp } from 'lucide-react';
 
 const performanceKpis = [
@@ -131,9 +131,6 @@ const performanceRows = [
   },
 ];
 
-const radarSeries = [4.8, 4.6, 4.5, 4.6, 4.7, 4.8];
-const radarLabels = ['Productivity', 'Collabo', 'Innovat', 'Leadership', 'Communication', 'Delivery'];
-
 const departmentBars = [
   { name: 'Engineering', value: 4.7 },
   { name: 'Product', value: 4.8 },
@@ -145,32 +142,6 @@ const departmentBars = [
   { name: 'Operations', value: 4.3 },
 ];
 
-const radarPoint = (index, score, radius = 95, cx = 170, cy = 132) => {
-  const angle = (-Math.PI / 2) + (index * (Math.PI * 2) / 6);
-  const normalized = (score - 4) / 1;
-  const r = 28 + normalized * (radius - 28);
-  return {
-    x: cx + r * Math.cos(angle),
-    y: cy + r * Math.sin(angle),
-  };
-};
-
-const buildRadarPolygon = () => radarSeries
-  .map((score, index) => {
-    const point = radarPoint(index, score);
-    return `${point.x},${point.y}`;
-  })
-  .join(' ');
-
-const gridPolygon = (level) => {
-  const sizeByLevel = [28, 44, 60, 76, 95][level];
-  const points = Array.from({ length: 6 }, (_, index) => {
-    const angle = (-Math.PI / 2) + (index * (Math.PI * 2) / 6);
-    return `${170 + sizeByLevel * Math.cos(angle)},${132 + sizeByLevel * Math.sin(angle)}`;
-  });
-  return points.join(' ');
-};
-
 const barTone = (value) => {
   if (value >= 4.7) return 'green';
   if (value >= 4.5) return 'blue';
@@ -178,6 +149,19 @@ const barTone = (value) => {
 };
 
 const PerformanceTab = () => {
+  const [selectedEmployeeName, setSelectedEmployeeName] = useState(performanceRows[0]?.name || '');
+
+  const selectedEmployee = useMemo(
+    () => performanceRows.find((row) => row.name === selectedEmployeeName) || performanceRows[0],
+    [selectedEmployeeName]
+  );
+
+  const selectedAverage = useMemo(() => {
+    if (!selectedEmployee) return '0.00';
+    const total = selectedEmployee.q1 + selectedEmployee.q2 + selectedEmployee.q3 + selectedEmployee.q4;
+    return (total / 4).toFixed(2);
+  }, [selectedEmployee]);
+
   return (
     <div className="tm-performance-root">
       <section className="tm-kpi-grid">
@@ -221,8 +205,17 @@ const PerformanceTab = () => {
                 {performanceRows.map((row, index) => (
                   <tr
                     key={row.name}
-                    className={`tm-perf-row ${index === 0 ? 'active' : ''}`}
+                    className={`tm-perf-row ${selectedEmployee?.name === row.name ? 'active' : ''}`}
                     style={{ '--perf-index': index }}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedEmployeeName(row.name)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setSelectedEmployeeName(row.name);
+                      }
+                    }}
                   >
                     <td>
                       <div className="tm-perf-employee-cell">
@@ -263,34 +256,51 @@ const PerformanceTab = () => {
         </article>
 
         <article className="tm-panel tm-perf-radar-panel tm-perf-anim-panel" style={{ '--perf-index': 1 }}>
-          <h3>Team Competency Radar</h3>
-          <p className="tm-muted">Average across all dimensions</p>
+          <h3>Individual Performance Score</h3>
+          <p className="tm-muted">Selected from the performance table</p>
 
-          <svg viewBox="0 0 340 280" className="tm-perf-radar" aria-label="Team competency radar">
-            {[0, 1, 2, 3, 4].map((level) => (
-              <polygon key={level} points={gridPolygon(level)} className="tm-perf-radar-grid" />
-            ))}
-            {Array.from({ length: 6 }, (_, index) => {
-              const angle = (-Math.PI / 2) + (index * (Math.PI * 2) / 6);
-              const x = 170 + 95 * Math.cos(angle);
-              const y = 132 + 95 * Math.sin(angle);
-              return <line key={index} x1="170" y1="132" x2={x} y2={y} className="tm-perf-radar-axis" />;
-            })}
+          {selectedEmployee ? (
+            <div className="tm-perf-individual">
+              <div className="tm-perf-individual-head">
+                <span className={`tm-perf-avatar ${selectedEmployee.tone}`}>{selectedEmployee.initials}</span>
+                <div>
+                  <strong>{selectedEmployee.name}</strong>
+                  <small>{selectedEmployee.department}</small>
+                </div>
+                <em className={`tm-perf-review ${selectedEmployee.reviewTone}`}>{selectedEmployee.review}</em>
+              </div>
 
-            <polygon points={buildRadarPolygon()} className="tm-perf-radar-data" />
+              <div className="tm-perf-individual-score">
+                <p>Average Score</p>
+                <h2>{selectedAverage}</h2>
+                <span>/ 5.0</span>
+              </div>
 
-            {radarSeries.map((score, index) => {
-              const point = radarPoint(index, score);
-              return <circle key={`${score}-${index}`} cx={point.x} cy={point.y} r="4" className="tm-perf-radar-point" />;
-            })}
+              <div className="tm-perf-quarter-grid">
+                <article><span>Q1</span><strong>{selectedEmployee.q1}</strong></article>
+                <article><span>Q2</span><strong>{selectedEmployee.q2}</strong></article>
+                <article><span>Q3</span><strong>{selectedEmployee.q3}</strong></article>
+                <article><span>Q4</span><strong>{selectedEmployee.q4}</strong></article>
+              </div>
 
-            {radarLabels.map((label, index) => {
-              const angle = (-Math.PI / 2) + (index * (Math.PI * 2) / 6);
-              const x = 170 + 118 * Math.cos(angle);
-              const y = 132 + 118 * Math.sin(angle);
-              return <text key={label} x={x} y={y} textAnchor="middle" className="tm-perf-radar-label">{label}</text>;
-            })}
-          </svg>
+              <div className="tm-perf-detail-row">
+                <span>Goals Achieved</span>
+                <strong>{selectedEmployee.goals}%</strong>
+              </div>
+              <div className="tm-perf-goal-track individual">
+                <i className={selectedEmployee.goalsTone} style={{ width: `${Math.min(selectedEmployee.goals, 130)}%` }} />
+              </div>
+
+              <div className="tm-perf-detail-row">
+                <span>Trend</span>
+                {selectedEmployee.trend === 'up' ? (
+                  <strong className="tm-perf-up"><TrendingUp size={14} /> Improving</strong>
+                ) : (
+                  <strong className="tm-perf-neutral">Stable</strong>
+                )}
+              </div>
+            </div>
+          ) : null}
         </article>
       </section>
 

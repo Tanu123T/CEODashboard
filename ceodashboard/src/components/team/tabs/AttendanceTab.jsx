@@ -320,7 +320,6 @@ const AttendanceTab = () => {
                 <th>Check-in</th>
                 <th>Check-out</th>
                 <th>Hours</th>
-                <th>Device</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -340,7 +339,6 @@ const AttendanceTab = () => {
                   <td>{row.checkIn}</td>
                   <td>{row.checkOut}</td>
                   <td>{row.hours}</td>
-                  <td>{row.device}</td>
                   <td>
                     <span className={`tm-att-status ${statusTone[row.status] || statusToTone[row.status] || 'present'}`}>
                       {row.status}
@@ -350,7 +348,7 @@ const AttendanceTab = () => {
               ))}
               {!filteredRows.length ? (
                 <tr>
-                  <td colSpan="7"><p className="tm-empty">No employees match the selected attendance filter.</p></td>
+                  <td colSpan="6"><p className="tm-empty">No employees match the selected attendance filter.</p></td>
                 </tr>
               ) : null}
             </tbody>
