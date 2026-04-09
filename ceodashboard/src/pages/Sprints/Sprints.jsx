@@ -31,25 +31,28 @@ import PageLoader from '../../components/common/PageLoader';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 
 const metricIcons = {
-  'Total Sprints': <Activity size={22} />,
+  'Total Planned Sprints': <Activity size={22} />,
   'Active': <Clock3 size={22} />,
   'Completed': <CheckCircle2 size={22} />,
-  'Delayed': <AlertTriangle size={22} />,
   'Avg. Completion': <TrendingUp size={22} />,
 };
 
 const statusClass = {
   active: 'sprint-status-active',
   completed: 'sprint-status-completed',
-  delayed: 'sprint-status-delayed',
   upcoming: 'sprint-status-upcoming',
 };
 
 const statusColors = {
   active: '#06b6d4',
   completed: '#4f46e5',
-  delayed: '#ef4444',
   upcoming: '#f59e0b',
+};
+
+const getProgressTone = (progress) => {
+  if (progress >= 67) return 'progress-high';
+  if (progress >= 34) return 'progress-medium';
+  return 'progress-low';
 };
 
 const Sprints = () => {
@@ -57,6 +60,7 @@ const Sprints = () => {
   const navigate = useNavigate();
   const [projectFilter, setProjectFilter] = useState('all');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [sprintTab, setSprintTab] = useState('all');
 
   const getProjectColor = (projectId) => {
     const colors = {
@@ -94,6 +98,37 @@ const Sprints = () => {
   const filteredActivity = useMemo(() => {
     if (projectFilter === 'all') return sprintDashboardData.activity;
     return sprintDashboardData.activity.filter((item) => item.projectId === projectFilter);
+  }, [projectFilter]);
+
+  const filteredActivityByTab = useMemo(() => {
+    if (sprintTab === 'all') return filteredActivity;
+    return filteredActivity.filter((item) => item.status === sprintTab);
+  }, [filteredActivity, sprintTab]);
+
+  const filteredSprintProgress = useMemo(() => {
+    if (projectFilter === 'all') {
+      // Show all sprints across all projects
+      const allSprints = [];
+      for (const projectKey in sprintDetails) {
+        const projectSprints = sprintDetails[projectKey].sprints || [];
+        allSprints.push(...projectSprints.map(sprint => ({
+          ...sprint,
+          name: `${sprint.id} — ${sprint.title}`,
+          completed: sprint.progress,
+          target: 100,
+        })));
+      }
+      return allSprints;
+    } else {
+      // Show sprints for selected project
+      const projectSprints = sprintDetails[projectFilter]?.sprints || [];
+      return projectSprints.map(sprint => ({
+        ...sprint,
+        name: `${sprint.id} — ${sprint.title}`,
+        completed: sprint.progress,
+        target: 100,
+      }));
+    }
   }, [projectFilter]);
 
   if (isLoading) {
@@ -164,8 +199,8 @@ const Sprints = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <TrendingUp size={24} style={{ color: '#3b82f6' }} />
                 <div>
-                  <h2>Sprint Performance Comparison</h2>
-                  <p className="sprint-panel-copy">Completion progress for each project</p>
+                  <h2>Sprint Progress</h2>
+                  <p className="sprint-panel-copy">Completion progress for {projectFilter === 'all' ? 'all sprints' : 'all sprints of this project'}</p>
                 </div>
               </div>
             </div>
@@ -173,14 +208,8 @@ const Sprints = () => {
           <ResponsiveContainer width="100%" height={340}>
             <ComposedChart
               layout="vertical"
-              data={[
-                { name: 'Mobile App Redesign', completed: 50, target: 80, fill: '#38bdf8' },
-                { name: 'Data Analytics Engine', completed: 27, target: 80, fill: '#18b7a6' },
-                { name: 'Platform API v3', completed: 44, target: 80, fill: '#22c55e' },
-                { name: 'Hospital CRM', completed: 74, target: 80, fill: '#0ea5e9' },
-                { name: 'Banking Portal', completed: 57, target: 80, fill: '#06b6d4' },
-              ]}
-              margin={{ top: 20, right: 80, bottom: 20, left: 180 }}
+              data={filteredSprintProgress}
+              margin={{ top: 20, right: 80, bottom: 20, left: 240 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12, fill: '#64748b' }} />
@@ -188,7 +217,7 @@ const Sprints = () => {
                 dataKey="name" 
                 type="category" 
                 tick={{ fontSize: 12, fill: '#1f2937', fontWeight: 500 }}
-                width={170}
+                width={230}
               />
               <Tooltip
                 contentStyle={{
@@ -201,40 +230,35 @@ const Sprints = () => {
                 formatter={(value) => `${value}%`}
                 labelFormatter={(label) => label}
               />
-              <Bar dataKey="target" fill="#f3f4f6" radius={[0, 6, 6, 0]} name="Target (80%)" />
+              <Bar dataKey="target" fill="#f3f4f6" radius={[0, 6, 6, 0]} name="Target (100%)" />
               <Bar 
                 dataKey="completed" 
                 radius={[0, 6, 6, 0]}
                 name="Completed"
               >
-                {[
-                  { name: 'Mobile App Redesign', completed: 50, target: 80, fill: '#38bdf8' },
-                  { name: 'Data Analytics Engine', completed: 27, target: 80, fill: '#18b7a6' },
-                  { name: 'Platform API v3', completed: 44, target: 80, fill: '#22c55e' },
-                  { name: 'Hospital CRM', completed: 74, target: 80, fill: '#0ea5e9' },
-                  { name: 'Banking Portal', completed: 57, target: 80, fill: '#06b6d4' },
-                ].map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
+                {filteredSprintProgress.map((entry, index) => {
+                  const colors = ['#38bdf8', '#18b7a6', '#22c55e', '#0ea5e9', '#06b6d4', '#f59e0b', '#ef4444', '#8b5cf6'];
+                  return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                })}
               </Bar>
               <Legend wrapperStyle={{ paddingTop: '12px' }} />
             </ComposedChart>
           </ResponsiveContainer>
           <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
             <div style={{ padding: '12px', backgroundColor: '#cffafe', borderRadius: '12px', border: '1px solid #a5f3fc' }}>
-              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#0369a1', fontWeight: 700 }}>LEADING</p>
-              <p style={{ margin: 0, fontSize: '14px', color: '#164e63', fontWeight: 600 }}>Hospital CRM</p>
-              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>74% complete</p>
+              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#0369a1', fontWeight: 700 }}>TOTAL PLANNED SPRINTS</p>
+              <p style={{ margin: 0, fontSize: '14px', color: '#164e63', fontWeight: 600 }}>{filteredSprintProgress.length}</p>
+              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>This {projectFilter === 'all' ? 'dashboard' : 'project'}</p>
             </div>
             <div style={{ padding: '12px', backgroundColor: '#ccfbf1', borderRadius: '12px', border: '1px solid #99f6e4' }}>
-              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#0d9488', fontWeight: 700 }}>ON TRACK</p>
-              <p style={{ margin: 0, fontSize: '14px', color: '#134e4a', fontWeight: 600 }}>3 Projects</p>
-              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>40-60% range</p>
+              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#0d9488', fontWeight: 700 }}>AVG PROGRESS</p>
+              <p style={{ margin: 0, fontSize: '14px', color: '#134e4a', fontWeight: 600 }}>{filteredSprintProgress.length > 0 ? Math.round(filteredSprintProgress.reduce((sum, s) => sum + s.completed, 0) / filteredSprintProgress.length) : 0}%</p>
+              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>Average completion</p>
             </div>
             <div style={{ padding: '12px', backgroundColor: '#dcfce7', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
-              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#15803d', fontWeight: 700 }}>FOCUS AREA</p>
-              <p style={{ margin: 0, fontSize: '14px', color: '#166534', fontWeight: 600 }}>Data Analytics</p>
-              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>27% complete</p>
+              <p style={{ margin: '0 0 6px 0', fontSize: '12px', color: '#15803d', fontWeight: 700 }}>COMPLETED</p>
+              <p style={{ margin: 0, fontSize: '14px', color: '#166534', fontWeight: 600 }}>{filteredSprintProgress.filter(s => s.completed === 100).length}</p>
+              <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>100% complete</p>
             </div>
           </div>
         </article>
@@ -265,11 +289,33 @@ const Sprints = () => {
 
       <article className="sprint-panel sprint-activity-panel">
         <div className="sprint-panel-heading sprint-activity-heading">
-          <h2>Recent Sprint Activity</h2>
-          <span>{filteredActivity.length} total sprints</span>
+          <h2>Sprints</h2>
+          <span>({filteredActivityByTab.length})</span>
         </div>
+
+        <div className="sprint-tabs-container">
+          <button 
+            className={`sprint-tab ${sprintTab === 'all' ? 'active' : ''}`}
+            onClick={() => setSprintTab('all')}
+          >
+            All Sprints
+          </button>
+          <button 
+            className={`sprint-tab ${sprintTab === 'active' ? 'active' : ''}`}
+            onClick={() => setSprintTab('active')}
+          >
+            Active
+          </button>
+          <button 
+            className={`sprint-tab ${sprintTab === 'completed' ? 'active' : ''}`}
+            onClick={() => setSprintTab('completed')}
+          >
+            Completed
+          </button>
+        </div>
+
         <div className="sprint-activity-list">
-          {filteredActivity.map((item) => (
+          {filteredActivityByTab.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -292,7 +338,7 @@ const Sprints = () => {
               <div className="sprint-activity-progress-section">
                 <span className="sprint-progress-label">Progress</span>
                 <div className="sprint-activity-progress-bar">
-                  <div className="sprint-activity-progress-fill" style={{ width: `${item.progress}%` }} />
+                  <div className={`sprint-activity-progress-fill ${getProgressTone(item.progress)}`} style={{ width: `${item.progress}%` }} />
                 </div>
               </div>
 
