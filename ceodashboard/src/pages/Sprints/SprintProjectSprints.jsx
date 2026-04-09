@@ -64,6 +64,11 @@ const SprintProjectSprints = () => {
     return filtered;
   }, [details, project, selectedTab]);
 
+  const teamMembers = useMemo(() => {
+    if (!details) return [];
+    return [...new Set(details.board.map((item) => item.owner))];
+  }, [details]);
+
   const progressData = details?.burndown || [];
   const completionTrend = details?.velocity?.map((item) => ({ sprint: item.sprint, completed: item.completed })) || [];
   const taskSplit = details?.workSplit || [];
@@ -91,6 +96,15 @@ const SprintProjectSprints = () => {
           <p className="sprint-dashboard-eyebrow">Sprint Dashboard</p>
           <h1>{project.name}</h1>
           <p className="sprint-project-subtitle">Viewing: {project.name}</p>
+          <p className="sprint-project-team-title">Team Members</p>
+          <div className="sprint-project-team-row">
+            {teamMembers.map((member) => (
+              <span key={member} className="sprint-project-team-chip">
+                <span>{member.charAt(0)}</span>
+                {member}
+              </span>
+            ))}
+          </div>
         </div>
         <div className="sprint-dashboard-filter">
           <div className="sprint-project-dropdown" ref={dropdownRef}>
@@ -143,34 +157,6 @@ const SprintProjectSprints = () => {
 
       <SprintSummaryCards metrics={sprintDashboardData.metrics} />
 
-      <section className="sprint-project-main-grid">
-        <article className="sprint-panel sprint-progress-large-card">
-          <div className="sprint-panel-heading sprint-progress-panel-heading">
-            <div>
-              <h2>Sprint Progress</h2>
-              <p>All sprints combined</p>
-            </div>
-            <button type="button" className="sprint-panel-select">All Sprints</button>
-          </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={progressData} margin={{ top: 24, right: 20, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="progressGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e9eef4" vertical={false} />
-              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} domain={[0, 'dataMax + 10']} />
-              <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0' }} />
-              <Area type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={3} fill="url(#progressGradient)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </article>
-
-      </section>
-
       <article className="sprint-panel sprint-sprints-panel">
         <div className="sprint-section-header">
           <h2>Sprints ({sprintList.length})</h2>
@@ -205,6 +191,34 @@ const SprintProjectSprints = () => {
           ))}
         </div>
       </article>
+
+      <section className="sprint-project-main-grid">
+        <article className="sprint-panel sprint-progress-large-card">
+          <div className="sprint-panel-heading sprint-progress-panel-heading">
+            <div>
+              <h2>Sprint Progress</h2>
+              <p>All sprints combined</p>
+            </div>
+            <button type="button" className="sprint-panel-select">All Sprints</button>
+          </div>
+          <ResponsiveContainer width="100%" height={320}>
+            <AreaChart data={progressData} margin={{ top: 24, right: 20, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="progressGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e9eef4" vertical={false} />
+              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} domain={[0, 'dataMax + 10']} />
+              <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0' }} />
+              <Area type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={3} fill="url(#progressGradient)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </article>
+
+      </section>
     </div>
   );
 };

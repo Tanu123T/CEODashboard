@@ -49,11 +49,18 @@ const statusColors = {
   upcoming: '#f59e0b',
 };
 
+const getProgressTone = (progress) => {
+  if (progress >= 67) return 'progress-high';
+  if (progress >= 34) return 'progress-medium';
+  return 'progress-low';
+};
+
 const Sprints = () => {
   const isLoading = useSimulatedLoading(600);
   const navigate = useNavigate();
   const [projectFilter, setProjectFilter] = useState('all');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [sprintTab, setSprintTab] = useState('all');
 
   const getProjectColor = (projectId) => {
     const colors = {
@@ -92,6 +99,11 @@ const Sprints = () => {
     if (projectFilter === 'all') return sprintDashboardData.activity;
     return sprintDashboardData.activity.filter((item) => item.projectId === projectFilter);
   }, [projectFilter]);
+
+  const filteredActivityByTab = useMemo(() => {
+    if (sprintTab === 'all') return filteredActivity;
+    return filteredActivity.filter((item) => item.status === sprintTab);
+  }, [filteredActivity, sprintTab]);
 
   const filteredSprintProgress = useMemo(() => {
     if (projectFilter === 'all') {
@@ -277,11 +289,33 @@ const Sprints = () => {
 
       <article className="sprint-panel sprint-activity-panel">
         <div className="sprint-panel-heading sprint-activity-heading">
-          <h2>Recent Sprint Activity</h2>
-          <span>{filteredActivity.length} total sprints</span>
+          <h2>Sprints</h2>
+          <span>({filteredActivityByTab.length})</span>
         </div>
+
+        <div className="sprint-tabs-container">
+          <button 
+            className={`sprint-tab ${sprintTab === 'all' ? 'active' : ''}`}
+            onClick={() => setSprintTab('all')}
+          >
+            All Sprints
+          </button>
+          <button 
+            className={`sprint-tab ${sprintTab === 'active' ? 'active' : ''}`}
+            onClick={() => setSprintTab('active')}
+          >
+            Active
+          </button>
+          <button 
+            className={`sprint-tab ${sprintTab === 'completed' ? 'active' : ''}`}
+            onClick={() => setSprintTab('completed')}
+          >
+            Completed
+          </button>
+        </div>
+
         <div className="sprint-activity-list">
-          {filteredActivity.map((item) => (
+          {filteredActivityByTab.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -304,7 +338,7 @@ const Sprints = () => {
               <div className="sprint-activity-progress-section">
                 <span className="sprint-progress-label">Progress</span>
                 <div className="sprint-activity-progress-bar">
-                  <div className="sprint-activity-progress-fill" style={{ width: `${item.progress}%` }} />
+                  <div className={`sprint-activity-progress-fill ${getProgressTone(item.progress)}`} style={{ width: `${item.progress}%` }} />
                 </div>
               </div>
 
