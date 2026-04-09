@@ -123,7 +123,6 @@ const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchli
                   <th>Check-In</th>
                   <th>Check-Out</th>
                   <th>Hours</th>
-                  <th>Device</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -143,7 +142,6 @@ const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchli
                     <td>{item.checkIn}</td>
                     <td>{item.checkOut}</td>
                     <td>{item.hours}</td>
-                    <td>{item.device}</td>
                     <td>
                       <span className={`ph-attendance-status ${item.status}`}>
                         {item.status === 'present' ? 'Present' : item.status === 'late' ? 'Late' : 'On Leave'}

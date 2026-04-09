@@ -22,7 +22,6 @@ const PeopleHealthFilters = ({
 }) => {
   const isMembersTab = activeTab === 'role-coverage';
   const showSearch = !isMembersTab;
-  const showTimeRange = !isMembersTab;
   const showProjectFilter = false;
 
   return (
@@ -40,28 +39,12 @@ const PeopleHealthFilters = ({
       ) : null}
 
       <div className="ph-filter-grid">
-        <FilterSelect
-          label="Department"
-          value={filters.department}
-          onChange={(value) => setFilters((prev) => ({ ...prev, department: value }))}
-          options={departments}
-        />
-
         {showProjectFilter ? (
           <FilterSelect
             label="Project"
             value={filters.project}
             onChange={(value) => setFilters((prev) => ({ ...prev, project: value }))}
             options={projects}
-          />
-        ) : null}
-
-        {showTimeRange ? (
-          <FilterSelect
-            label="Time Range"
-            value={filters.timeRange}
-            onChange={(value) => setFilters((prev) => ({ ...prev, timeRange: value }))}
-            options={ranges}
           />
         ) : null}
       </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { CalendarClock } from 'lucide-react';
 import PeopleHealthFilters from './components/PeopleHealthFilters';
 import PeopleHealthTabNav from './components/PeopleHealthTabNav';
 import AvailabilityTab from './tabs/AvailabilityTab';
@@ -39,6 +40,14 @@ const PeopleHealthPage = () => {
   const navigate = useNavigate();
 
   const validTabs = useMemo(() => tabItems.map((item) => item.id), []);
+  const lastUpdated = useMemo(() => new Date().toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }), []);
+
   const activeTab = useMemo(() => {
     const tabFromPath = location.pathname.split('/')[2];
     return validTabs.includes(tabFromPath) ? tabFromPath : 'availability';
@@ -181,6 +190,20 @@ const PeopleHealthPage = () => {
 
   return (
     <div className="ph-page-root">
+      <section className="ph-header-card">
+        <div>
+          <h2>People Health</h2>
+          <p>Workforce readiness, attendance trends, and talent continuity insights.</p>
+        </div>
+
+        <div className="ph-header-actions">
+          <span className="ph-updated-pill">
+            <CalendarClock size={14} />
+            Last updated: {lastUpdated}
+          </span>
+        </div>
+      </section>
+
       {activeTab !== 'holiday-calendar' ? (
         <PeopleHealthFilters
           activeTab={activeTab}

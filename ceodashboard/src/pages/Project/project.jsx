@@ -29,6 +29,13 @@ const Projects = () => {
   const isLoading = useSimulatedLoading(650);
   const navigate = useNavigate();
   const { projectId } = useParams();
+  const pageLastUpdated = useMemo(() => new Date().toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }), []);
 
   const totals = useMemo(() => {
     const complete = projectRecords.filter((item) => item.statusTone === 'complete').length;
@@ -55,6 +62,14 @@ const Projects = () => {
   if (projectId && !selectedProject) {
     return (
       <div className="projects-page project-detail-page">
+        <section className="projects-top-header">
+          <div>
+            <h1>Project Health</h1>
+            <p>Portfolio status, execution pace, and delivery health</p>
+          </div>
+          <span className="projects-updated-pill">Last updated: {pageLastUpdated}</span>
+        </section>
+
         <button type="button" className="project-back" onClick={() => navigate('/projects')}>
           <ArrowLeft size={17} />
           <span>Back to Projects</span>
@@ -87,6 +102,14 @@ const Projects = () => {
 
     return (
       <div className="projects-page project-detail-page">
+        <section className="projects-top-header">
+          <div>
+            <h1>Project Health</h1>
+            <p>{selectedProject.name} - execution, sprint, and budget overview</p>
+          </div>
+          <span className="projects-updated-pill">Last updated: {pageLastUpdated}</span>
+        </section>
+
         <button type="button" className="project-back" onClick={() => navigate('/projects')}>
           <ArrowLeft size={17} />
           <span>Back to Projects</span>
@@ -256,10 +279,13 @@ const Projects = () => {
 
   return (
     <div className="projects-page">
-      <header className="projects-header">
-        <h1>Projects</h1>
-        <p>All active and in-progress projects</p>
-      </header>
+      <section className="projects-top-header">
+        <div>
+          <h1>Project Health</h1>
+          <p>Portfolio status, execution pace, and delivery health</p>
+        </div>
+        <span className="projects-updated-pill">Last updated: {pageLastUpdated}</span>
+      </section>
 
       <section className="projects-kpi-grid">
         <article className="projects-kpi-card">
