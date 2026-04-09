@@ -6,16 +6,13 @@ import {
   ArrowRight,
   BriefcaseBusiness,
   CalendarDays,
-  CheckCircle,
   Circle,
-  TriangleAlert,
   UserRound,
   Zap,
 } from 'lucide-react';
 import PageLoader from '../../components/common/PageLoader';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 import { projectRecords } from '../../data/projectsData';
-import { sprintDetails } from '../Sprints/sprintData';
 
 const formatCurrency = (value) => `₹${value.toLocaleString('en-IN')}`;
 
@@ -32,15 +29,24 @@ const Projects = () => {
   const isLoading = useSimulatedLoading(650);
   const navigate = useNavigate();
   const { projectId } = useParams();
+  const pageLastUpdated = useMemo(() => new Date().toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }), []);
 
   const totals = useMemo(() => {
-    const onTrack = projectRecords.filter((item) => item.statusTone === 'on-track').length;
-    const needsAttention = projectRecords.filter((item) => item.statusTone !== 'on-track').length;
+    const complete = projectRecords.filter((item) => item.statusTone === 'complete').length;
+    const inProgress = projectRecords.filter((item) => item.statusTone === 'in-progress').length;
+    const delayed = projectRecords.filter((item) => item.statusTone === 'delayed').length;
 
     return {
       total: projectRecords.length,
-      onTrack,
-      needsAttention,
+      complete,
+      inProgress,
+      delayed,
     };
   }, []);
 
@@ -56,6 +62,14 @@ const Projects = () => {
   if (projectId && !selectedProject) {
     return (
       <div className="projects-page project-detail-page">
+        <section className="projects-top-header">
+          <div>
+            <h1>Project Health</h1>
+            <p>Portfolio status, execution pace, and delivery health</p>
+          </div>
+          <span className="projects-updated-pill">Last updated: {pageLastUpdated}</span>
+        </section>
+
         <button type="button" className="project-back" onClick={() => navigate('/projects')}>
           <ArrowLeft size={17} />
           <span>Back to Projects</span>
@@ -70,23 +84,32 @@ const Projects = () => {
   }
 
   if (selectedProject) {
-    const sprintProject = selectedProject.sprintProjectId ? sprintDetails[selectedProject.sprintProjectId] : null;
-    const sprintStatusClass = (status) => {
-      if (status === 'active') return 'project-sprint-pill-active';
-      if (status === 'completed') return 'project-sprint-pill-completed';
-      if (status === 'delayed') return 'project-sprint-pill-delayed';
-      return 'project-sprint-pill-upcoming';
-    };
-
     const radius = 66;
     const circumference = 2 * Math.PI * radius;
     const progress = Math.max(0, Math.min(100, selectedProject.progress));
     const dashOffset = circumference - (progress / 100) * circumference;
     const remaining = Math.max(selectedProject.budgetTotal - selectedProject.budgetSpent, 0);
     const sprintRouteId = sprintRouteByProjectId[selectedProject.id];
+    const plannedSprints = Math.max(1, Number(selectedProject.sprints) || 1);
+    const completedSprints = Math.min(
+      plannedSprints,
+      Math.round((progress / 100) * plannedSprints)
+    );
+    const sprintRoadmapDots = Array.from({ length: plannedSprints }, (_, index) => ({
+      id: index + 1,
+      completed: index < completedSprints,
+    }));
 
     return (
       <div className="projects-page project-detail-page">
+        <section className="projects-top-header">
+          <div>
+            <h1>Project Health</h1>
+            <p>{selectedProject.name} - execution, sprint, and budget overview</p>
+          </div>
+          <span className="projects-updated-pill">Last updated: {pageLastUpdated}</span>
+        </section>
+
         <button type="button" className="project-back" onClick={() => navigate('/projects')}>
           <ArrowLeft size={17} />
           <span>Back to Projects</span>
@@ -176,7 +199,6 @@ const Projects = () => {
                 <span>Complete</span>
               </div>
             </div>
-            <p>{selectedProject.milestonesDone} of {selectedProject.milestones.length} milestones done</p>
           </article>
         </section>
 
@@ -188,7 +210,10 @@ const Projects = () => {
             <em>{selectedProject.progress}% utilized</em>
           </div>
           <div className="project-progress-track detail-budget-track">
-            <span className="project-progress-fill on-track" style={{ width: `${selectedProject.progress}%` }} />
+            <span
+              className={`project-progress-fill ${selectedProject.statusTone}`}
+              style={{ width: `${selectedProject.progress}%` }}
+            />
           </div>
 
           <div className="budget-stat-grid">
@@ -208,93 +233,44 @@ const Projects = () => {
         </section>
 
         <section className="project-detail-grid bottom">
-          <section className="project-detail-panel milestones-panel">
-            <h3>MILESTONES</h3>
-            <div className="milestone-list">
-              {selectedProject.milestones.map((item) => (
-                <article key={item.title} className="milestone-item">
-                  <div className={`milestone-name ${item.done ? 'done' : ''}`}>
-                    {item.done ? <CheckCircle size={20} /> : <Circle size={20} />}
-                    <span>{item.title}</span>
-                  </div>
-                  <strong>{item.date}</strong>
-                </article>
-              ))}
-            </div>
-          </section>
-
           <div className="project-detail-side">
-            <section className="project-detail-panel">
-              <h3>RISKS</h3>
-              <div className="risk-list">
-                {selectedProject.risks.length > 0 ? (
-                  selectedProject.risks.map((risk) => (
-                    <div key={risk} className="risk-item">
-                      <TriangleAlert size={18} />
-                      <span>{risk}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="risk-item neutral">
-                    <CheckCircle size={18} />
-                    <span>No active risks logged.</span>
-                  </div>
-                )}
+            <section className="project-detail-panel sprint-insight-panel">
+              <div className="sprint-insight-header">
+                <h3>SPRINT INSIGHT</h3>
+                <button
+                  type="button"
+                  className="view-sprint-btn"
+                  onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
+                >
+                  <span>View Sprint</span>
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+
+              <div className="sprint-insight-content">
+                <div className="sprint-roadmap-header">
+                  <p>
+                    <strong>{completedSprints}</strong> of <strong>{plannedSprints}</strong> sprints completed
+                  </p>
+                  <span>{selectedProject.progress}% overall progress</span>
+                </div>
+
+                <div className="sprint-roadmap-track" aria-label="Sprint roadmap progress">
+                  {sprintRoadmapDots.map((dot) => (
+                    <span
+                      key={dot.id}
+                      className={`sprint-roadmap-dot ${dot.completed ? 'completed' : 'planned'}`}
+                      title={`Sprint ${dot.id} ${dot.completed ? 'completed' : 'planned'}`}
+                    />
+                  ))}
+                </div>
+
+                <div className="sprint-roadmap-legend" aria-hidden="true">
+                  <span><i className="legend-dot completed" /> Completed</span>
+                  <span><i className="legend-dot planned" /> Planned</span>
+                </div>
               </div>
             </section>
-
-        <section className="project-detail-panel">
-          <div className="project-section-heading">
-            <h3>Active Sprint Work</h3>
-            {sprintProject && (
-              <button
-                type="button"
-                className="project-detail-link"
-                onClick={() => navigate(`/sprints/${selectedProject.sprintProjectId}`)}
-              >
-                View all sprints
-              </button>
-            )}
-          </div>
-          {sprintProject ? (
-            <div className="project-sprint-grid">
-              {sprintProject.sprints.slice(0, 4).map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className="project-sprint-card"
-                  onClick={() => navigate(`/sprints/${selectedProject.sprintProjectId}/${item.id}`)}
-                >
-                  <div className="project-sprint-card-title">
-                    <strong>{item.id}</strong>
-                    <span>{item.title}</span>
-                  </div>
-                  <div className="project-sprint-card-meta">
-                    <span className={`project-sprint-pill ${sprintStatusClass(item.status)}`}>
-                      {item.status === 'active' ? 'Active' : item.status === 'completed' ? 'Completed' : item.status === 'delayed' ? 'Delayed' : 'Upcoming'}
-                    </span>
-                    <span>{item.progress}% progress</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <p className="project-no-sprints">Sprint details are not available for this project.</p>
-          )}
-        </section>
-
-        <section className="project-detail-panel">
-          <h3>RECENT ACTIVITY</h3>
-          <div className="activity-list">
-            {selectedProject.activity.map((item) => (
-              <article key={`${item.actor}-${item.time}`} className="activity-item">
-                <Clock3 size={16} />
-                <div>
-                  <p><strong>{item.actor}</strong> {item.action}</p>
-                  <span>{item.time}</span>
-                </div>
-              </article>
-            ))}
           </div>
         </section>
       </div>
@@ -303,10 +279,13 @@ const Projects = () => {
 
   return (
     <div className="projects-page">
-      <header className="projects-header">
-        <h1>Projects</h1>
-        <p>All active and in-progress projects</p>
-      </header>
+      <section className="projects-top-header">
+        <div>
+          <h1>Project Health</h1>
+          <p>Portfolio status, execution pace, and delivery health</p>
+        </div>
+        <span className="projects-updated-pill">Last updated: {pageLastUpdated}</span>
+      </section>
 
       <section className="projects-kpi-grid">
         <article className="projects-kpi-card">
@@ -314,12 +293,16 @@ const Projects = () => {
           <h3 className="kpi-blue">{totals.total}</h3>
         </article>
         <article className="projects-kpi-card">
-          <p>On Track</p>
-          <h3 className="kpi-green">{totals.onTrack}</h3>
+          <p>Complete</p>
+          <h3 className="kpi-green">{totals.complete}</h3>
         </article>
         <article className="projects-kpi-card">
-          <p>Needs Attention / At Risk</p>
-          <h3 className="kpi-red">{totals.needsAttention}</h3>
+          <p>In Progress</p>
+          <h3 className="kpi-amber">{totals.inProgress}</h3>
+        </article>
+        <article className="projects-kpi-card">
+          <p>Delayed</p>
+          <h3 className="kpi-red">{totals.delayed}</h3>
         </article>
       </section>
 
@@ -372,14 +355,6 @@ const Projects = () => {
                 <p>Due Date</p>
                 <strong>{project.dueDate}</strong>
               </article>
-              {project.riskCount > 0 ? (
-                <span className="risk-meta">
-                  <TriangleAlert size={14} />
-                  {project.riskCount} {project.riskCount === 1 ? 'risk' : 'risks'}
-                </span>
-              ) : (
-                <span className="risk-meta neutral">No risks</span>
-              )}
             </div>
           </button>
         ))}
