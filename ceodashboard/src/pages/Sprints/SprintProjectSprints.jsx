@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './Sprints.css';
 import {
   ArrowLeft,
@@ -33,11 +33,19 @@ const statusTone = (status) => {
 
 const SprintProjectSprints = () => {
   const navigate = useNavigate();
+  const { projectId } = useParams();
   const defaultProjectId = sprintProjects[0]?.id;
-  const [selectedProjectId, setSelectedProjectId] = useState(defaultProjectId);
+  const initialProjectId = sprintProjects.some((item) => item.id === projectId) ? projectId : defaultProjectId;
+  const [selectedProjectId, setSelectedProjectId] = useState(initialProjectId);
   const [selectedTab, setSelectedTab] = useState('all');
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (projectId && sprintProjects.some((item) => item.id === projectId) && projectId !== selectedProjectId) {
+      setSelectedProjectId(projectId);
+    }
+  }, [projectId, selectedProjectId]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -125,6 +133,7 @@ const SprintProjectSprints = () => {
                     onClick={() => {
                       setSelectedProjectId(item.id);
                       setIsDropdownOpen(false);
+                      navigate(`/sprints/${item.id}`);
                     }}
                   >
                     <span className="sprint-project-dot" style={{ backgroundColor: '#6b7280' }} />
@@ -167,7 +176,7 @@ const SprintProjectSprints = () => {
               key={item.id}
               type="button"
               className="sprint-card"
-              onClick={() => navigate(`/sprints/${item.id}`)}
+              onClick={() => navigate(`/sprints/${selectedProjectId}/${item.id}`)}
             >
               <div className="sprint-card-header">
                 <div>

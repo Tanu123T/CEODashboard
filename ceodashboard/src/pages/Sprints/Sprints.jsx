@@ -26,7 +26,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
-import { sprintDashboardData } from './sprintData';
+import { sprintDashboardData, sprintDetails } from './sprintData';
 import PageLoader from '../../components/common/PageLoader';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 
