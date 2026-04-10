@@ -49,11 +49,11 @@ const SprintProjectSprints = () => {
   const sprintList = useMemo(() => {
     if (!details || !project) return [];
     let filtered = (details.sprints || []).filter((item) => item.subtitle === project.name);
-    
+
     if (selectedTab !== 'all') {
       filtered = filtered.filter((item) => item.status === selectedTab);
     }
-    
+
     return filtered;
   }, [details, project, selectedTab]);
 
@@ -167,7 +167,6 @@ const SprintProjectSprints = () => {
           ))}
         </div>
       </article>
-
     </div>
   );
 };
