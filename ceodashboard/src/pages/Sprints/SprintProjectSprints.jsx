@@ -64,11 +64,11 @@ const SprintProjectSprints = () => {
   const sprintList = useMemo(() => {
     if (!details || !project) return [];
     let filtered = (details.sprints || []).filter((item) => item.subtitle === project.name);
-    
+
     if (selectedTab !== 'all') {
       filtered = filtered.filter((item) => item.status === selectedTab);
     }
-    
+
     return filtered;
   }, [details, project, selectedTab]);
 
@@ -200,7 +200,6 @@ const SprintProjectSprints = () => {
           ))}
         </div>
       </article>
-
       <section className="sprint-project-main-grid">
         <article className="sprint-panel sprint-progress-large-card">
           <div className="sprint-panel-heading sprint-progress-panel-heading">
