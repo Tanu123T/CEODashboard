@@ -198,10 +198,13 @@ const SprintProjectSprints = () => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#e9eef4" vertical={false} />
-              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+              <XAxis dataKey="sprintLabel" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} domain={[0, 'dataMax + 10']} />
-              <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0' }} />
-              <Area type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={3} fill="url(#progressGradient)" />
+              <Tooltip
+                contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0' }}
+                formatter={(value) => [`${value}%`, 'Progress']}
+              />
+              <Area type="monotone" dataKey="progress" stroke="#3b82f6" strokeWidth={3} fill="url(#progressGradient)" />
             </AreaChart>
           </ResponsiveContainer>
         </article>
