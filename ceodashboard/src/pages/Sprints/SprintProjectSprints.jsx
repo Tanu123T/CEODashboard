@@ -15,12 +15,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
 } from 'recharts';
 import { sprintProjects, sprintDetails, sprintDashboardData } from './sprintData';
 import SprintSummaryCards from '../../components/SprintSummaryCards';
@@ -72,14 +66,7 @@ const SprintProjectSprints = () => {
     return filtered;
   }, [details, project, selectedTab]);
 
-  const teamMembers = useMemo(() => {
-    if (!details) return [];
-    return [...new Set(details.board.map((item) => item.owner))];
-  }, [details]);
-
   const progressData = details?.burndown || [];
-  const completionTrend = details?.velocity?.map((item) => ({ sprint: item.sprint, completed: item.completed })) || [];
-  const taskSplit = details?.workSplit || [];
 
   if (!project || !details) {
     return (
@@ -104,15 +91,6 @@ const SprintProjectSprints = () => {
           <p className="sprint-dashboard-eyebrow">Sprint Dashboard</p>
           <h1>{project.name}</h1>
           <p className="sprint-project-subtitle">Viewing: {project.name}</p>
-          <p className="sprint-project-team-title">Team Members</p>
-          <div className="sprint-project-team-row">
-            {teamMembers.map((member) => (
-              <span key={member} className="sprint-project-team-chip">
-                <span>{member.charAt(0)}</span>
-                {member}
-              </span>
-            ))}
-          </div>
         </div>
         <div className="sprint-dashboard-filter">
           <div className="sprint-project-dropdown" ref={dropdownRef}>
@@ -146,6 +124,8 @@ const SprintProjectSprints = () => {
         </div>
       </header>
 
+      <SprintSummaryCards metrics={sprintDashboardData.metrics} />
+
       <div className="sprint-tabs-container">
         <div className="sprint-tabs">
           {[
@@ -163,8 +143,6 @@ const SprintProjectSprints = () => {
           ))}
         </div>
       </div>
-
-      <SprintSummaryCards metrics={sprintDashboardData.metrics} />
 
       <article className="sprint-panel sprint-sprints-panel">
         <div className="sprint-section-header">
