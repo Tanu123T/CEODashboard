@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Briefcase, CalendarDays, CheckCircle2, Clock3, ListChecks, Target } from 'lucide-react';
+import { ArrowLeft, Briefcase, Bug, Clock3, Star, Target, Users } from 'lucide-react';
 import './Sprints.css';
 import { sprintDetails, sprintProjects } from './sprintData';
 
@@ -14,16 +14,6 @@ const normalizeStatus = (status) => {
   if (value === 'to do' || value === 'todo' || value === 'backlog' || value === 'pending') return 'todo';
 
   return 'todo';
-};
-
-const formatStatusLabel = (status) => {
-  const key = normalizeStatus(status);
-
-  if (key === 'done') return 'Done';
-  if (key === 'inProgress') return 'In Progress';
-  if (key === 'review') return 'Review';
-  if (key === 'blocked') return 'Blocked';
-  return 'To Do';
 };
 
 const clamp = (value, min = 0, max = 100) => Math.min(max, Math.max(min, value));
@@ -131,16 +121,10 @@ const SprintMemberDetail = () => {
     return memberData.rows[0]?.projectId || '';
   }, [location.state, memberData.rows, sourceProjectId]);
 
-  const [selectedProjectId, setSelectedProjectId] = useState(initialProjectId);
-
-  useEffect(() => {
-    setSelectedProjectId(initialProjectId);
-  }, [initialProjectId]);
-
   const selectedProjectData = useMemo(() => {
-    const picked = memberData.rows.find((row) => row.projectId === selectedProjectId);
+    const picked = memberData.rows.find((row) => row.projectId === initialProjectId);
     return picked || memberData.rows[0] || null;
-  }, [memberData.rows, selectedProjectId]);
+  }, [memberData.rows, initialProjectId]);
 
   const sprintOptions = useMemo(() => {
     if (!selectedProjectData) {
@@ -245,6 +229,83 @@ const SprintMemberDetail = () => {
     };
   }, [selectedProjectData]);
 
+  const deepDiveRows = useMemo(() => {
+    if (!selectedProjectData) {
+      return [];
+    }
+
+    const baseAssigned = Math.max(selectedProjectData.assigned, 1);
+    const basePoints = Math.max(selectedProjectData.points, baseAssigned);
+
+    return selectedProjectData.sprintHistory.map((item, index, list) => {
+      const completionRate = clamp(Number(item.progress || 0), 0, 100);
+      const sprintLoadFactor = 0.8 + (index * 0.08);
+      const total = Math.max(1, Math.round(baseAssigned * sprintLoadFactor));
+      const completed = Math.max(0, Math.min(total, Math.round((total * completionRate) / 100)));
+      const previous = index > 0 ? list[index - 1] : null;
+      const previousProgress = previous ? Number(previous.progress || 0) : completionRate;
+      const progressDelta = Math.round(completionRate - previousProgress);
+      const storyPoints = Math.max(8, Math.round((basePoints / baseAssigned) * total));
+      const bugsFixed = Math.max(0, Math.round(completed * 0.28));
+      const hours = Math.max(20, Math.round(storyPoints * 1.9));
+      const quality = clamp(Math.round((completionRate / 10) + (item.status === 'completed' ? 1 : 0)), 5, 10);
+      const collaboration = clamp(Math.round(7 + (completionRate / 35) + (item.status === 'active' ? 1 : 0)), 6, 10);
+      const onTimeDelivery = clamp(completionRate + (item.status === 'completed' ? 2 : -3), 60, 98);
+      const qualityRate = clamp((quality * 10) - (item.status === 'active' ? 4 : 0), 58, 96);
+      const score = clamp(Math.round((completionRate * 0.5) + (quality * 5) + (collaboration * 2.5)), 45, 98);
+
+      let grade = 'C';
+      let gradeLabel = 'Steady';
+      if (score >= 90) {
+        grade = 'S';
+        gradeLabel = 'Exceptional';
+      } else if (score >= 80) {
+        grade = 'A';
+        gradeLabel = 'Excellent';
+      } else if (score >= 70) {
+        grade = 'B';
+        gradeLabel = 'Strong';
+      }
+
+      return {
+        id: item.id,
+        title: item.title,
+        status: item.status,
+        completionRate,
+        onTimeDelivery,
+        qualityRate,
+        completed,
+        total,
+        storyPoints,
+        bugsFixed,
+        hours,
+        quality,
+        collaboration,
+        score,
+        grade,
+        gradeLabel,
+        progressDelta,
+      };
+    });
+  }, [selectedProjectData]);
+
+  const selectedSprintMetrics = useMemo(() => {
+    if (!deepDiveRows.length) {
+      return null;
+    }
+
+    const matched = deepDiveRows.find((row) => row.id === selectedSprintData?.id);
+    return matched || deepDiveRows[0];
+  }, [deepDiveRows, selectedSprintData]);
+
+  const sprintRating = useMemo(() => {
+    if (!selectedSprintMetrics) {
+      return 0;
+    }
+
+    return Number(clamp(selectedSprintMetrics.score / 20, 1, 5).toFixed(1));
+  }, [selectedSprintMetrics]);
+
   if (!decodedMemberName || memberData.rows.length === 0 || !selectedProjectData) {
     return (
       <div className="dashboard-wrapper sprint-page sprint-member-page">
@@ -262,249 +323,135 @@ const SprintMemberDetail = () => {
   }
 
   return (
-    <div className="dashboard-wrapper sprint-page sprint-member-page">
-      <header className="sprint-member-header">
+    <div className="dashboard-wrapper sprint-page sprint-member-page sprint-member-v2-page">
+      <header className="sprint-member-v2-header">
         <div>
           <button type="button" className="sprint-back-link" onClick={() => navigate(backTo)}>
             <ArrowLeft size={14} /> Back
           </button>
-          <p className="sprint-dashboard-eyebrow">Team Member Progress</p>
           <h1>{decodedMemberName}</h1>
-          <p className="sprint-project-subtitle">Detailed project-wise and sprint-wise contribution</p>
         </div>
-        <div className="sprint-member-project-switch">
-          <label htmlFor="member-sprint-select">Sprint</label>
-          <select
-            id="member-sprint-select"
-            className="sprint-member-select"
-            value={selectedSprintData?.id || ''}
-            onChange={(event) => setSelectedSprintId(event.target.value)}
-          >
-            {sprintOptions.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.id} - {item.title}
-              </option>
-            ))}
-          </select>
+        <div className="sprint-member-v2-profile">
+          <div className="sprint-member-v2-avatar">{decodedMemberName.slice(0, 2).toUpperCase()}</div>
+          <div>
+            <strong>{decodedMemberName}</strong>
+            <span>{selectedProjectData.projectName}</span>
+          </div>
         </div>
       </header>
 
-      <section className="sprint-member-summary-grid">
-        <article className="sprint-member-summary-card">
-          <div className="sprint-member-summary-icon">
-            <Briefcase size={18} />
-          </div>
-          <div>
-            <p>Total Projects</p>
-            <h3>{memberData.rows.length}</h3>
-          </div>
+      <section className="sprint-member-v2-badges">
+        <article className="sprint-member-v2-badge-item">
+          <span className="sprint-member-v2-badge-label"><Target size={14} /> Total Stories</span>
+          <strong>{selectedSprintMetrics?.storyPoints ?? 0}</strong>
         </article>
-        <article className="sprint-member-summary-card">
-          <div className="sprint-member-summary-icon done">
-            <CheckCircle2 size={18} />
-          </div>
-          <div>
-            <p>Completed Tasks</p>
-            <h3>{selectedProjectData.done}</h3>
-          </div>
+        <article className="sprint-member-v2-badge-item">
+          <span className="sprint-member-v2-badge-label"><Bug size={14} /> Bugs Resolved</span>
+          <strong>{selectedSprintMetrics?.bugsFixed ?? 0}</strong>
         </article>
-        <article className="sprint-member-summary-card">
-          <div className="sprint-member-summary-icon progress">
-            <Clock3 size={18} />
-          </div>
-          <div>
-            <p>Overall Completion</p>
-            <h3>{selectedProjectData.completion}%</h3>
-          </div>
+        <article className="sprint-member-v2-badge-item">
+          <span className="sprint-member-v2-badge-label"><Clock3 size={14} /> Hours Worked</span>
+          <strong>{selectedSprintMetrics?.hours ?? 0}h</strong>
         </article>
-        <article className="sprint-member-summary-card">
-          <div className="sprint-member-summary-icon">
-            <ListChecks size={18} />
-          </div>
-          <div>
-            <p>Total Assigned Tasks</p>
-            <h3>{selectedProjectData.assigned}</h3>
-          </div>
+        <article className="sprint-member-v2-badge-item">
+          <span className="sprint-member-v2-badge-label"><Star size={14} /> Sprint Rating</span>
+          <strong>{sprintRating}</strong>
         </article>
-        <article className="sprint-member-summary-card">
-          <div className="sprint-member-summary-icon progress">
-            <Target size={18} />
-          </div>
-          <div>
-            <p>Story Points</p>
-            <h3>{selectedProjectData.points}</h3>
-          </div>
+        <article className="sprint-member-v2-badge-item">
+          <span className="sprint-member-v2-badge-label"><Star size={14} /> Quality Score</span>
+          <strong>{selectedSprintMetrics?.qualityRate ?? 0}%</strong>
+        </article>
+        <article className="sprint-member-v2-badge-item">
+          <span className="sprint-member-v2-badge-label"><Briefcase size={14} /> Sprint</span>
+          <strong>{selectedSprintData?.id || '-'}</strong>
+        </article>
+        <article className="sprint-member-v2-badge-item">
+          <span className="sprint-member-v2-badge-label"><Users size={14} /> Progress</span>
+          <strong>{selectedSprintMetrics?.completionRate ?? 0}%</strong>
         </article>
       </section>
 
-      <section className="sprint-member-performance-band">
-        <article className="sprint-member-performance-card sprint-member-performance-score-card">
-          <p className="sprint-summary-label">Performance Score</p>
-          <div className="sprint-member-performance-score-row">
-            <h2>{performanceInsights?.deliveryScore ?? 0}</h2>
-            <span className="sprint-member-performance-state">{performanceInsights?.momentumLabel}</span>
+      <section className="sprint-panel sprint-member-deep-dive-shell">
+        <div className="sprint-panel-heading">
+          <div>
+            <h2>Sprint-wise Deep Dive</h2>
+            <p className="sprint-panel-copy">Detailed sprint-level contribution and delivery quality trends</p>
           </div>
-          <div className="sprint-member-performance-track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={performanceInsights?.deliveryScore ?? 0}>
-            <span style={{ width: `${performanceInsights?.deliveryScore ?? 0}%` }} />
-          </div>
-          <div className="sprint-member-performance-metrics">
-            <div>
-              <p>Completion Rate</p>
-              <strong>{performanceInsights?.doneRate ?? 0}%</strong>
-            </div>
-            <div>
-              <p>In Flight</p>
-              <strong>{performanceInsights?.inFlightRate ?? 0}%</strong>
-            </div>
-            <div>
-              <p>Blocked</p>
-              <strong>{performanceInsights?.blockedRate ?? 0}%</strong>
-            </div>
-            <div>
-              <p>Quality Score</p>
-              <strong>{performanceInsights?.qualityScore ?? 0}</strong>
-            </div>
-          </div>
-        </article>
+        </div>
 
-        <article className="sprint-member-performance-card">
-          <div className="sprint-panel-heading">
-            <div>
-              <h2>Performance Insights</h2>
-              <p className="sprint-panel-copy">
-                {selectedProjectData.projectName} contribution profile for {decodedMemberName}
-              </p>
-            </div>
-          </div>
+        <div className="sprint-member-deep-dive-list">
+          {deepDiveRows.map((row) => {
+            const isActive = row.id === selectedSprintData?.id;
 
-          <div className="sprint-member-performance-pills">
-            <span>Critical Load: {performanceInsights?.highPriorityRate ?? 0}%</span>
-            <span>Avg Story Points / Task: {performanceInsights?.avgPointsPerTask ?? 0}</span>
-            <span>Sprint Signal: {selectedSprintData?.progress ?? selectedProjectData.completion}%</span>
-          </div>
-
-          <div className="sprint-member-performance-grid">
-            <div>
-              <h4>Strengths</h4>
-              <ul>
-                {(performanceInsights?.strengths || []).map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4>Focus Areas</h4>
-              <ul>
-                {(performanceInsights?.focusAreas || []).map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <section className="sprint-member-columns">
-        <article className="sprint-panel">
-          <div className="sprint-panel-heading">
-            <div>
-              <h2>Project Wise Progress</h2>
-              <p className="sprint-panel-copy">Detailed contribution and task-level metrics by project</p>
-            </div>
-          </div>
-          <div className="sprint-member-project-list">
-            <div key={selectedProjectData.projectId} className="sprint-member-project-item">
-              <div className="sprint-member-project-title-row">
-                <div>
-                  <strong>{selectedProjectData.projectName}</strong>
-                  <p className="sprint-member-project-subline">Current: {selectedProjectData.sprint} • {selectedProjectData.sprintState}</p>
-                </div>
-                <span>{selectedProjectData.completion}%</span>
-              </div>
-              <p>{selectedProjectData.assigned} tasks • {selectedProjectData.points} story points</p>
-              <div className="sprint-progress-bar">
-                <span className="sprint-progress-segment closed" style={{ width: `${selectedProjectData.completion}%` }} />
-                <span className="sprint-progress-segment open" style={{ width: `${Math.max(0, 100 - selectedProjectData.completion)}%` }} />
-              </div>
-
-              <div className="sprint-member-status-row">
-                <span>Done: {selectedProjectData.done}</span>
-                <span>In Progress: {selectedProjectData.inProgress}</span>
-                <span>Review: {selectedProjectData.review}</span>
-                <span>Blocked: {selectedProjectData.blocked}</span>
-                <span>To Do: {selectedProjectData.todo}</span>
-              </div>
-
-              <div className="sprint-member-status-row">
-                <span>High: {selectedProjectData.prioritySummary.High}</span>
-                <span>Medium: {selectedProjectData.prioritySummary.Medium}</span>
-                <span>Low: {selectedProjectData.prioritySummary.Low}</span>
-              </div>
-
-              <div className="sprint-member-task-grid">
-                {selectedProjectData.tasks.map((task) => (
-                  <div key={task.id} className="sprint-member-task-item">
-                    <div className="sprint-member-task-top">
-                      <strong>{task.id}</strong>
-                      <span className="sprint-member-sprint-badge">{formatStatusLabel(task.status)}</span>
+            return (
+              <article
+                key={row.id}
+                className={`sprint-member-deep-card ${isActive ? 'active' : ''}`}
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedSprintId(row.id)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setSelectedSprintId(row.id);
+                  }
+                }}
+              >
+                <div className="sprint-member-deep-head">
+                  <div>
+                    <div className="sprint-member-deep-badges">
+                      <span className="sprint-member-deep-sprint-id">{row.id.toUpperCase()}</span>
+                      <span className={`sprint-member-deep-status ${row.status}`}>{row.status}</span>
                     </div>
-                    <p>{task.title}</p>
-                    <div className="sprint-member-task-meta">
-                      <span>Priority: {task.priority}</span>
-                      <span>Points: {task.points}</span>
-                    </div>
+                    <h3>{row.id}</h3>
+                    <p>{row.title}</p>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article className="sprint-panel">
-          <div className="sprint-panel-heading">
-            <div>
-              <h2>Sprint Wise Details</h2>
-              <p className="sprint-panel-copy">Sprint timeline and member contribution snapshot</p>
-            </div>
-          </div>
-          <div className="sprint-member-sprint-list">
-            <div key={`${selectedProjectData.projectId}-sprint`} className="sprint-member-sprint-item">
-              <div className="sprint-member-sprint-heading">
-                <div>
-                  <strong>{selectedSprintData?.id || selectedProjectData.sprint}</strong>
-                  <p>{selectedSprintData?.subtitle || selectedProjectData.projectName}</p>
                 </div>
-                <span className="sprint-member-sprint-badge">{selectedSprintData?.tasks || `${selectedProjectData.assigned} tasks`}</span>
-              </div>
-              <div className="sprint-member-sprint-meta">
-                <span><CalendarDays size={14} /> {selectedProjectData.duration}</span>
-              </div>
-              <div className="sprint-member-status-row">
-                <span>Done: {selectedProjectData.done}</span>
-                <span>In Progress: {selectedProjectData.inProgress}</span>
-                <span>Review: {selectedProjectData.review}</span>
-                <span>Blocked: {selectedProjectData.blocked}</span>
-                <span>To Do: {selectedProjectData.todo}</span>
-              </div>
 
-              <div className="sprint-member-history-list">
-                {selectedSprintHistoryRows.map((item) => (
-                  <div key={`${selectedProjectData.projectId}-${item.id}`} className="sprint-member-history-item">
-                    <div>
-                      <strong>{item.id} - {item.title}</strong>
-                      <p>{item.subtitle}</p>
-                    </div>
-                    <div className="sprint-member-history-meta">
-                      <span>{item.status}</span>
-                      <span>{item.progress}%</span>
-                      <span>{item.tasks}</span>
-                    </div>
+                <div className="sprint-member-deep-metric-grid">
+                  <div className="sprint-member-deep-metric">
+                    <Target size={14} />
+                    <strong>{row.storyPoints}</strong>
+                    <span>Story Pts</span>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </article>
+                  <div className="sprint-member-deep-metric">
+                    <Bug size={14} />
+                    <strong>{row.bugsFixed}</strong>
+                    <span>Bugs Fixed</span>
+                  </div>
+                  <div className="sprint-member-deep-metric">
+                    <Clock3 size={14} />
+                    <strong>{row.hours}h</strong>
+                    <span>Hours</span>
+                  </div>
+                  <div className="sprint-member-deep-metric">
+                    <Users size={14} />
+                    <strong>{row.collaboration}/10</strong>
+                    <span>Collab</span>
+                  </div>
+                </div>
+
+                <div className="sprint-member-deep-bars">
+                  <div className="sprint-member-deep-bar-row">
+                    <span>Task Completion</span>
+                    <div className="sprint-member-deep-bar-track"><span style={{ width: `${row.completionRate}%` }} /></div>
+                    <strong>{row.completionRate}%</strong>
+                  </div>
+                  <div className="sprint-member-deep-bar-row">
+                    <span>On-Time Delivery</span>
+                    <div className="sprint-member-deep-bar-track"><span className="delivery" style={{ width: `${row.onTimeDelivery}%` }} /></div>
+                    <strong>{row.onTimeDelivery}%</strong>
+                  </div>
+                  <div className="sprint-member-deep-bar-row">
+                    <span>Quality Score</span>
+                    <div className="sprint-member-deep-bar-track"><span className="quality" style={{ width: `${row.qualityRate}%` }} /></div>
+                    <strong>{row.qualityRate}%</strong>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </section>
     </div>
   );

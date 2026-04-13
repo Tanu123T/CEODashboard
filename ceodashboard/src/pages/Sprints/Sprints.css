@@ -2531,6 +2531,398 @@
   font-weight: 600;
 }
 
+.sprint-member-v2-page {
+  gap: 14px;
+}
+
+.sprint-member-v2-header {
+  padding: 18px 20px;
+  border-radius: 18px;
+  border: 1px solid var(--sprint-border);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fcff 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sprint-member-v2-header h1 {
+  margin: 14px 0 0;
+  font-size: 38px;
+  color: #1f3b5a;
+}
+
+.sprint-member-v2-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  border: 1px solid #d7e5f6;
+  background: #ffffff;
+}
+
+.sprint-member-v2-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #4b8fe7 0%, #2fc7a6 100%);
+}
+
+.sprint-member-v2-profile strong {
+  display: block;
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.sprint-member-v2-profile span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.sprint-member-v2-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sprint-member-v2-filters.single-filter {
+  grid-template-columns: 1fr;
+}
+
+.sprint-member-v2-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.sprint-member-v2-badges {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sprint-member-v2-badge-item {
+  border: 1px solid #d7e5f6;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
+  padding: 10px 14px;
+  display: grid;
+  gap: 4px;
+  min-height: 74px;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.sprint-member-v2-badge-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #5f789a;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sprint-member-v2-badge-label svg {
+  color: #4b8fe7;
+}
+
+.sprint-member-v2-badge-item strong {
+  color: #163b67;
+  font-size: clamp(22px, 1.6vw, 28px);
+  line-height: 0.95;
+  white-space: nowrap;
+}
+
+.sprint-member-v2-kpi-card {
+  border: 1px solid var(--sprint-border);
+  border-radius: 14px;
+  background: linear-gradient(165deg, #ffffff 0%, #f9fcff 100%);
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sprint-member-v2-kpi-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(75, 143, 231, 0.9), rgba(47, 199, 166, 0.9));
+}
+
+.sprint-member-v2-kpi-card p {
+  margin: 0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sprint-member-v2-kpi-card h3 {
+  margin: 0;
+  color: #1f3b5a;
+  font-size: 36px;
+  line-height: 1;
+}
+
+.sprint-member-v2-kpi-card h3 span {
+  font-size: 28px;
+}
+
+.sprint-member-v2-kpi-card small {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.sprint-member-v2-progress-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.sprint-member-v2-progress-track span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #2db18c 0%, #4b8fe7 100%);
+}
+
+.sprint-member-v2-kpi-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.sprint-member-v2-rating-card h3 {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.sprint-member-v2-stars {
+  display: inline-flex;
+  gap: 4px;
+  color: #2db18c;
+}
+
+.sprint-member-v2-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sprint-member-v2-chart-card {
+  min-height: 340px;
+}
+
+.sprint-member-v2-chart-wrap,
+.sprint-member-v2-pie-wrap {
+  height: 250px;
+}
+
+.sprint-member-v2-notes-card {
+  padding: 16px;
+}
+
+.sprint-member-v2-notes-list {
+  margin: 4px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.sprint-member-v2-notes-list li {
+  color: #334155;
+  font-size: 14px;
+}
+
+.sprint-member-v2-notes-list li::marker {
+  color: #2db18c;
+}
+
+.sprint-member-deep-dive-shell {
+  padding: 16px;
+}
+
+.sprint-member-deep-dive-list {
+  display: grid;
+  gap: 14px;
+}
+
+.sprint-member-deep-card {
+  border: 1px solid #dbe7f7;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at top right, rgba(75, 143, 231, 0.1), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #f9fcff 100%);
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.sprint-member-deep-card.active {
+  border-color: #a9c8ee;
+  box-shadow: 0 14px 30px rgba(59, 130, 246, 0.13);
+}
+
+.sprint-member-deep-card:focus-visible {
+  outline: 2px solid #79a7ff;
+  outline-offset: 2px;
+}
+
+.sprint-member-deep-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.sprint-member-deep-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.sprint-member-deep-sprint-id {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sprint-member-deep-status {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: capitalize;
+  border: 1px solid #d4e3f7;
+  background: #f3f8ff;
+  color: #3a6ba7;
+}
+
+.sprint-member-deep-status.completed {
+  background: #ecfbf5;
+  border-color: #cfeedd;
+  color: #1f8f67;
+}
+
+.sprint-member-deep-status.active {
+  background: #eef5ff;
+  border-color: #cfe0ff;
+  color: #2a62b1;
+}
+
+.sprint-member-deep-head h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 28px;
+  line-height: 1.05;
+}
+
+.sprint-member-deep-head p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.sprint-member-deep-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sprint-member-deep-metric {
+  border: 1px solid #e4ecf8;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 8px 6px;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  color: #7a8ea8;
+}
+
+.sprint-member-deep-metric.primary {
+  background: #effaf5;
+  border-color: #cdeede;
+  color: #24926c;
+}
+
+.sprint-member-deep-metric strong {
+  font-size: 24px;
+  line-height: 1;
+  color: #0f172a;
+}
+
+.sprint-member-deep-metric span {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sprint-member-deep-bars {
+  display: grid;
+  gap: 7px;
+}
+
+.sprint-member-deep-bar-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) 46px;
+  align-items: center;
+  gap: 8px;
+}
+
+.sprint-member-deep-bar-row span,
+.sprint-member-deep-bar-row strong {
+  font-size: 12px;
+  color: #475569;
+}
+
+.sprint-member-deep-bar-track {
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e8edf5;
+}
+
+.sprint-member-deep-bar-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #28ba79 0%, #2db18c 100%);
+}
+
+.sprint-member-deep-bar-track span.delivery {
+  background: linear-gradient(90deg, #4b8fe7 0%, #2f73cf 100%);
+}
+
+.sprint-member-deep-bar-track span.quality {
+  background: linear-gradient(90deg, #30c9c2 0%, #4b8fe7 100%);
+}
+
 @media (max-width: 1000px) {
   .sprint-member-header {
     flex-direction: column;
@@ -2546,6 +2938,36 @@
   .sprint-member-performance-band,
   .sprint-member-performance-grid {
     grid-template-columns: 1fr;
+  }
+
+  .sprint-member-v2-filters,
+  .sprint-member-v2-kpi-grid,
+  .sprint-member-v2-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sprint-member-v2-badges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sprint-member-deep-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sprint-member-deep-bar-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .sprint-member-v2-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 1380px) and (min-width: 1001px) {
+  .sprint-member-v2-badges {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
