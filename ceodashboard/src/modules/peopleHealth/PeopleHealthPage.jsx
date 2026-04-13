@@ -4,7 +4,7 @@ import { CalendarClock } from 'lucide-react';
 import PeopleHealthFilters from './components/PeopleHealthFilters';
 import PeopleHealthTabNav from './components/PeopleHealthTabNav';
 import AvailabilityTab from './tabs/AvailabilityTab';
-import HolidayCalendarTab from './tabs/HolidayCalendarTab';
+import WorkCalendarTab from './tabs/WorkCalendarTab';
 import RoleCoverageTab from './tabs/RoleCoverageTab';
 import { employees } from './data/employees';
 import { attendanceSnapshot, attendanceTrend, repeatedLateOrAbsent, workforceTrendByMonth } from './data/attendance';
@@ -178,7 +178,7 @@ const PeopleHealthPage = () => {
       />
     ),
     'holiday-calendar': (
-      <HolidayCalendarTab />
+      <WorkCalendarTab />
     ),
     'role-coverage': (
       <RoleCoverageTab members={filteredEmployees} />
