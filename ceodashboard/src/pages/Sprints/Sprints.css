@@ -1283,6 +1283,16 @@
   color: var(--sprint-text);
   font-size: 13px;
   font-weight: 600;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.sprint-team-chip:hover {
+  border-color: var(--sprint-primary);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.1);
+  transform: translateY(-1px);
 }
 
 .sprint-team-chip span {
@@ -1558,8 +1568,8 @@
   grid-template-columns: 2fr 1fr;
   gap: 40px;
   grid-template-columns: 2fr 1fr;
-  align-items: stretch;
-  grid-auto-rows: 1fr;
+  align-items: start;
+  grid-auto-rows: auto;
 }
 
 .sprint-detail-main-grid:not(.sprint-secondary-grid) {
@@ -1568,6 +1578,20 @@
 
 .sprint-detail-main-grid.sprint-secondary-grid {
   margin-top: 28px;
+}
+
+.sprint-detail-columns-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  margin-top: 20px;
+  align-items: start;
+}
+
+.sprint-detail-column {
+  display: grid;
+  gap: 28px;
+  align-content: start;
 }
 
 .sprint-donut-panel,
@@ -1720,6 +1744,31 @@
   color: var(--sprint-info);
 }
 
+.sprint-status-icon-total {
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+}
+
+.sprint-status-icon-completed {
+  background: rgba(34, 197, 94, 0.14);
+  color: #16a34a;
+}
+
+.sprint-status-icon-progress {
+  background: rgba(249, 115, 22, 0.14);
+  color: #c2410c;
+}
+
+.sprint-status-icon-todo {
+  background: rgba(168, 85, 247, 0.14);
+  color: #7c3aed;
+}
+
+.sprint-status-icon-testing {
+  background: rgba(239, 68, 68, 0.14);
+  color: #b91c1c;
+}
+
 .sprint-status-item p {
   margin: 0 0 6px;
   color: #64748b;
@@ -1756,6 +1805,31 @@
   background: var(--sprint-info);
   color: #ffffff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.sprint-status-total {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.sprint-status-completed-green {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.sprint-status-progress-pill {
+  background: #ea580c;
+  color: #ffffff;
+}
+
+.sprint-status-todo {
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+.sprint-status-testing {
+  background: #b91c1c;
+  color: #ffffff;
 }
 
 .sprint-status-progress {
@@ -2003,6 +2077,7 @@
 
 @media (max-width: 1200px) {
   .sprint-detail-top,
+  .sprint-detail-columns-layout,
   .sprint-detail-main-grid,
   .sprint-detail-main-grid.sprint-secondary-grid {
     grid-template-columns: 1fr;
@@ -2060,6 +2135,291 @@
   border: 1px solid var(--sprint-border);
   border-radius: 12px;
   transition: all 180ms ease;
+}
+
+.sprint-member-header {
+  padding: 24px 28px;
+  border-radius: 20px;
+  border: 1px solid var(--sprint-border);
+  background: #ffffff;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sprint-member-project-switch {
+  min-width: 260px;
+  display: grid;
+  gap: 8px;
+}
+
+.sprint-member-project-switch label {
+  color: var(--sprint-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.sprint-member-select {
+  width: 100%;
+  border: 1px solid var(--sprint-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--sprint-text);
+  background: #ffffff;
+}
+
+.sprint-member-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sprint-member-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid var(--sprint-border);
+  background: #ffffff;
+}
+
+.sprint-member-summary-card p {
+  margin: 0 0 4px;
+  color: var(--sprint-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sprint-member-summary-card h3 {
+  margin: 0;
+  color: var(--sprint-text);
+  font-size: 28px;
+}
+
+.sprint-member-summary-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+}
+
+.sprint-member-summary-icon.done {
+  background: rgba(22, 163, 74, 0.14);
+  color: #16a34a;
+}
+
+.sprint-member-summary-icon.progress {
+  background: rgba(249, 115, 22, 0.14);
+  color: #c2410c;
+}
+
+.sprint-member-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.sprint-member-project-list,
+.sprint-member-sprint-list {
+  display: grid;
+  gap: 12px;
+}
+
+.sprint-member-project-item,
+.sprint-member-sprint-item {
+  border: 1px solid var(--sprint-border);
+  border-radius: 16px;
+  padding: 14px;
+  background: #f8fafc;
+}
+
+.sprint-member-project-title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.sprint-member-project-title-row strong {
+  color: var(--sprint-text);
+}
+
+.sprint-member-project-item p {
+  margin: 0 0 10px;
+  color: var(--sprint-muted);
+  font-size: 13px;
+}
+
+.sprint-member-project-subline {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.sprint-member-sprint-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sprint-member-sprint-heading p {
+  margin: 4px 0 0;
+  color: var(--sprint-muted);
+  font-size: 13px;
+}
+
+.sprint-member-sprint-badge {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sprint-member-sprint-meta {
+  margin-top: 10px;
+  color: var(--sprint-muted);
+  font-size: 13px;
+}
+
+.sprint-member-sprint-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sprint-member-status-row {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sprint-member-status-row span {
+  background: #ffffff;
+  border: 1px solid #dbe4ef;
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #334155;
+  font-size: 12px;
+}
+
+.sprint-member-task-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.sprint-member-task-item {
+  background: #ffffff;
+  border: 1px solid #dbe4ef;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.sprint-member-task-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sprint-member-task-top strong {
+  color: #0f172a;
+}
+
+.sprint-member-task-item p {
+  margin: 8px 0;
+  color: #334155;
+  font-size: 13px;
+}
+
+.sprint-member-task-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sprint-member-task-meta span {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #475569;
+  font-size: 11px;
+}
+
+.sprint-member-history-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.sprint-member-history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+  background: #ffffff;
+  border: 1px solid #dbe4ef;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.sprint-member-history-item strong {
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.sprint-member-history-item p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.sprint-member-history-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.sprint-member-history-meta span {
+  background: #eef4ff;
+  border: 1px solid #cfe0ff;
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+@media (max-width: 1000px) {
+  .sprint-member-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sprint-member-project-switch {
+    min-width: 0;
+  }
+
+  .sprint-member-summary-grid,
+  .sprint-member-columns {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sprint-upcoming-item:hover {
@@ -2561,4 +2921,150 @@
     gap: 8px;
     padding: 12px;
   }
+}
+
+/* Sprint Visual Upgrade: content unchanged, stronger premium look */
+.sprint-page,
+.sprint-selector-page,
+.sprint-dashboard-page,
+.sprint-project-page,
+.sprint-detail-page,
+.sprint-member-page {
+  background:
+    radial-gradient(1100px 520px at -12% -12%, rgba(37, 99, 235, 0.16) 0%, rgba(37, 99, 235, 0) 60%),
+    radial-gradient(860px 460px at 112% -16%, rgba(14, 165, 233, 0.15) 0%, rgba(14, 165, 233, 0) 58%),
+    linear-gradient(180deg, #f6faff 0%, #edf3fb 100%);
+}
+
+.sprint-dashboard-header,
+.sprint-project-header,
+.sprint-detail-top,
+.sprint-member-header,
+.sprint-panel,
+.sprint-card,
+.sprint-stat-card,
+.sprint-summary-card,
+.sprint-member-summary-card,
+.sprint-member-project-item,
+.sprint-member-sprint-item,
+.sprint-member-task-item,
+.sprint-member-history-item {
+  border: 1px solid rgba(148, 177, 214, 0.34);
+  box-shadow:
+    0 18px 42px rgba(37, 99, 235, 0.12),
+    0 2px 10px rgba(15, 23, 42, 0.05);
+}
+
+.sprint-dashboard-header,
+.sprint-project-header,
+.sprint-detail-top,
+.sprint-member-header {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 250, 255, 0.98) 100%);
+}
+
+.sprint-panel,
+.sprint-card,
+.sprint-stat-card {
+  background: linear-gradient(160deg, #ffffff 0%, #f9fcff 100%);
+}
+
+.sprint-panel::after,
+.sprint-card::after,
+.sprint-stat-card::after,
+.sprint-member-summary-card::after,
+.sprint-member-project-item::after,
+.sprint-member-sprint-item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.85), rgba(6, 182, 212, 0.85));
+  opacity: 0.8;
+}
+
+.sprint-panel,
+.sprint-card,
+.sprint-stat-card,
+.sprint-status-item,
+.sprint-upcoming-item,
+.sprint-activity-row,
+.sprint-member-summary-card,
+.sprint-member-project-item,
+.sprint-member-sprint-item,
+.sprint-member-task-item,
+.sprint-member-history-item {
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.sprint-panel:hover,
+.sprint-card:hover,
+.sprint-stat-card:hover,
+.sprint-status-item:hover,
+.sprint-upcoming-item:hover,
+.sprint-activity-row:hover,
+.sprint-member-summary-card:hover,
+.sprint-member-project-item:hover,
+.sprint-member-sprint-item:hover,
+.sprint-member-task-item:hover,
+.sprint-member-history-item:hover {
+  transform: translateY(-4px);
+  border-color: rgba(37, 99, 235, 0.48);
+  box-shadow:
+    0 26px 48px rgba(37, 99, 235, 0.16),
+    0 8px 16px rgba(15, 23, 42, 0.08);
+}
+
+.sprint-dashboard-header h1,
+.sprint-project-header h1,
+.sprint-detail-title-row h1,
+.sprint-member-header h1 {
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.sprint-dashboard-eyebrow,
+.sprint-summary-label,
+.sprint-kpi-card p,
+.sprint-stat-card-content p {
+  letter-spacing: 0.18em;
+}
+
+.sprint-project-select-button,
+.sprint-member-select,
+.sprint-panel-select,
+.sprint-tab {
+  border: 1px solid rgba(130, 167, 214, 0.45);
+  background: linear-gradient(160deg, #ffffff 0%, #f2f8ff 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.sprint-tab.active {
+  background: linear-gradient(160deg, #ffffff 0%, #eaf3ff 100%);
+  border-color: rgba(37, 99, 235, 0.6);
+}
+
+.sprint-project-select-button:hover,
+.sprint-member-select:hover,
+.sprint-panel-select:hover,
+.sprint-tab:hover {
+  border-color: rgba(37, 99, 235, 0.6);
+}
+
+.sprint-progress-bar,
+.sprint-activity-progress-bar,
+.sprint-progress-bar-container,
+.sprint-work-distribution-bar {
+  background: linear-gradient(180deg, #eaf1fb 0%, #dce7f5 100%);
+}
+
+.sprint-status-pill,
+.sprint-pill,
+.sprint-upcoming-badge,
+.sprint-member-sprint-badge,
+.sprint-member-history-meta span,
+.sprint-member-task-meta span,
+.sprint-member-status-row span {
+  border: 1px solid rgba(37, 99, 235, 0.28);
 }

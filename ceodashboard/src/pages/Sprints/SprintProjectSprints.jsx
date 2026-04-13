@@ -7,6 +7,8 @@ import {
   ChevronDown,
   ChevronRight,
 } from 'lucide-react';
+//
+
 import {
   ResponsiveContainer,
   AreaChart,
@@ -15,12 +17,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
 } from 'recharts';
 import { sprintProjects, sprintDetails, sprintDashboardData } from './sprintData';
 import SprintSummaryCards from '../../components/SprintSummaryCards';
@@ -64,37 +60,15 @@ const SprintProjectSprints = () => {
   const sprintList = useMemo(() => {
     if (!details || !project) return [];
     let filtered = (details.sprints || []).filter((item) => item.subtitle === project.name);
-    
+
     if (selectedTab !== 'all') {
       filtered = filtered.filter((item) => item.status === selectedTab);
     }
-    
+
     return filtered;
   }, [details, project, selectedTab]);
 
-  const teamMembers = useMemo(() => {
-    if (!details) return [];
-    return [...new Set(details.board.map((item) => item.owner))];
-  }, [details]);
-
-  const progressData = useMemo(() => {
-    if (!details?.sprints?.length) return [];
-
-    return details.sprints
-      .map((item) => {
-        const sprintMatch = String(item.id).match(/Sprint\s*(\d+)/i);
-        const sprintNumber = sprintMatch ? Number(sprintMatch[1]) : Number.MAX_SAFE_INTEGER;
-
-        return {
-          sprintNumber,
-          sprintLabel: Number.isFinite(sprintNumber) ? `Sprint ${sprintNumber}` : item.id,
-          progress: Number(item.progress) || 0,
-        };
-      })
-      .sort((a, b) => a.sprintNumber - b.sprintNumber);
-  }, [details]);
-  const completionTrend = details?.velocity?.map((item) => ({ sprint: item.sprint, completed: item.completed })) || [];
-  const taskSplit = details?.workSplit || [];
+  const progressData = details?.burndown || [];
 
   if (!project || !details) {
     return (
@@ -119,15 +93,6 @@ const SprintProjectSprints = () => {
           <p className="sprint-dashboard-eyebrow">Sprint Dashboard</p>
           <h1>{project.name}</h1>
           <p className="sprint-project-subtitle">Viewing: {project.name}</p>
-          <p className="sprint-project-team-title">Team Members</p>
-          <div className="sprint-project-team-row">
-            {teamMembers.map((member) => (
-              <span key={member} className="sprint-project-team-chip">
-                <span>{member.charAt(0)}</span>
-                {member}
-              </span>
-            ))}
-          </div>
         </div>
         <div className="sprint-dashboard-filter">
           <div className="sprint-project-dropdown" ref={dropdownRef}>
@@ -161,6 +126,8 @@ const SprintProjectSprints = () => {
         </div>
       </header>
 
+      <SprintSummaryCards metrics={sprintDashboardData.metrics} />
+
       <div className="sprint-tabs-container">
         <div className="sprint-tabs">
           {[
@@ -178,8 +145,6 @@ const SprintProjectSprints = () => {
           ))}
         </div>
       </div>
-
-      <SprintSummaryCards metrics={sprintDashboardData.metrics} />
 
       <article className="sprint-panel sprint-sprints-panel">
         <div className="sprint-section-header">
@@ -215,7 +180,6 @@ const SprintProjectSprints = () => {
           ))}
         </div>
       </article>
-
       <section className="sprint-project-main-grid">
         <article className="sprint-panel sprint-progress-large-card">
           <div className="sprint-panel-heading sprint-progress-panel-heading">

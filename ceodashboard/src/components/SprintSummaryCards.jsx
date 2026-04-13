@@ -2,7 +2,7 @@ import React from 'react';
 import { Activity, AlertTriangle, CheckCircle2, Clock3, TrendingUp } from 'lucide-react';
 
 const metricIcons = {
-  'Total Sprints': <Activity size={22} />,
+  'Total Planned Sprints': <Activity size={22} />,
   Active: <Clock3 size={22} />,
   Completed: <CheckCircle2 size={22} />,
   Delayed: <AlertTriangle size={22} />,
@@ -18,7 +18,7 @@ const SprintSummaryCards = ({ metrics }) => (
             <p>{item.label}</p>
             <h2>{item.value}</h2>
           </div>
-          <span className="sprint-stat-icon">{metricIcons[item.label]}</span>
+          <span className="sprint-stat-icon">{metricIcons[item.label] || <Activity size={22} />}</span>
         </div>
       </article>
     ))}
