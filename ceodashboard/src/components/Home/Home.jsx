@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 
@@ -28,8 +28,10 @@ import {
   Building2,
   FolderKanban,
   Timer,
-    UserRound,
+  UserRound,
   FileText,
+  Sparkles,
+  RefreshCcw,
 } from "lucide-react";
 
 import { departmentDistribution, trendLabels, trendValues } from "../team/teamData";
@@ -123,14 +125,6 @@ const scheduleItems = [
     tone: "purple",
     tag: "Deep Work",
   },
-  {
-    time: "06:00 PM",
-    title: "Proposal Review - FinEdge Capital",
-    meta: "30 min - Rohan, Amit S.",
-    icon: Briefcase,
-    tone: "orange",
-    tag: "Client",
-  },
 ];
 
 
@@ -160,9 +154,96 @@ const birthdaysAnniversariesData = [
 
 ];
 
+const dailyBusinessQuotes = [
+  {
+    text: "Great leaders turn clarity into momentum by aligning every team around one measurable priority at a time.",
+    author: "John C. Maxwell",
+    source: "Leadership Principles",
+  },
+  {
+    text: "Execution compounds faster than ideas when strategy is translated into weekly decisions that teams can act on immediately.",
+    author: "Larry Bossidy",
+    source: "Execution",
+  },
+  {
+    text: "What gets measured gets managed, and what gets reviewed consistently becomes a repeatable competitive advantage.",
+    author: "Peter Drucker",
+    source: "Management Practice",
+  },
+  {
+    text: "Focus creates speed, and speed creates advantage when teams are empowered to ship value without unnecessary friction.",
+    author: "Eric Ries",
+    source: "Lean Startup",
+  },
+  {
+    text: "Small strategic wins, repeated with discipline, build the kind of enduring enterprise that can weather any market cycle.",
+    author: "Jim Collins",
+    source: "Built to Last",
+  },
+  {
+    text: "The best time to improve a system is before it breaks, while momentum is high and change is still inexpensive.",
+    author: "W. Edwards Deming",
+    source: "Quality Thinking",
+  },
+  {
+    text: "High standards are not a burden, they are the operating system that turns talent into reliable long-term performance.",
+    author: "Angela Duckworth",
+    source: "Grit",
+  },
+  {
+    text: "Teams move faster when priorities are unmistakable, outcomes are visible, and ownership is clear at every level.",
+    author: "Stephen R. Covey",
+    source: "Execution Discipline",
+  },
+  {
+    text: "Consistency is the strongest form of innovation because it converts good ideas into habits, and habits into results.",
+    author: "James Clear",
+    source: "Atomic Habits",
+  },
+  {
+    text: "Strong culture is a competitive moat that protects execution quality when pressure rises and timelines tighten.",
+    author: "Satya Nadella",
+    source: "Cultural Transformation",
+  },
+];
+
+const getDayOfYear = (date) => {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  return Math.floor(diff / oneDay);
+};
+
 const Home = () => {
   const navigate = useNavigate();
   const [activeProjectIndex, setActiveProjectIndex] = useState(null);
+  const [now, setNow] = useState(new Date());
+  const [quoteOffset, setQuoteOffset] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const dateLabel = useMemo(() => now.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }), [now]);
+
+  const timeLabel = useMemo(() => now.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }), [now]);
+
+  const quoteIndex = useMemo(() => {
+    const dailySeed = getDayOfYear(now) % dailyBusinessQuotes.length;
+    return (dailySeed + quoteOffset) % dailyBusinessQuotes.length;
+  }, [now, quoteOffset]);
+
+  const dailyQuote = dailyBusinessQuotes[quoteIndex];
 
   const currentMonth = useMemo(() => {
     const now = new Date();
@@ -196,9 +277,81 @@ const Home = () => {
 
   return (
     <div className="home">
-      <section className="hero">
-        <h1>Good morning, CEO</h1>
-        <p>Live performance, progress, and priorities at a glance.</p>
+      <section className="dashboard-top-grid">
+        <section className="hero">
+          <div className="hero-copy">
+            <h1>Good morning, CEO</h1>
+            <p>Live performance, progress, and priorities at a glance.</p>
+            <div className="hero-live-row" aria-live="polite">
+              <span className="hero-live-badge">LIVE</span>
+              <span>{dateLabel}</span>
+              <span className="hero-live-dot" />
+              <span>{timeLabel}</span>
+            </div>
+
+            <article className="hero-quote-card" aria-live="polite">
+              <header>
+                <span>
+                  <Sparkles size={14} />
+                  Daily CEO Quote
+                </span>
+                <button
+                  type="button"
+                  className="hero-quote-refresh"
+                  onClick={() => setQuoteOffset((prev) => (prev + 1) % dailyBusinessQuotes.length)}
+                  aria-label="Show another quote"
+                >
+                  <RefreshCcw size={14} />
+                  Refresh
+                </button>
+              </header>
+              <div className="hero-quote-body">
+                <p className="hero-quote-text">"{dailyQuote.text}"</p>
+                <p className="hero-quote-author">
+                  <span>{dailyQuote.author}</span>
+                  <small>{dailyQuote.source}</small>
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className="dashboard-section top-schedule-section">
+          <header className="section-head">
+            <div className="section-title">
+              <Calendar size={16} />
+              <h2>Today's Schedule</h2>
+            </div>
+          </header>
+
+          <article className="panel schedule-panel top-schedule-panel">
+            <header className="panel-head">
+              <div>
+                <h2>Today's Agenda</h2>
+                <p>{dateLabel}</p>
+              </div>
+            </header>
+
+            <div className="schedule-list">
+              {scheduleItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <article className="schedule-item" key={`${item.time}-${item.title}`}>
+                    <span className="schedule-time">{item.time}</span>
+                    <div className={`schedule-icon ${item.tone}`}>
+                      <Icon size={16} />
+                    </div>
+                    <div className="schedule-copy">
+                      <h4>{item.title}</h4>
+                      <p>{item.meta}</p>
+                    </div>
+                    <span className={`schedule-tag ${item.tone}`}>{item.tag}</span>
+                  </article>
+                );
+              })}
+            </div>
+          </article>
+        </section>
       </section>
 
       <section className="dashboard-section dashboard-section-projects">
@@ -539,6 +692,7 @@ const Home = () => {
           </article>
         </section>
       </section>
+
     </div>
   );
 };
