@@ -6,6 +6,7 @@ import PeopleHealthTabNav from './components/PeopleHealthTabNav';
 import AvailabilityTab from './tabs/AvailabilityTab';
 import WorkCalendarTab from './tabs/WorkCalendarTab';
 import RoleCoverageTab from './tabs/RoleCoverageTab';
+import HiringRecruitmentTab from './tabs/HiringRecruitmentTab';
 import { employees } from './data/employees';
 import { attendanceSnapshot, attendanceTrend, repeatedLateOrAbsent, workforceTrendByMonth } from './data/attendance';
 import { departments } from './data/departments';
@@ -32,7 +33,7 @@ const tabItems = [
   { id: 'availability', label: 'WorkForce Health' },
   { id: 'role-coverage', label: 'Employee Hub' },
   { id: 'holiday-calendar', label: 'Work Calender' },
-  { id: 'hiring-recruitment', label: 'Hiring and Recruitment' },
+  { id: 'hiring-recruitment', label: 'Org Hierarchy' },
 ];
 
 const PeopleHealthPage = () => {
@@ -184,7 +185,7 @@ const PeopleHealthPage = () => {
       <RoleCoverageTab members={filteredEmployees} />
     ),
     'hiring-recruitment': (
-      <div className="ph-blank-screen" aria-hidden="true" />
+      <HiringRecruitmentTab members={filteredEmployees} />
     ),
   };
 

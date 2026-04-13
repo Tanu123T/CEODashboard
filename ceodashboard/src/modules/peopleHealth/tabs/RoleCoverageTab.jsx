@@ -9,6 +9,47 @@ import {
 } from 'lucide-react';
 import PeopleHealthPanelCard from '../components/PeopleHealthPanelCard';
 
+const getInitials = (name) => name
+  .split(' ')
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((part) => part[0])
+  .join('');
+
+const getAvatarPalette = (seed) => {
+  const palettes = [
+    ['#4b8fe7', '#2fc7a6'],
+    ['#6f5ef6', '#4b8fe7'],
+    ['#f08a5d', '#f9c74f'],
+    ['#3d8bfd', '#6dd5c1'],
+    ['#8f63d7', '#4ac0d9'],
+    ['#1f9f73', '#5d89e3'],
+  ];
+
+  return palettes[seed % palettes.length];
+};
+
+const getMemberAvatarSrc = (member) => {
+  const seed = Number(member.id.split('-')[1] || '1');
+  const initials = getInitials(member.name);
+  const [startColor, endColor] = getAvatarPalette(seed);
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="${member.name} profile picture">
+      <defs>
+        <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${startColor}" />
+          <stop offset="100%" stop-color="${endColor}" />
+        </linearGradient>
+      </defs>
+      <rect width="160" height="160" rx="32" fill="url(#g)" />
+      <circle cx="80" cy="80" r="58" fill="rgba(255,255,255,0.12)" />
+      <text x="80" y="93" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="58" font-weight="800" fill="#ffffff" letter-spacing="2">${initials}</text>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+};
+
 const RoleCoverageTab = ({ members }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -236,12 +277,10 @@ const RoleCoverageTab = ({ members }) => {
           <header className="ph-member-modal-headline">
             <div className="ph-member-modal-identity">
               <span className="ph-member-modal-avatar" aria-hidden="true">
-                {selectedMemberInsights.employee
-                  .split(' ')
-                  .filter(Boolean)
-                  .slice(0, 2)
-                  .map((part) => part[0])
-                  .join('')}
+                <img
+                  src={getMemberAvatarSrc(selectedMember)}
+                  alt={`${selectedMemberInsights.employee} profile picture`}
+                />
               </span>
               <div>
                 <h4>{selectedMemberInsights.employee}</h4>
@@ -338,12 +377,6 @@ const RoleCoverageTab = ({ members }) => {
           <div className="ph-member-grid">
             {visibleMembers.map((item) => {
               const statusLabel = item.status === 'leave' ? 'On Leave' : 'Active';
-              const initials = item.name
-                .split(' ')
-                .filter(Boolean)
-                .slice(0, 2)
-                .map((part) => part[0])
-                .join('');
 
               return (
                 <article
@@ -360,8 +393,8 @@ const RoleCoverageTab = ({ members }) => {
                   }}
                 >
                   <div className="ph-member-card-head">
-                    <div className="ph-member-avatar" aria-hidden="true">
-                      {initials}
+                    <div className="ph-member-avatar">
+                      <img src={getMemberAvatarSrc(item)} alt={`${item.name} profile picture`} />
                     </div>
                     <div className="ph-member-title">
                       <strong>{item.name}</strong>

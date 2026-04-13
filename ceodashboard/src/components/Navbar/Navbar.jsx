@@ -35,7 +35,7 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
     { label: 'WorkForce Health', to: '/employees/availability' },
     { label: 'Employee Hub', to: '/employees/role-coverage' },
     { label: 'Work Calender', to: '/employees/holiday-calendar' },
-    { label: 'Hiring and Recruitment', to: '/employees/hiring-recruitment' },
+    { label: 'Org Hierarchy', to: '/employees/hiring-recruitment' },
   ];
 
   const handleLogout = () => {

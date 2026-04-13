@@ -14,7 +14,7 @@ const getPageMeta = (pathname) => {
       availability: 'WorkForce Health',
       'holiday-calendar': 'Work Calender',
       'role-coverage': 'Employee Hub',
-      'hiring-recruitment': 'Hiring and Recruitment',
+      'hiring-recruitment': 'Org Hierarchy',
     }
 
     return {
