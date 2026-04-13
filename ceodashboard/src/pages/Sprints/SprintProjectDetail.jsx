@@ -60,7 +60,11 @@ const SprintProjectDetail = () => {
   const reviewTasks = details.board.filter((item) => item.status === 'Review').length;
   const openTasks = totalTasks - completedTasks;
   const sprintCompletion = Math.round((completedTasks / Math.max(totalTasks, 1)) * 100);
-  const storyPointCompletion = Math.round((selectedVelocity.completed / Math.max(project.totalPoints, 1)) * 100);
+  const sprintStatus = String(selectedSprint.status || '').toLowerCase();
+  const fallbackCompletion = Math.round((selectedVelocity.completed / Math.max(project.totalPoints, 1)) * 100);
+  const storyPointCompletion = sprintStatus === 'completed'
+    ? 100
+    : Math.max(0, Math.min(100, Math.round(selectedSprint.progress ?? fallbackCompletion)));
 
   const selectedSprintStatusClass = (status) => {
     if (status === 'active' || status === 'completed') return 'sprint-health-good';
