@@ -450,7 +450,7 @@
 }
 
 .sprint-work-segment.done {
-  background: #10b981;
+  background: #18b7a6;
 }
 
 .sprint-work-segment.in-progress {
@@ -458,7 +458,7 @@
 }
 
 .sprint-work-segment.todo {
-  background: #f59e0b;
+  background: #0ea5e9;
 }
 
 .sprint-work-distribution-meta {
@@ -476,7 +476,7 @@
 }
 
 .sprint-work-tag.done {
-  color: #10b981;
+  color: #0f766e;
 }
 
 .sprint-work-tag.in-progress {
@@ -484,7 +484,7 @@
 }
 
 .sprint-work-tag.todo {
-  color: #f59e0b;
+  color: #0369a1;
 }
 
 .sprint-work-total {
@@ -518,7 +518,7 @@
 }
 
 .sprint-work-dot.done {
-  background: #10b981;
+  background: #18b7a6;
 }
 
 .sprint-work-dot.in-progress {
@@ -526,7 +526,7 @@
 }
 
 .sprint-work-dot.todo {
-  background: #f59e0b;
+  background: #0ea5e9;
 }
 
 .sprint-activity-heading {
@@ -1751,23 +1751,23 @@
 }
 
 .sprint-status-icon-completed {
-  background: rgba(34, 197, 94, 0.14);
-  color: #16a34a;
+  background: rgba(24, 183, 166, 0.14);
+  color: #0f766e;
 }
 
 .sprint-status-icon-progress {
-  background: rgba(249, 115, 22, 0.14);
-  color: #c2410c;
+  background: rgba(59, 130, 246, 0.14);
+  color: #2563eb;
 }
 
 .sprint-status-icon-todo {
-  background: rgba(168, 85, 247, 0.14);
-  color: #7c3aed;
+  background: rgba(14, 165, 233, 0.14);
+  color: #0369a1;
 }
 
 .sprint-status-icon-testing {
-  background: rgba(239, 68, 68, 0.14);
-  color: #b91c1c;
+  background: rgba(100, 116, 139, 0.16);
+  color: #334155;
 }
 
 .sprint-status-item p {
@@ -1814,22 +1814,22 @@
 }
 
 .sprint-status-completed-green {
-  background: #16a34a;
+  background: #18b7a6;
   color: #ffffff;
 }
 
 .sprint-status-progress-pill {
-  background: #ea580c;
+  background: #2563eb;
   color: #ffffff;
 }
 
 .sprint-status-todo {
-  background: #7c3aed;
+  background: #0ea5e9;
   color: #ffffff;
 }
 
 .sprint-status-testing {
-  background: #b91c1c;
+  background: #64748b;
   color: #ffffff;
 }
 
@@ -1861,7 +1861,7 @@
 }
 
 .sprint-progress-segment.closed {
-  background: linear-gradient(90deg, #22c55e 0%, #10b981 100%);
+  background: linear-gradient(90deg, #14b8a6 0%, #06b6d4 100%);
 }
 
 .sprint-progress-segment.open {
@@ -1889,7 +1889,7 @@
 }
 
 .sprint-status-dot.closed {
-  background: var(--sprint-success);
+  background: #18b7a6;
 }
 
 .sprint-status-dot.open {
