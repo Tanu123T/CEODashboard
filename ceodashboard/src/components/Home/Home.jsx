@@ -151,6 +151,8 @@ const birthdaysAnniversariesData = [
   { date: "April 12", name: "Arjun Kumar", type: "Work Anniversary (3 years)", tone: "purple" },
   { date: "April 15", name: "Sneha Patel", type: "Birthday", tone: "blue" },
   { date: "April 18", name: "Rohan Verma", type: "Work Anniversary (2 years)", tone: "purple" },
+  { date: "April 22", name: "Anika Desai", type: "Birthday", tone: "blue" },
+  { date: "April 24", name: "Kabir Shah", type: "Work Anniversary (4 years)", tone: "purple" },
 
 ];
 
@@ -325,13 +327,6 @@ const Home = () => {
           </header>
 
           <article className="panel schedule-panel top-schedule-panel">
-            <header className="panel-head">
-              <div>
-                <h2>Today's Agenda</h2>
-                <p>{dateLabel}</p>
-              </div>
-            </header>
-
             <div className="schedule-list">
               {scheduleItems.map((item) => {
                 const Icon = item.icon;
@@ -621,9 +616,11 @@ const Home = () => {
                 <article className="info-item info-item-small" key={`${entry.date}-${entry.name}`}>
                   <div className={`info-dot ${entry.tone}`} />
                   <div className="info-copy">
-                    <h4>{entry.name}</h4>
+                    <div className="info-copy-title-row">
+                      <h4>{entry.name}</h4>
+                      <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
+                    </div>
                     <p>{entry.date}</p>
-                    <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
                   </div>
                 </article>
               ))}
@@ -642,9 +639,11 @@ const Home = () => {
                 <article className="info-item info-item-small" key={`${entry.date}-${entry.name}`}>
                   <div className={`info-dot ${entry.tone}`} />
                   <div className="info-copy">
-                    <h4>{entry.name}</h4>
+                    <div className="info-copy-title-row">
+                      <h4>{entry.name}</h4>
+                      <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
+                    </div>
                     <p>{entry.date}</p>
-                    <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
                   </div>
                 </article>
               ))}
@@ -671,7 +670,7 @@ const Home = () => {
               </button>
             </header>
 
-            <div className="progress-list">
+            <div className="progress-list1">
               {sprintOverview.map((item) => (
                 <article className="progress-item" key={item.title}>
                   <div className={`progress-dot ${item.tone}`} />

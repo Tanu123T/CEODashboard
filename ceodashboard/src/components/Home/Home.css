@@ -214,9 +214,9 @@
 
 .top-schedule-panel {
     height: 100%;
-    max-height: 240px;
+    max-height: 200px;
     overflow: hidden;
-    padding: 8px;
+    padding: 4px;
 }
 
 .top-schedule-panel .schedule-item {
@@ -524,7 +524,6 @@
 }
 
 .project-chart-wrap {
-    border: 1px solid #edf2f8;
     border-radius: 16px;
     background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
     padding: 6px 10px 2px;
@@ -559,16 +558,19 @@
 }
 
 .project-overview-card {
-    border: 1px solid #e7edf3;
-    border-radius: 16px;
+
     padding: 10px 12px;
     background: linear-gradient(135deg, #ffffff 0%, #fbfdff 100%);
     box-shadow: 0 1px 2px rgba(15, 31, 61, 0.04);
     transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    border-bottom: 1px solid #edf1f6;
+}
+
+.project-overview-card:last-child {
+    border-bottom: 0;
 }
 
 .project-overview-card:hover {
-    transform: translateY(-1px);
     border-color: #d7e3f1;
     box-shadow: 0 10px 24px rgba(21, 51, 94, 0.08);
 }
@@ -756,6 +758,7 @@
     gap: 10px;
     padding: 10px 0;
     border-top: 1px solid #e7edf3;
+    margin-bottom: 7px;
 }
 
 .schedule-item:first-child {
@@ -867,19 +870,22 @@
     padding: 0;
 }
 
-.progress-list {
+.progress-list1 {
     display: grid;
     gap: 10px;
 }
 
 .progress-item {
-    border: 1px solid #e7edf3;
-    border-radius: 14px;
     padding: 10px 12px;
     display: grid;
     grid-template-columns: auto 1fr auto;
     gap: 12px;
     align-items: center;
+    border-bottom: 1px solid #edf1f6;
+}
+
+.progress-item:last-child {
+    border-bottom: 0;
 }
 
 .progress-dot {
@@ -1149,31 +1155,36 @@
 
 .info-list {
     display: grid;
-    gap: 10px;
-}
-
-.info-list-compact {
     gap: 8px;
 }
 
+.info-list-compact {
+    gap: 6px;
+}
+
 .info-item {
+    margin-top: 7px;
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: flex-start;
     gap: 12px;
-    padding: 10px 12px;
-    border: 1px solid #e7edf3;
-    border-radius: 12px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #edf1f6;
+
+}
+
+.info-item:last-child {
+    border-bottom: 0;
 }
 
 .info-item-small {
-    padding: 8px 10px;
-    gap: 10px;
+    padding: 6px 8px;
+    gap: 8px;
 }
 
 .info-dot {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
     margin-top: 4px;
@@ -1194,24 +1205,37 @@
 .info-copy h4 {
     margin: 0;
     color: #0b1f44;
-    font-size: 15px;
-    line-height: 1.25;
+    font-size: 14px;
+    line-height: 1.15;
     font-weight: 600;
 }
 
+.info-copy-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+}
+
+.info-copy-title-row h4 {
+    min-width: 0;
+    flex: 1;
+}
+
 .info-item-small .info-copy h4 {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .info-copy p {
-    margin: 3px 0 0;
+    margin: 2px 0 0;
     color: #6f86a4;
     font-size: 12px;
 }
 
 .info-item-small .info-copy p {
-    margin-top: 2px;
-    font-size: 11px;
+    margin-top: 1px;
+    font-size: 10px;
 }
 
 .info-tag {
@@ -1222,6 +1246,10 @@
     font-weight: 700;
     background: #ecf4ff;
     color: #5c9bff;
+}
+
+.info-copy-title-row .info-tag {
+    flex-shrink: 0;
 }
 
 .info-tag.blue {
@@ -1235,8 +1263,13 @@
 }
 
 .info-item-small .info-tag {
-    padding: 3px 9px;
-    font-size: 10px;
+    padding: 2px 8px;
+    font-size: 9px;
+}
+
+.compact-panel-small {
+    min-height: 190px;
+    padding: 10px;
 }
 
 @media (max-width: 1400px) {
