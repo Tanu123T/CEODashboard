@@ -324,6 +324,14 @@ const Home = () => {
               <Calendar size={16} />
               <h2>Today's Schedule</h2>
             </div>
+            <button
+              type="button"
+              className="schedule-add-btn"
+              onClick={() => navigate('/employees/holiday-calendar')}
+            >
+              Add Schedule
+              <ArrowRight size={14} />
+            </button>
           </header>
 
           <article className="panel schedule-panel top-schedule-panel">
