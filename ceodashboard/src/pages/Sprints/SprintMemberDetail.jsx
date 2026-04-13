@@ -380,10 +380,6 @@ const SprintMemberDetail = () => {
           <strong>{selectedSprintMetrics?.qualityRate ?? 0}%</strong>
         </article>
         <article className="sprint-member-v2-badge-item">
-          <span className="sprint-member-v2-badge-label"><Briefcase size={14} /> Sprint</span>
-          <strong>{selectedSprintData?.id || '-'}</strong>
-        </article>
-        <article className="sprint-member-v2-badge-item">
           <span className="sprint-member-v2-badge-label"><Users size={14} /> Progress</span>
           <strong>{selectedSprintMetrics?.completionRate ?? 0}%</strong>
         </article>
@@ -441,11 +437,6 @@ const SprintMemberDetail = () => {
                     <Clock3 size={14} />
                     <strong>{row.hours}h</strong>
                     <span>Hours</span>
-                  </div>
-                  <div className="sprint-member-deep-metric">
-                    <Users size={14} />
-                    <strong>{row.collaboration}/10</strong>
-                    <span>Collab</span>
                   </div>
                 </div>
 
