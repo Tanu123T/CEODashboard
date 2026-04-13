@@ -1,11 +1,29 @@
-import React, { useMemo, useState } from 'react';
-import { Building2, CalendarCheck2, Clock3, Coffee, Download, UserCheck, UserMinus } from 'lucide-react';
+import React, { useMemo, useRef, useState } from 'react';
+import { Building2, CalendarCheck2, CalendarDays, Clock3, Coffee, Download, UserCheck, UserMinus } from 'lucide-react';
 import { ResponsiveContainer, Tooltip, AreaChart, Area, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
 import PeopleHealthKpiCard from '../components/PeopleHealthKpiCard';
 import PeopleHealthPanelCard from '../components/PeopleHealthPanelCard';
 
 const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchlist, members }) => {
-  const [attendanceFilter, setAttendanceFilter] = useState('all');
+  const todayDateKey = useMemo(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }, []);
+  const [selectedAttendanceDate, setSelectedAttendanceDate] = useState(todayDateKey);
+  const attendanceDateInputRef = useRef(null);
+
+  const selectedAttendanceDateObj = useMemo(() => {
+    return new Date(`${selectedAttendanceDate}T00:00:00`);
+  }, [selectedAttendanceDate]);
+
+  const selectedAttendanceDateLabel = useMemo(() => {
+    return selectedAttendanceDateObj.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }, [selectedAttendanceDateObj]);
+
   const totalHeadcount = departments.reduce((sum, item) => sum + item.headcount, 0);
   const headcountGrowthTrend = [
     { month: 'Jan', actual: Math.max(0, totalHeadcount - 28), target: Math.max(0, totalHeadcount - 24) },
@@ -16,18 +34,47 @@ const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchli
     { month: 'Jun', actual: totalHeadcount, target: Math.max(0, totalHeadcount + 3) },
   ];
 
-  const checkIn = ['08:52', '09:41', '08:30', '09:00', '10:05', '08:45', '09:00', '08:30', '10:15', '08:55', '09:05', '08:40'];
-  const checkOut = ['18:10', '19:05', '17:45', '18:30', '18:45', '--', '--', '--', '18:05', '--', '17:55', '18:20'];
-  const hoursWorked = ['9.3h', '9.4h', '9.25h', '9.5h', '8.67h', '--', '--', '--', '7.83h', '--', '8.83h', '9.67h'];
-  const devicePool = ['CAM-SF-01', 'FP-NY-02', 'CAM-SF-01', 'FP-AU-01', 'CAM-REMOTE-03', '--', '--', '--'];
+  const formatTime = (totalMinutes) => {
+    const safeMinutes = Math.max(0, Math.min(23 * 60 + 59, Math.round(totalMinutes)));
+    const hours = Math.floor(safeMinutes / 60);
+    const minutes = safeMinutes % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  };
+
+  const openAttendanceDatePicker = () => {
+    const input = attendanceDateInputRef.current;
+    if (!input) {
+      return;
+    }
+
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+      return;
+    }
+
+    input.click();
+  };
 
   const attendanceLogs = useMemo(() => {
+    const year = selectedAttendanceDateObj.getFullYear();
+    const month = selectedAttendanceDateObj.getMonth() + 1;
+    const day = selectedAttendanceDateObj.getDate();
+    const dateSeed = (year * 10000) + (month * 100) + day;
+    const isSelectedDateToday = selectedAttendanceDate === todayDateKey;
+
     return members.map((item, index) => {
-      const derivedStatus = item.status === 'leave'
+      const leaveRule = (dateSeed + index) % 11 === 0;
+      const checkInMinutes = 8 * 60 + 20 + ((dateSeed + (index * 17)) % 125);
+      const workDurationMinutes = 8 * 60 + 10 + ((dateSeed + (index * 13)) % 85);
+      const checkOutMinutes = checkInMinutes + workDurationMinutes;
+
+      const derivedStatus = leaveRule
         ? 'leave'
-        : index % 7 === 1
+        : checkInMinutes > (9 * 60 + 20)
           ? 'late'
           : 'present';
+
+      const hoursValue = (workDurationMinutes / 60).toFixed(2).replace(/\.00$/, '').replace(/(\.[1-9])0$/, '$1');
 
       return {
         id: item.id,
@@ -40,18 +87,13 @@ const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchli
           .join(''),
         employeeCode: item.id.replace('-', ''),
         department: item.department,
-        checkIn: derivedStatus === 'leave' ? '--' : checkIn[index % checkIn.length],
-        checkOut: derivedStatus === 'leave' ? '--' : checkOut[index % checkOut.length],
-        hours: derivedStatus === 'leave' ? '--' : hoursWorked[index % hoursWorked.length],
-        device: derivedStatus === 'leave' ? '--' : devicePool[index % devicePool.length],
+        checkIn: derivedStatus === 'leave' ? '--' : formatTime(checkInMinutes),
+        checkOut: derivedStatus === 'leave' || isSelectedDateToday ? '' : formatTime(checkOutMinutes),
+        hours: derivedStatus === 'leave' || isSelectedDateToday ? '' : `${hoursValue}h`,
         status: derivedStatus,
       };
     });
-  }, [members]);
-
-  const visibleAttendanceLogs = attendanceLogs.filter((item) => {
-    return attendanceFilter === 'all' ? true : item.status === attendanceFilter;
-  });
+  }, [members, selectedAttendanceDateObj, selectedAttendanceDate, todayDateKey]);
 
   const kpis = [
     { title: 'Present Today', value: attendanceSnapshot.present, subtitle: 'Checked in and active', icon: UserCheck, tone: 'success' },
@@ -93,20 +135,22 @@ const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchli
 
       <section className="ph-full-card">
         <PeopleHealthPanelCard
-          title="Today's Attendance Log"
+          title="Attendance Log"
           subtitle="Real-time employee check-in/out records"
           action={(
             <div className="ph-attendance-toolbar">
-              <select
-                className="ph-mini-select"
-                value={attendanceFilter}
-                onChange={(event) => setAttendanceFilter(event.target.value)}
-              >
-                <option value="all">All</option>
-                <option value="present">Present</option>
-                <option value="late">Late</option>
-                <option value="leave">On Leave</option>
-              </select>
+              <span className="ph-date-pill">{selectedAttendanceDateLabel}</span>
+              <button type="button" className="ph-date-icon-btn" onClick={openAttendanceDatePicker} aria-label="Pick attendance date">
+                <CalendarDays size={18} />
+              </button>
+              <input
+                ref={attendanceDateInputRef}
+                type="date"
+                className="ph-date-input-hidden"
+                value={selectedAttendanceDate}
+                onChange={(event) => setSelectedAttendanceDate(event.target.value)}
+                aria-label="Attendance date"
+              />
               <button type="button" className="ph-btn ghost">
                 <Download size={14} />
                 Export
@@ -127,7 +171,7 @@ const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchli
                 </tr>
               </thead>
               <tbody>
-                {visibleAttendanceLogs.map((item) => (
+                {attendanceLogs.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <div className="ph-attendance-employee">
@@ -155,24 +199,7 @@ const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchli
         </PeopleHealthPanelCard>
       </section>
 
-      <section className="ph-grid two-col">
-        <PeopleHealthPanelCard title="Department Availability Comparison" subtitle="Active ratio by department">
-          <ul className="ph-progress-list">
-            {departments.map((item) => {
-              const ratio = Math.round((item.active / item.headcount) * 100);
-              return (
-                <li key={item.name}>
-                  <div>
-                    <span>{item.name}</span>
-                    <strong>{ratio}%</strong>
-                  </div>
-                  <div className="ph-progress-track"><span style={{ width: `${ratio}%` }} /></div>
-                </li>
-              );
-            })}
-          </ul>
-        </PeopleHealthPanelCard>
-
+      <section className="ph-full-card">
         <PeopleHealthPanelCard title="Repeated Late and Absence Watchlist" subtitle="Requires manager action">
           <ul className="ph-alert-list">
             {lateWatchlist.map((item) => (

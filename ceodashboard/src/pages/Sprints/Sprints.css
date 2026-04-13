@@ -1,6 +1,7 @@
 .sprint-page,
 .sprint-selector-page,
-.sprint-dashboard-page {
+.sprint-dashboard-page,
+.sprint-project-page {
   --sprint-primary: #3b82f6;
   --sprint-primary-deep: #1f4fb1;
   --sprint-info: #06b6d4;
@@ -449,7 +450,7 @@
 }
 
 .sprint-work-segment.done {
-  background: #10b981;
+  background: #18b7a6;
 }
 
 .sprint-work-segment.in-progress {
@@ -457,7 +458,7 @@
 }
 
 .sprint-work-segment.todo {
-  background: #f59e0b;
+  background: #0ea5e9;
 }
 
 .sprint-work-distribution-meta {
@@ -475,7 +476,7 @@
 }
 
 .sprint-work-tag.done {
-  color: #10b981;
+  color: #0f766e;
 }
 
 .sprint-work-tag.in-progress {
@@ -483,7 +484,7 @@
 }
 
 .sprint-work-tag.todo {
-  color: #f59e0b;
+  color: #0369a1;
 }
 
 .sprint-work-total {
@@ -517,7 +518,7 @@
 }
 
 .sprint-work-dot.done {
-  background: #10b981;
+  background: #18b7a6;
 }
 
 .sprint-work-dot.in-progress {
@@ -525,7 +526,7 @@
 }
 
 .sprint-work-dot.todo {
-  background: #f59e0b;
+  background: #0ea5e9;
 }
 
 .sprint-activity-heading {
@@ -1750,23 +1751,23 @@
 }
 
 .sprint-status-icon-completed {
-  background: rgba(34, 197, 94, 0.14);
-  color: #16a34a;
+  background: rgba(24, 183, 166, 0.14);
+  color: #0f766e;
 }
 
 .sprint-status-icon-progress {
-  background: rgba(249, 115, 22, 0.14);
-  color: #c2410c;
+  background: rgba(59, 130, 246, 0.14);
+  color: #2563eb;
 }
 
 .sprint-status-icon-todo {
-  background: rgba(168, 85, 247, 0.14);
-  color: #7c3aed;
+  background: rgba(14, 165, 233, 0.14);
+  color: #0369a1;
 }
 
 .sprint-status-icon-testing {
-  background: rgba(239, 68, 68, 0.14);
-  color: #b91c1c;
+  background: rgba(100, 116, 139, 0.16);
+  color: #334155;
 }
 
 .sprint-status-item p {
@@ -1813,22 +1814,22 @@
 }
 
 .sprint-status-completed-green {
-  background: #16a34a;
+  background: #18b7a6;
   color: #ffffff;
 }
 
 .sprint-status-progress-pill {
-  background: #ea580c;
+  background: #2563eb;
   color: #ffffff;
 }
 
 .sprint-status-todo {
-  background: #7c3aed;
+  background: #0ea5e9;
   color: #ffffff;
 }
 
 .sprint-status-testing {
-  background: #b91c1c;
+  background: #64748b;
   color: #ffffff;
 }
 
@@ -1860,7 +1861,7 @@
 }
 
 .sprint-progress-segment.closed {
-  background: linear-gradient(90deg, #22c55e 0%, #10b981 100%);
+  background: linear-gradient(90deg, #14b8a6 0%, #06b6d4 100%);
 }
 
 .sprint-progress-segment.open {
@@ -1888,7 +1889,7 @@
 }
 
 .sprint-status-dot.closed {
-  background: var(--sprint-success);
+  background: #18b7a6;
 }
 
 .sprint-status-dot.open {
@@ -2222,6 +2223,130 @@
   color: #c2410c;
 }
 
+.sprint-member-performance-band {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(420px, 1.6fr);
+  gap: 18px;
+}
+
+.sprint-member-performance-card {
+  background: #ffffff;
+  border: 1px solid #dbe7ff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
+}
+
+.sprint-member-performance-score-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sprint-member-performance-score-row h2 {
+  margin: 0;
+  font-size: 48px;
+  line-height: 1;
+  color: #0f172a;
+}
+
+.sprint-member-performance-state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #ecf5ff;
+  border: 1px solid #cfe0ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.sprint-member-performance-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e2e8f0;
+  margin-top: 12px;
+}
+
+.sprint-member-performance-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb 0%, #06b6d4 100%);
+}
+
+.sprint-member-performance-metrics {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sprint-member-performance-metrics p {
+  margin: 0;
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sprint-member-performance-metrics strong {
+  margin-top: 4px;
+  display: block;
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.sprint-member-performance-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.sprint-member-performance-pills span {
+  background: #eef4ff;
+  border: 1px solid #cfe0ff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sprint-member-performance-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.sprint-member-performance-grid h4 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.sprint-member-performance-grid ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.sprint-member-performance-grid li {
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .sprint-member-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2417,7 +2542,9 @@
   }
 
   .sprint-member-summary-grid,
-  .sprint-member-columns {
+  .sprint-member-columns,
+  .sprint-member-performance-band,
+  .sprint-member-performance-grid {
     grid-template-columns: 1fr;
   }
 }

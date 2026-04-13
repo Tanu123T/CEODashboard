@@ -26,6 +26,8 @@ const formatStatusLabel = (status) => {
   return 'To Do';
 };
 
+const clamp = (value, min = 0, max = 100) => Math.min(max, Math.max(min, value));
+
 const SprintMemberDetail = () => {
   const { memberName } = useParams();
   const navigate = useNavigate();
@@ -109,17 +111,25 @@ const SprintMemberDetail = () => {
   }, [decodedMemberName]);
 
   const backTo = location.state?.from || '/sprints';
+  const sourceProjectId = location.state?.projectId;
+  const sourceSprintId = location.state?.sprintId;
 
   const initialProjectId = useMemo(() => {
-    const fromState = location.state?.projectId;
-    if (fromState) return fromState;
+    if (sourceProjectId && memberData.rows.some((row) => row.projectId === sourceProjectId)) {
+      return sourceProjectId;
+    }
 
     const path = String(location.state?.from || '');
     const matched = path.match(/^\/sprints\/([^/]+)/);
-    if (matched?.[1]) return decodeURIComponent(matched[1]);
+    if (matched?.[1]) {
+      const parsedProjectId = decodeURIComponent(matched[1]);
+      if (memberData.rows.some((row) => row.projectId === parsedProjectId)) {
+        return parsedProjectId;
+      }
+    }
 
     return memberData.rows[0]?.projectId || '';
-  }, [location.state, memberData.rows]);
+  }, [location.state, memberData.rows, sourceProjectId]);
 
   const [selectedProjectId, setSelectedProjectId] = useState(initialProjectId);
 
@@ -131,6 +141,109 @@ const SprintMemberDetail = () => {
     const picked = memberData.rows.find((row) => row.projectId === selectedProjectId);
     return picked || memberData.rows[0] || null;
   }, [memberData.rows, selectedProjectId]);
+
+  const sprintOptions = useMemo(() => {
+    if (!selectedProjectData) {
+      return [];
+    }
+
+    if (Array.isArray(selectedProjectData.sprintHistory) && selectedProjectData.sprintHistory.length > 0) {
+      return selectedProjectData.sprintHistory;
+    }
+
+    return [
+      {
+        id: selectedProjectData.sprint,
+        title: 'Current Sprint',
+        subtitle: selectedProjectData.projectName,
+        status: selectedProjectData.sprintState,
+        progress: selectedProjectData.completion,
+        tasks: `${selectedProjectData.assigned} tasks`,
+      },
+    ];
+  }, [selectedProjectData]);
+
+  const [selectedSprintId, setSelectedSprintId] = useState('');
+
+  useEffect(() => {
+    if (!sprintOptions.length) {
+      setSelectedSprintId('');
+      return;
+    }
+
+    const preferredSprintId = sourceSprintId || selectedProjectData?.sprint;
+    const matchingOption = sprintOptions.find((item) => item.id === preferredSprintId);
+    setSelectedSprintId(matchingOption ? matchingOption.id : sprintOptions[0].id);
+  }, [sourceSprintId, sprintOptions, selectedProjectData]);
+
+  const selectedSprintData = useMemo(() => {
+    if (!sprintOptions.length) {
+      return null;
+    }
+
+    const selected = sprintOptions.find((item) => item.id === selectedSprintId);
+    return selected || sprintOptions[0];
+  }, [sprintOptions, selectedSprintId]);
+
+  const selectedSprintHistoryRows = useMemo(() => {
+    if (!selectedSprintData || !Array.isArray(selectedProjectData?.sprintHistory)) {
+      return [];
+    }
+
+    return selectedProjectData.sprintHistory.filter((item) => item.id === selectedSprintData.id);
+  }, [selectedProjectData, selectedSprintData]);
+
+  const performanceInsights = useMemo(() => {
+    if (!selectedProjectData) {
+      return null;
+    }
+
+    const total = Math.max(selectedProjectData.assigned, 1);
+    const doneRate = Math.round((selectedProjectData.done / total) * 100);
+    const inFlightCount = selectedProjectData.inProgress + selectedProjectData.review;
+    const inFlightRate = Math.round((inFlightCount / total) * 100);
+    const blockedRate = Math.round((selectedProjectData.blocked / total) * 100);
+    const highPriorityRate = Math.round((selectedProjectData.prioritySummary.High / total) * 100);
+    const avgPointsPerTask = Number((selectedProjectData.points / total).toFixed(1));
+
+    const deliveryScore = clamp(Math.round((doneRate * 0.62) + (inFlightRate * 0.23) + ((100 - blockedRate) * 0.15)));
+    const qualityScore = clamp(Math.round((((selectedProjectData.done + selectedProjectData.review) / total) * 100) - (blockedRate * 0.5)));
+
+    let momentumLabel = 'Stable Delivery';
+    if (deliveryScore >= 75 && blockedRate <= 10) momentumLabel = 'High Momentum';
+    if (deliveryScore < 50 || blockedRate >= 25) momentumLabel = 'Needs Attention';
+
+    const strengths = [];
+    if (doneRate >= 40) strengths.push('Strong closure rate on assigned tasks.');
+    if (qualityScore >= 70) strengths.push('Healthy quality signal with strong done/review balance.');
+    if (avgPointsPerTask >= 5) strengths.push('Handling medium to high-complexity work items.');
+
+    const focusAreas = [];
+    if (blockedRate >= 20) focusAreas.push('Reduce blocked tasks by early dependency follow-ups.');
+    if (selectedProjectData.todo >= selectedProjectData.done) focusAreas.push('Prioritize top pending items to lift completion pace.');
+    if (highPriorityRate >= 40) focusAreas.push('High critical-load ownership; keep sprint planning buffer.');
+
+    if (strengths.length === 0) {
+      strengths.push('Consistent participation across active sprint tasks.');
+    }
+
+    if (focusAreas.length === 0) {
+      focusAreas.push('Maintain current execution rhythm and quality checks.');
+    }
+
+    return {
+      doneRate,
+      inFlightRate,
+      blockedRate,
+      highPriorityRate,
+      avgPointsPerTask,
+      deliveryScore,
+      qualityScore,
+      momentumLabel,
+      strengths,
+      focusAreas,
+    };
+  }, [selectedProjectData]);
 
   if (!decodedMemberName || memberData.rows.length === 0 || !selectedProjectData) {
     return (
@@ -160,16 +273,16 @@ const SprintMemberDetail = () => {
           <p className="sprint-project-subtitle">Detailed project-wise and sprint-wise contribution</p>
         </div>
         <div className="sprint-member-project-switch">
-          <label htmlFor="member-project-select">Project</label>
+          <label htmlFor="member-sprint-select">Sprint</label>
           <select
-            id="member-project-select"
+            id="member-sprint-select"
             className="sprint-member-select"
-            value={selectedProjectData.projectId}
-            onChange={(event) => setSelectedProjectId(event.target.value)}
+            value={selectedSprintData?.id || ''}
+            onChange={(event) => setSelectedSprintId(event.target.value)}
           >
-            {memberData.rows.map((row) => (
-              <option key={row.projectId} value={row.projectId}>
-                {row.projectName}
+            {sprintOptions.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.id} - {item.title}
               </option>
             ))}
           </select>
@@ -220,6 +333,73 @@ const SprintMemberDetail = () => {
           <div>
             <p>Story Points</p>
             <h3>{selectedProjectData.points}</h3>
+          </div>
+        </article>
+      </section>
+
+      <section className="sprint-member-performance-band">
+        <article className="sprint-member-performance-card sprint-member-performance-score-card">
+          <p className="sprint-summary-label">Performance Score</p>
+          <div className="sprint-member-performance-score-row">
+            <h2>{performanceInsights?.deliveryScore ?? 0}</h2>
+            <span className="sprint-member-performance-state">{performanceInsights?.momentumLabel}</span>
+          </div>
+          <div className="sprint-member-performance-track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={performanceInsights?.deliveryScore ?? 0}>
+            <span style={{ width: `${performanceInsights?.deliveryScore ?? 0}%` }} />
+          </div>
+          <div className="sprint-member-performance-metrics">
+            <div>
+              <p>Completion Rate</p>
+              <strong>{performanceInsights?.doneRate ?? 0}%</strong>
+            </div>
+            <div>
+              <p>In Flight</p>
+              <strong>{performanceInsights?.inFlightRate ?? 0}%</strong>
+            </div>
+            <div>
+              <p>Blocked</p>
+              <strong>{performanceInsights?.blockedRate ?? 0}%</strong>
+            </div>
+            <div>
+              <p>Quality Score</p>
+              <strong>{performanceInsights?.qualityScore ?? 0}</strong>
+            </div>
+          </div>
+        </article>
+
+        <article className="sprint-member-performance-card">
+          <div className="sprint-panel-heading">
+            <div>
+              <h2>Performance Insights</h2>
+              <p className="sprint-panel-copy">
+                {selectedProjectData.projectName} contribution profile for {decodedMemberName}
+              </p>
+            </div>
+          </div>
+
+          <div className="sprint-member-performance-pills">
+            <span>Critical Load: {performanceInsights?.highPriorityRate ?? 0}%</span>
+            <span>Avg Story Points / Task: {performanceInsights?.avgPointsPerTask ?? 0}</span>
+            <span>Sprint Signal: {selectedSprintData?.progress ?? selectedProjectData.completion}%</span>
+          </div>
+
+          <div className="sprint-member-performance-grid">
+            <div>
+              <h4>Strengths</h4>
+              <ul>
+                {(performanceInsights?.strengths || []).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4>Focus Areas</h4>
+              <ul>
+                {(performanceInsights?.focusAreas || []).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         </article>
       </section>
@@ -291,10 +471,10 @@ const SprintMemberDetail = () => {
             <div key={`${selectedProjectData.projectId}-sprint`} className="sprint-member-sprint-item">
               <div className="sprint-member-sprint-heading">
                 <div>
-                  <strong>{selectedProjectData.sprint}</strong>
-                  <p>{selectedProjectData.projectName}</p>
+                  <strong>{selectedSprintData?.id || selectedProjectData.sprint}</strong>
+                  <p>{selectedSprintData?.subtitle || selectedProjectData.projectName}</p>
                 </div>
-                <span className="sprint-member-sprint-badge">{selectedProjectData.assigned} tasks</span>
+                <span className="sprint-member-sprint-badge">{selectedSprintData?.tasks || `${selectedProjectData.assigned} tasks`}</span>
               </div>
               <div className="sprint-member-sprint-meta">
                 <span><CalendarDays size={14} /> {selectedProjectData.duration}</span>
@@ -308,7 +488,7 @@ const SprintMemberDetail = () => {
               </div>
 
               <div className="sprint-member-history-list">
-                {selectedProjectData.sprintHistory.map((item) => (
+                {selectedSprintHistoryRows.map((item) => (
                   <div key={`${selectedProjectData.projectId}-${item.id}`} className="sprint-member-history-item">
                     <div>
                       <strong>{item.id} - {item.title}</strong>
