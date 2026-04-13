@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './Sprints.css';
 import {
   ResponsiveContainer,
@@ -18,7 +18,6 @@ import { sprintProjects, sprintDetails } from './sprintData';
 
 const SprintProjectDetail = () => {
   const { sprintId } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
 
   let project = null;
@@ -79,8 +78,6 @@ const SprintProjectDetail = () => {
       : selectedSprint.status === 'delayed'
         ? 'Delayed'
         : 'Upcoming';
-
-  const teamMembers = [...new Set(details.board.map((item) => item.owner))];
 
   const getMetricProgress = (value) => Math.min(100, Math.max(8, Math.round((value / Math.max(totalTasks, 1)) * 100)));
 
@@ -181,26 +178,6 @@ const SprintProjectDetail = () => {
             </article>
           </div>
 
-          <div className="sprint-detail-team-row">
-            <p className="sprint-summary-label">Team</p>
-            <div className="sprint-detail-team-chips">
-              {teamMembers.map((owner) => (
-                <button
-                  key={owner}
-                  type="button"
-                  className="sprint-team-chip"
-                  onClick={() =>
-                    navigate(`/sprints/member/${encodeURIComponent(owner)}`, {
-                      state: { from: location.pathname, projectId: project.id },
-                    })
-                  }
-                >
-                  <span>{owner.split(' ').map((part) => part[0]).join('')}</span>
-                  {owner}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         <article className="sprint-story-points-card sprint-story-points-top-card">

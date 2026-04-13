@@ -596,6 +596,47 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
+}
+
+.ph-date-pill {
+  min-height: 36px;
+  border: 1px solid #d7e3f1;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0 12px;
+  color: #365677;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ph-date-icon-btn {
+  min-height: 42px;
+  width: 42px;
+  border: 1px solid #bcd3ec;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
+  color: #355f8b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(52, 95, 139, 0.12);
+}
+
+.ph-date-icon-btn:hover {
+  background: linear-gradient(180deg, #f8fbff 0%, #e9f2ff 100%);
+  color: #244d77;
+}
+
+.ph-date-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .ph-attendance-table-wrap {

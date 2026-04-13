@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './Sprints.css';
 import {
   ArrowLeft,
@@ -7,17 +7,6 @@ import {
   ChevronDown,
   ChevronRight,
 } from 'lucide-react';
-//
-
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from 'recharts';
 import { sprintProjects, sprintDetails, sprintDashboardData } from './sprintData';
 import SprintSummaryCards from '../../components/SprintSummaryCards';
 
@@ -28,6 +17,7 @@ const statusTone = (status) => {
 };
 
 const SprintProjectSprints = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const { projectId } = useParams();
   const defaultProjectId = sprintProjects[0]?.id;
@@ -68,7 +58,13 @@ const SprintProjectSprints = () => {
     return filtered;
   }, [details, project, selectedTab]);
 
-  const progressData = details?.burndown || [];
+  const teamMembers = useMemo(() => {
+    if (!details?.board) {
+      return [];
+    }
+
+    return [...new Set(details.board.map((item) => item.owner))];
+  }, [details]);
 
   if (!project || !details) {
     return (
@@ -128,6 +124,27 @@ const SprintProjectSprints = () => {
 
       <SprintSummaryCards metrics={sprintDashboardData.metrics} />
 
+      <section className="sprint-detail-team-row">
+        <p className="sprint-summary-label">Team</p>
+        <div className="sprint-detail-team-chips">
+          {teamMembers.map((owner) => (
+            <button
+              key={owner}
+              type="button"
+              className="sprint-team-chip"
+              onClick={() =>
+                navigate(`/sprints/member/${encodeURIComponent(owner)}`, {
+                  state: { from: location.pathname, projectId: project.id, sprintId: project.sprint },
+                })
+              }
+            >
+              <span>{owner.split(' ').map((part) => part[0]).join('')}</span>
+              {owner}
+            </button>
+          ))}
+        </div>
+      </section>
+
       <div className="sprint-tabs-container">
         <div className="sprint-tabs">
           {[
@@ -180,36 +197,6 @@ const SprintProjectSprints = () => {
           ))}
         </div>
       </article>
-      <section className="sprint-project-main-grid">
-        <article className="sprint-panel sprint-progress-large-card">
-          <div className="sprint-panel-heading sprint-progress-panel-heading">
-            <div>
-              <h2>Sprint Progress</h2>
-              <p>All sprints combined</p>
-            </div>
-            <button type="button" className="sprint-panel-select">All Sprints</button>
-          </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={progressData} margin={{ top: 24, right: 20, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="progressGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e9eef4" vertical={false} />
-              <XAxis dataKey="sprintLabel" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} domain={[0, 'dataMax + 10']} />
-              <Tooltip
-                contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0' }}
-                formatter={(value) => [`${value}%`, 'Progress']}
-              />
-              <Area type="monotone" dataKey="progress" stroke="#3b82f6" strokeWidth={3} fill="url(#progressGradient)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </article>
-
-      </section>
     </div>
   );
 };

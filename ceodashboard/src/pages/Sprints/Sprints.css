@@ -1,6 +1,7 @@
 .sprint-page,
 .sprint-selector-page,
-.sprint-dashboard-page {
+.sprint-dashboard-page,
+.sprint-project-page {
   --sprint-primary: #3b82f6;
   --sprint-primary-deep: #1f4fb1;
   --sprint-info: #06b6d4;
@@ -2222,6 +2223,130 @@
   color: #c2410c;
 }
 
+.sprint-member-performance-band {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(420px, 1.6fr);
+  gap: 18px;
+}
+
+.sprint-member-performance-card {
+  background: #ffffff;
+  border: 1px solid #dbe7ff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
+}
+
+.sprint-member-performance-score-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sprint-member-performance-score-row h2 {
+  margin: 0;
+  font-size: 48px;
+  line-height: 1;
+  color: #0f172a;
+}
+
+.sprint-member-performance-state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #ecf5ff;
+  border: 1px solid #cfe0ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.sprint-member-performance-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e2e8f0;
+  margin-top: 12px;
+}
+
+.sprint-member-performance-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb 0%, #06b6d4 100%);
+}
+
+.sprint-member-performance-metrics {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sprint-member-performance-metrics p {
+  margin: 0;
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sprint-member-performance-metrics strong {
+  margin-top: 4px;
+  display: block;
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.sprint-member-performance-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.sprint-member-performance-pills span {
+  background: #eef4ff;
+  border: 1px solid #cfe0ff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sprint-member-performance-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.sprint-member-performance-grid h4 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.sprint-member-performance-grid ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.sprint-member-performance-grid li {
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .sprint-member-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2417,7 +2542,9 @@
   }
 
   .sprint-member-summary-grid,
-  .sprint-member-columns {
+  .sprint-member-columns,
+  .sprint-member-performance-band,
+  .sprint-member-performance-grid {
     grid-template-columns: 1fr;
   }
 }
