@@ -290,68 +290,98 @@ const RoleCoverageTab = ({ members }) => {
           </header>
 
           <div className="ph-member-dashboard-grid">
-          <section className="ph-member-info-card ph-member-dashboard-card">
-            <h5 className="ph-member-section-head"><UserRound size={15} /> Personal Information</h5>
-            <div className="ph-member-project-detail-panel">
-              <div><small>Employee Code</small><strong>{selectedMemberInsights.employeeCode}</strong></div>
-              <div><small>Department</small><strong>{selectedMemberInsights.department}</strong></div>
-              <div><small>Role</small><strong>{selectedMemberInsights.role}</strong></div>
-              <div><small>Location</small><strong>{selectedMemberInsights.location}</strong></div>
-              <div><small>Joined On</small><strong>{selectedMemberInsights.joinedOn}</strong></div>
-              <div><small>Tenure</small><strong>{selectedMemberInsights.tenure}</strong></div>
-              <div><small>Email</small><strong>{selectedMemberInsights.email}</strong></div>
-              <div><small>Phone</small><strong>{selectedMemberInsights.phone}</strong></div>
-            </div>
-          </section>
+          <div className="ph-member-column-left">
+            <section className="ph-member-info-card ph-member-dashboard-card">
+              <h5 className="ph-member-section-head"><UserRound size={15} /> Personal Information</h5>
+              <div className="ph-member-project-detail-panel">
+                <div><small>Employee Code</small><strong>{selectedMemberInsights.employeeCode}</strong></div>
+                <div><small>Department</small><strong>{selectedMemberInsights.department}</strong></div>
+                <div><small>Role</small><strong>{selectedMemberInsights.role}</strong></div>
+                <div><small>Location</small><strong>{selectedMemberInsights.location}</strong></div>
+                <div><small>Joined On</small><strong>{selectedMemberInsights.joinedOn}</strong></div>
+                <div><small>Tenure</small><strong>{selectedMemberInsights.tenure}</strong></div>
+                <div><small>Email</small><strong style={{ fontSize: '12px', wordBreak: 'break-all' }}>{selectedMemberInsights.email}</strong></div>
+                <div><small>Phone</small><strong>{selectedMemberInsights.phone}</strong></div>
+              </div>
+            </section>
 
-          <section className="ph-member-info-card ph-member-dashboard-card">
-            <h5 className="ph-member-section-head"><Timer size={15} /> Sprint Progress</h5>
-            <div className="ph-member-projects-worked">
-              <ul>
-                {selectedMemberInsights.sprintProgress.map((item) => (
-                  <li key={item.sprint}>
-                    <div>
-                      <strong>{item.project}</strong>
-                      <span style={{ fontSize: '12px', color: '#5f87c9', marginLeft: '4px' }}>{item.sprint}</span>
-                    </div>
-                    <span style={{ fontSize: '13px', color: '#666' }}>Allocated: {item.allocated} • Done: {item.done}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-
-          <section className="ph-member-info-card project ph-member-dashboard-card">
+            <section className="ph-member-info-card ph-member-dashboard-card">
               <h5 className="ph-member-section-head"><BriefcaseBusiness size={15} /> Project Section</h5>
+              <div style={{ fontSize: '11px', color: '#7a8ea7', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '12px' }}>Projects Worked On</div>
               <div className="ph-member-projects-worked">
-                <h6>PROJECTS WORKED ON</h6>
                 <ul>
                   {selectedMemberInsights.projectsWorked.map((item) => (
                     <li key={`project-${item.name}`}>
                       <div>
                         <strong>{item.name}</strong>
-                        <span style={{ fontSize: '12px', color: '#5f87c9', marginLeft: '8px' }}>{item.role}</span>
+                        <span style={{ fontSize: '11px', color: '#5f87c9', marginLeft: '8px', fontWeight: '700', textTransform: 'uppercase' }}>{item.role}</span>
                       </div>
-                      <strong>{item.performance}%</strong>
+                      <strong style={{ minWidth: '35px', textAlign: 'right' }}>{item.performance}%</strong>
                     </li>
                   ))}
                 </ul>
               </div>
-          </section>
+            </section>
+          </div>
 
-          <section className="ph-member-info-card ph-member-dashboard-card">
-            <h5 className="ph-member-section-head"><CalendarDays size={15} /> Attendance Section</h5>
-            <div className="ph-member-project-detail-panel">
-              <div><small>Total Working Days</small><strong>{selectedMemberInsights.attendanceDays}</strong></div>
-              <div><small>Present</small><strong>{selectedMemberInsights.presentDays}</strong></div>
-              <div><small>Absent</small><strong>{selectedMemberInsights.absentDays}</strong></div>
-              <div><small>Leaves</small><strong>{selectedMemberInsights.leaves}</strong></div>
-              <div><small>Attendance Rate</small><strong>{selectedMemberInsights.attendancePercent}%</strong></div>
-              <div><small>Check-in Time</small><strong>{selectedMemberInsights.checkInTime}</strong></div>
-              <div><small>Current Status</small><strong>{selectedMemberInsights.presentLabel}</strong></div>
-              <div><small>Stability</small><strong>{selectedMemberInsights.attritionScore}</strong></div>
-            </div>
-          </section>
+          <div className="ph-member-column-right">
+            <section className="ph-member-info-card ph-member-dashboard-card">
+              <h5 className="ph-member-section-head"><Timer size={15} /> Sprint Progress</h5>
+              <div className="ph-member-projects-worked">
+                <ul>
+                  {selectedMemberInsights.sprintProgress.map((item) => (
+                    <li key={item.sprint} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
+                      <div>
+                        <strong>{item.project}</strong>
+                        <span style={{ fontSize: '11px', color: '#5f87c9', marginLeft: '4px', fontWeight: '700', textTransform: 'uppercase' }}>{item.sprint}</span>
+                      </div>
+                      <span style={{ fontSize: '13px', color: '#0a1e3a', fontWeight: '700', alignSelf: 'flex-end' }}>
+                        Allocated: {item.allocated} • Done: {item.done}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section className="ph-member-info-card ph-member-dashboard-card">
+              <h5 className="ph-member-section-head"><CalendarDays size={15} /> Attendance Section</h5>
+              <div className="ph-member-attendance-grid">
+                <div className="ph-member-att-box">
+                  <small>Total Working Days</small>
+                  <strong>{selectedMemberInsights.attendanceDays}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Present</small>
+                  <strong style={{ color: '#10b981' }}>{selectedMemberInsights.presentDays}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Absent</small>
+                  <strong style={{ color: '#bf4a4a' }}>{selectedMemberInsights.absentDays}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Leaves</small>
+                  <strong>{selectedMemberInsights.leaves}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Attendance Rate</small>
+                  <strong>{selectedMemberInsights.attendancePercent}%</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Check-in Time</small>
+                  <strong>{selectedMemberInsights.checkInTime}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Current Status</small>
+                  <strong style={{ color: selectedMemberInsights.presentLabel === 'Present' ? '#10b981' : '#a97216' }}>{selectedMemberInsights.presentLabel}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Stability</small>
+                  <strong>{selectedMemberInsights.attritionScore}</strong>
+                </div>
+              </div>
+            </section>
+          </div>
           </div>
         </section>
       </div>
