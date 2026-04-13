@@ -7,7 +7,7 @@ import {
   ChevronDown,
   ChevronRight,
 } from 'lucide-react';
-import { sprintProjects, sprintDetails, sprintDashboardData } from './sprintData';
+import { sprintProjects, sprintDetails, sprintDashboardData, memberRegistry } from './sprintData';
 import SprintSummaryCards from '../../components/SprintSummaryCards';
 
 const statusTone = (status) => {
@@ -127,21 +127,27 @@ const SprintProjectSprints = () => {
       <section className="sprint-detail-team-row">
         <p className="sprint-summary-label">Team</p>
         <div className="sprint-detail-team-chips">
-          {teamMembers.map((owner) => (
-            <button
-              key={owner}
-              type="button"
-              className="sprint-team-chip"
-              onClick={() =>
-                navigate(`/sprints/member/${encodeURIComponent(owner)}`, {
-                  state: { from: location.pathname, projectId: project.id, sprintId: project.sprint },
-                })
-              }
-            >
-              <span>{owner.split(' ').map((part) => part[0]).join('')}</span>
-              {owner}
-            </button>
-          ))}
+          {teamMembers.map((owner) => {
+            const memberInfo = memberRegistry[owner] || { fullName: owner, role: 'Team Member' };
+            return (
+              <button
+                key={owner}
+                type="button"
+                className="sprint-team-chip"
+                onClick={() =>
+                  navigate(`/sprints/member/${encodeURIComponent(owner)}`, {
+                    state: { from: location.pathname, projectId: project.id, sprintId: project.sprint },
+                  })
+                }
+              >
+                <span>{owner.split(' ').map((part) => part[0]).join('')}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'left' }}>
+                  <strong>{memberInfo.fullName}</strong>
+                  <small style={{ fontSize: '11px', color: '#666' }}>{memberInfo.role}</small>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </section>
 

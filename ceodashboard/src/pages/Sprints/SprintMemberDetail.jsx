@@ -306,6 +306,10 @@ const SprintMemberDetail = () => {
     return Number(clamp(selectedSprintMetrics.score / 20, 1, 5).toFixed(1));
   }, [selectedSprintMetrics]);
 
+  const profileImageUrl = useMemo(() => (
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(decodedMemberName)}&background=4b8fe7&color=ffffff&size=256&bold=true`
+  ), [decodedMemberName]);
+
   if (!decodedMemberName || memberData.rows.length === 0 || !selectedProjectData) {
     return (
       <div className="dashboard-wrapper sprint-page sprint-member-page">
@@ -325,17 +329,31 @@ const SprintMemberDetail = () => {
   return (
     <div className="dashboard-wrapper sprint-page sprint-member-page sprint-member-v2-page">
       <header className="sprint-member-v2-header">
-        <div>
+        <div className="sprint-member-v2-headline">
           <button type="button" className="sprint-back-link" onClick={() => navigate(backTo)}>
             <ArrowLeft size={14} /> Back
           </button>
+          <p className="sprint-member-v2-eyebrow">Member Performance Profile</p>
           <h1>{decodedMemberName}</h1>
+          <p className="sprint-member-v2-subtitle">{selectedProjectData.projectName} · {selectedSprintData?.id || 'Sprint'} Insights</p>
         </div>
-        <div className="sprint-member-v2-profile">
-          <div className="sprint-member-v2-avatar">{decodedMemberName.slice(0, 2).toUpperCase()}</div>
+
+        <div className="sprint-member-v2-profile-corner">
+          <div className="sprint-member-v2-avatar-ring">
+            <div className="sprint-member-v2-avatar">
+              <span>{decodedMemberName.slice(0, 2).toUpperCase()}</span>
+              <img
+                src={profileImageUrl}
+                alt={`${decodedMemberName} profile`}
+                onError={(event) => {
+                  event.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          </div>
           <div>
             <strong>{decodedMemberName}</strong>
-            <span>{selectedProjectData.projectName}</span>
+            <span>Sprint Contributor</span>
           </div>
         </div>
       </header>

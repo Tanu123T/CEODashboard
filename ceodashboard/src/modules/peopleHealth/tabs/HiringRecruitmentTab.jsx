@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import PeopleHealthPanelCard from '../components/PeopleHealthPanelCard';
 
 const sortByName = (a, b) => a.name.localeCompare(b.name);
@@ -25,6 +26,7 @@ const buildHierarchy = (members) => {
 };
 
 const HiringRecruitmentTab = ({ members }) => {
+  const [isFullView, setIsFullView] = useState(false);
   const hierarchy = useMemo(() => buildHierarchy(members), [members]);
 
   const handleOrgChartWheel = (event) => {
@@ -46,7 +48,25 @@ const HiringRecruitmentTab = ({ members }) => {
           title="Organization Hierarchy"
           subtitle="Hierarchy view with CEO, leadership, and staff cards"
         >
-          <div className="ph-org-scroll-wrap" onWheel={handleOrgChartWheel} tabIndex={0} aria-label="Organization Hierarchy horizontally scrollable chart">
+          <div className="ph-org-header-controls">
+            <button 
+              type="button"
+              className={`ph-org-view-toggle ${isFullView ? 'active' : ''}`}
+              onClick={() => setIsFullView(!isFullView)}
+              aria-label={isFullView ? 'Switch to Scroll View' : 'Switch to Full View'}
+            >
+              {isFullView ? (
+                <>
+                  <Eye size={16} /> Full View
+                </>
+              ) : (
+                <>
+                  <EyeOff size={16} /> Scroll View
+                </>
+              )}
+            </button>
+          </div>
+          <div className={`ph-org-scroll-wrap ${isFullView ? 'ph-org-full-view' : ''}`} onWheel={isFullView ? undefined : handleOrgChartWheel} tabIndex={0} aria-label="Organization Hierarchy horizontally scrollable chart">
             <div className="ph-org-chart">
               <div className="ph-org-tier">
                 <div className="ph-org-grid ph-org-grid-root">
