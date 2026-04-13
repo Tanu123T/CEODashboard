@@ -34,7 +34,7 @@ const Header = ({ onToggleSidebar }) => {
         <div className="logo-box">VG</div>
 
         <div className="title-wrap">
-          <h2 className="title">Vishwaguru Infotech Pvt Ltd</h2>
+          <h2 className="title1">Vishwaguru Infotech Pvt Ltd</h2>
           <p>CEO Dashboard</p>
         </div>
       </div>
