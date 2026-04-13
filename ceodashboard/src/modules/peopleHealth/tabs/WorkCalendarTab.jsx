@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, Eye, X } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, Eye, LayoutGrid, X } from 'lucide-react';
 import { teamMembers, nextMeeting } from '../data/ceoSchedule';
 import './WorkCalendar.css';
 
@@ -665,12 +665,7 @@ const WorkCalendarTab = () => {
               aria-pressed={viewMode === 'week'}
               onClick={() => setViewMode('week')}
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <rect x="2" y="2" width="6" height="6" />
-                <rect x="12" y="2" width="6" height="6" />
-                <rect x="2" y="12" width="6" height="6" />
-                <rect x="12" y="12" width="6" height="6" />
-              </svg>
+              <LayoutGrid size={18} />
             </button>
             <button
               type="button"
@@ -679,10 +674,7 @@ const WorkCalendarTab = () => {
               aria-pressed={viewMode === 'day'}
               onClick={() => setViewMode('day')}
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <rect x="2" y="2" width="16" height="2" />
-                <rect x="2" y="6" width="16" height="12" />
-              </svg>
+              <CalendarDays size={18} />
             </button>
           </div>
         </div>
