@@ -1149,19 +1149,20 @@
 
 .info-list {
     display: grid;
-    gap: 10px;
-}
-
-.info-list-compact {
     gap: 8px;
 }
 
+.info-list-compact {
+    gap: 6px;
+}
+
 .info-item {
+    margin-top: 7px;
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: flex-start;
     gap: 12px;
-    padding: 10px 12px;
+    padding: 8px 10px;
     border-bottom: 1px solid #edf1f6;
 
 }
@@ -1171,13 +1172,13 @@
 }
 
 .info-item-small {
-    padding: 8px 10px;
-    gap: 10px;
+    padding: 6px 8px;
+    gap: 8px;
 }
 
 .info-dot {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
     margin-top: 4px;
@@ -1198,8 +1199,8 @@
 .info-copy h4 {
     margin: 0;
     color: #0b1f44;
-    font-size: 15px;
-    line-height: 1.25;
+    font-size: 14px;
+    line-height: 1.15;
     font-weight: 600;
 }
 
@@ -1217,18 +1218,18 @@
 }
 
 .info-item-small .info-copy h4 {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .info-copy p {
-    margin: 3px 0 0;
+    margin: 2px 0 0;
     color: #6f86a4;
     font-size: 12px;
 }
 
 .info-item-small .info-copy p {
-    margin-top: 2px;
-    font-size: 11px;
+    margin-top: 1px;
+    font-size: 10px;
 }
 
 .info-tag {
@@ -1256,8 +1257,13 @@
 }
 
 .info-item-small .info-tag {
-    padding: 3px 9px;
-    font-size: 10px;
+    padding: 2px 8px;
+    font-size: 9px;
+}
+
+.compact-panel-small {
+    min-height: 190px;
+    padding: 10px;
 }
 
 @media (max-width: 1400px) {
