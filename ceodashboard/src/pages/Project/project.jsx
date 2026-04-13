@@ -202,36 +202,6 @@ const Projects = () => {
           </article>
         </section>
 
-        <section className="project-detail-panel">
-          <h3>BUDGET</h3>
-          <div className="budget-head-row">
-            <strong>{formatCurrency(selectedProject.budgetSpent)}</strong>
-            <span>of {formatCurrency(selectedProject.budgetTotal)}</span>
-            <em>{selectedProject.progress}% utilized</em>
-          </div>
-          <div className="project-progress-track detail-budget-track">
-            <span
-              className={`project-progress-fill ${selectedProject.statusTone}`}
-              style={{ width: `${selectedProject.progress}%` }}
-            />
-          </div>
-
-          <div className="budget-stat-grid">
-            <article>
-              <p>BUDGET</p>
-              <h4>{formatCurrency(selectedProject.budgetTotal)}</h4>
-            </article>
-            <article>
-              <p>SPENT</p>
-              <h4 className="green-text">{formatCurrency(selectedProject.budgetSpent)}</h4>
-            </article>
-            <article>
-              <p>REMAINING</p>
-              <h4 className="green-text">{formatCurrency(remaining)}</h4>
-            </article>
-          </div>
-        </section>
-
         <section className="project-detail-grid bottom">
           <div className="project-detail-side">
             <section className="project-detail-panel sprint-insight-panel">

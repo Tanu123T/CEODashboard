@@ -898,6 +898,40 @@
   background: #dfeeff;
 }
 
+.ph-member-detail-page {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+}
+
+.ph-member-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ph-member-detail-header h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #1f344e;
+}
+
+.ph-member-detail-breadcrumb {
+  margin: 0 0 6px;
+  color: #647d9d;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ph-member-detail-card {
+  width: 100%;
+  max-width: 100%;
+  box-shadow: none;
+}
+
 .ph-member-modal-headline {
   padding-right: 44px;
 }
