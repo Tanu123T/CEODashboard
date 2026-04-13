@@ -670,7 +670,7 @@ const Home = () => {
               </button>
             </header>
 
-            <div className="progress-list">
+            <div className="progress-list1">
               {sprintOverview.map((item) => (
                 <article className="progress-item" key={item.title}>
                   <div className={`progress-dot ${item.tone}`} />
