@@ -49,10 +49,15 @@
     font-weight: 700;
 }
 
-.hero {
+.dashboard-top-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(500px, 620px);
-    gap: 14px;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 12px;
+    align-items: stretch;
+}
+
+.hero {
+    display: block;
     border-radius: 16px;
     padding: 18px;
     border: 1px solid #dbe6f5;
@@ -63,7 +68,8 @@
 
 .hero-copy {
     display: grid;
-    align-content: center;
+    align-content: start;
+    gap: 0;
 }
 
 .hero h1 {
@@ -116,13 +122,30 @@
 }
 
 .hero-quote-card {
+    margin-top: 14px;
+    width: clamp(440px, 96%, 620px);
+    max-width: 100%;
+    min-height: 150px;
+    max-height: 165px;
     border-radius: 14px;
     border: 1px solid #d8e6f8;
     background: #ffffff;
     box-shadow: 0 10px 30px rgba(44, 79, 126, 0.1);
-    padding: 14px;
+    padding: 12px;
     display: grid;
-    gap: 10px;
+    gap: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-quote-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #3d95ff 0%, #3ad2af 100%);
 }
 
 .hero-quote-card header {
@@ -143,12 +166,65 @@
     letter-spacing: 0.04em;
 }
 
-.hero-quote-card p {
+.hero-quote-body {
+    display: grid;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.hero-quote-text {
     margin: 0;
     color: #213f68;
     font-size: 14px;
     font-weight: 600;
-    line-height: 1.45;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.hero-quote-author {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-top: 1px solid #e8eef8;
+    padding-top: 7px;
+}
+
+.hero-quote-author span {
+    color: #173763;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.hero-quote-author small {
+    color: #6a83a8;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.top-schedule-section {
+    min-height: 0;
+}
+
+.top-schedule-panel {
+    height: 100%;
+    max-height: 240px;
+    overflow: hidden;
+    padding: 8px;
+}
+
+.top-schedule-panel .schedule-item {
+    padding: 4px 0;
+}
+
+.top-schedule-panel .panel-head {
+    margin-bottom: 6px;
 }
 
 .hero-quote-refresh {
@@ -1217,8 +1293,23 @@
 }
 
 @media (max-width: 1200px) {
-    .hero {
+    .dashboard-top-grid {
         grid-template-columns: 1fr;
+    }
+
+    .hero-quote-card {
+        width: min(100%, 420px);
+        aspect-ratio: auto;
+    }
+
+    .schedule-item {
+        grid-template-columns: 90px 40px minmax(0, 1fr);
+    }
+
+    .schedule-tag {
+        grid-column: 3;
+        justify-self: start;
+        margin-top: 4px;
     }
 
     .kpi-grid {
@@ -1255,6 +1346,10 @@
         padding: 14px;
     }
 
+    .hero-quote-card {
+        width: 100%;
+    }
+
     .panel,
     .kpi-card {
         padding: 12px;
@@ -1277,15 +1372,17 @@
         font-size: 13px;
     }
 
+    .hero-quote-author span {
+        font-size: 11px;
+    }
+
+    .hero-quote-author small {
+        font-size: 10px;
+    }
+
     .schedule-item {
         grid-template-columns: 90px 40px minmax(0, 1fr);
         gap: 10px;
-    }
-
-    .schedule-tag {
-        grid-column: 3;
-        justify-self: start;
-        margin-top: 4px;
     }
 
     .panel-head h2 {
