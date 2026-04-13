@@ -1,13 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { BriefcaseBusiness, CheckCircle2, ChevronDown, ChevronUp, Mail, MapPin, Phone, X } from 'lucide-react';
+import {
+  BriefcaseBusiness,
+  UserRound,
+  Timer,
+  CalendarDays,
+  X,
+} from 'lucide-react';
 import PeopleHealthPanelCard from '../components/PeopleHealthPanelCard';
 
 const RoleCoverageTab = ({ members }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showAllMembers, setShowAllMembers] = useState(false);
-  const [showProjectDetails, setShowProjectDetails] = useState(false);
   const visibleMembers = showAllMembers ? members : members.slice(0, 6);
   const pathSegments = location.pathname.split('/').filter(Boolean);
   const selectedMemberId = pathSegments[1] === 'role-coverage' && pathSegments[2] === 'member'
@@ -19,7 +24,6 @@ const RoleCoverageTab = ({ members }) => {
       if (selectedMemberId) {
         navigate('/employees/role-coverage');
       }
-      setShowProjectDetails(false);
       return;
     }
 
@@ -30,13 +34,8 @@ const RoleCoverageTab = ({ members }) => {
     const exists = members.some((item) => item.id === selectedMemberId);
     if (!exists) {
       navigate('/employees/role-coverage');
-      setShowProjectDetails(false);
     }
   }, [members, selectedMemberId, navigate]);
-
-  useEffect(() => {
-    setShowProjectDetails(false);
-  }, [selectedMemberId]);
 
   const selectedMember = useMemo(() => {
     if (!selectedMemberId) return null;
@@ -101,6 +100,9 @@ const RoleCoverageTab = ({ members }) => {
     const checkInMinute = (personId * 7) % 60;
 
     const projectCatalog = ['Platform v3.0 Rebuild', 'ML Recommendation Engine', 'Identity Security Upgrade', 'Revenue Insights Hub', 'Client Success Portal'];
+    const roleCatalog = ['Project Lead', 'Technical Architect', 'Core Engineer', 'QA Lead', 'Data Engineer'];
+    const sprintCatalog = ['Sprint 12', 'Sprint 13', 'Sprint 14', 'Sprint 15'];
+    
     const projectSeed = personId % projectCatalog.length;
     const currentProject = projectCatalog[projectSeed];
     const projectsWorked = [
@@ -109,15 +111,39 @@ const RoleCoverageTab = ({ members }) => {
       projectCatalog[(projectSeed + 2) % projectCatalog.length],
     ].map((name, index) => ({
       name,
-      progress: Math.max(38, Math.min(89, overallProgress + 8 - (index * 11) + (personId % 6))),
+      role: roleCatalog[(personId + index) % roleCatalog.length],
+      performance: Math.max(38, Math.min(89, overallProgress + 8 - (index * 11) + (personId % 6))),
     }));
 
-    const roleCatalog = ['Project Lead', 'Technical Architect', 'Core Engineer', 'QA Lead', 'Data Engineer'];
-    const sprintCatalog = ['Sprint 12', 'Sprint 13', 'Sprint 14', 'Sprint 15'];
     const durationWeeks = 8 + (personId % 7);
     const totalTasks = tasksAllocated + 10 + (personId % 8);
     const closedTasks = Math.min(totalTasks, completed + 8);
     const inProgressTasks = Math.max(0, totalTasks - closedTasks - delayed);
+    const attendanceDays = 22;
+    const presentDays = Math.max(12, Math.min(attendanceDays, Math.round((selectedMember.stabilityIndex / 100) * attendanceDays)));
+    const absentDays = Math.max(0, attendanceDays - presentDays - leaves);
+    const attendancePercent = Math.round((presentDays / Math.max(attendanceDays, 1)) * 100);
+
+    const sprintProgress = [
+      {
+        sprint: sprintCatalog[personId % sprintCatalog.length],
+        project: projectCatalog[personId % projectCatalog.length],
+        allocated: Math.max(10, Math.round(tasksAllocated * 0.45)),
+        done: Math.max(6, Math.round(completed * 0.4)),
+      },
+      {
+        sprint: sprintCatalog[(personId + 1) % sprintCatalog.length],
+        project: projectCatalog[(personId + 1) % projectCatalog.length],
+        allocated: Math.max(10, Math.round(tasksAllocated * 0.42)),
+        done: Math.max(5, Math.round(completed * 0.35)),
+      },
+      {
+        sprint: sprintCatalog[(personId + 2) % sprintCatalog.length],
+        project: projectCatalog[(personId + 2) % projectCatalog.length],
+        allocated: Math.max(9, Math.round(tasksAllocated * 0.38)),
+        done: Math.max(4, Math.round(completed * 0.3)),
+      },
+    ];
 
     return {
       employee: selectedMember.name,
@@ -134,11 +160,15 @@ const RoleCoverageTab = ({ members }) => {
       resignationSignal,
       lastPromotion: promotionDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
       compensationBand: `Band ${String.fromCharCode(65 + (personId % 5))}-${(personId % 3) + 1}`,
-      salary: `$${Math.round(132 + selectedMember.stabilityIndex * 0.7)}K`,
       successionReadiness,
       managerNote: managerNotes[personId % managerNotes.length],
       checkInTime: `${String(checkInHour).padStart(2, '0')}:${String(checkInMinute).padStart(2, '0')}`,
       presentLabel: selectedMember.status === 'leave' ? 'On Leave' : 'Present',
+      attendanceDays,
+      presentDays,
+      absentDays,
+      attendancePercent,
+      sprintProgress,
       taskLoad,
       tasksAllocated,
       completed,
@@ -191,16 +221,12 @@ const RoleCoverageTab = ({ members }) => {
           >
             Back to members
           </button>
-          <div>
-            <p className="ph-member-detail-breadcrumb">Employee Hub</p>
-            <h3>{selectedMemberInsights.employee}</h3>
-          </div>
         </div>
 
-        <section className="ph-member-modal ph-member-modal-card ph-member-detail-card">
+        <section className="ph-member-detail-shell">
           <button
             type="button"
-            className="ph-member-modal-close"
+            className="ph-member-modal-close ph-member-detail-close"
             onClick={() => navigate('/employees/role-coverage')}
             aria-label="Close employee details"
           >
@@ -224,105 +250,70 @@ const RoleCoverageTab = ({ members }) => {
             </div>
           </header>
 
-          <section className="ph-member-id-salary">
-            <span>{selectedMemberInsights.employeeCode}</span>
-            <strong>{selectedMemberInsights.salary}</strong>
+          <div className="ph-member-dashboard-grid">
+          <section className="ph-member-info-card ph-member-dashboard-card">
+            <h5 className="ph-member-section-head"><UserRound size={15} /> Personal Information</h5>
+            <div className="ph-member-project-detail-panel">
+              <div><small>Employee Code</small><strong>{selectedMemberInsights.employeeCode}</strong></div>
+              <div><small>Department</small><strong>{selectedMemberInsights.department}</strong></div>
+              <div><small>Role</small><strong>{selectedMemberInsights.role}</strong></div>
+              <div><small>Location</small><strong>{selectedMemberInsights.location}</strong></div>
+              <div><small>Joined On</small><strong>{selectedMemberInsights.joinedOn}</strong></div>
+              <div><small>Tenure</small><strong>{selectedMemberInsights.tenure}</strong></div>
+              <div><small>Email</small><strong>{selectedMemberInsights.email}</strong></div>
+              <div><small>Phone</small><strong>{selectedMemberInsights.phone}</strong></div>
+            </div>
           </section>
 
-          <section className="ph-member-top-panels">
-            <article className="ph-member-info-card">
-              <h5>TODAY'S STATUS</h5>
-              <div className="ph-member-highlight-line">
-                <CheckCircle2 size={16} />
-                <strong>{selectedMemberInsights.presentLabel}</strong>
-              </div>
-              <p>Checked in at {selectedMemberInsights.checkInTime}</p>
-            </article>
-
-            <article className="ph-member-info-card project">
-              <h5>CURRENT PROJECT</h5>
-              <button
-                type="button"
-                className="ph-member-project-trigger"
-                onClick={() => setShowProjectDetails((value) => !value)}
-              >
-                <span className="ph-member-highlight-line">
-                  <BriefcaseBusiness size={16} />
-                  <strong>{selectedMemberInsights.currentProject}</strong>
-                </span>
-                <span className="ph-member-project-trigger-icon" aria-hidden="true">
-                  {showProjectDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </span>
-              </button>
-              <p>{selectedMemberInsights.tasksDone} tasks done • {selectedMemberInsights.openTasks} open</p>
-            </article>
-          </section>
-
-          {showProjectDetails ? (
-            <section className="ph-member-info-card ph-member-project-expanded">
-              <h5>PROJECT EXECUTION DETAILS</h5>
-              <div className="ph-member-project-detail-panel">
-                <div><small>Assigned Role</small><strong>{selectedMemberInsights.projectRole}</strong></div>
-                <div><small>Total Tasks</small><strong>{selectedMemberInsights.totalTasks}</strong></div>
-                <div><small>Closed Tasks</small><strong>{selectedMemberInsights.closedTasks}</strong></div>
-                <div><small>In Progress</small><strong>{selectedMemberInsights.inProgressTasks}</strong></div>
-                <div><small>Duration</small><strong>{selectedMemberInsights.projectDuration}</strong></div>
-                <div><small>Current Sprint</small><strong>{selectedMemberInsights.projectSprint}</strong></div>
-                <div><small>Start Date</small><strong>{selectedMemberInsights.projectStartDate}</strong></div>
-                <div><small>Expected Completion</small><strong>{selectedMemberInsights.projectEta}</strong></div>
-              </div>
-            </section>
-          ) : null}
-
-          <section className="ph-member-info-card snapshot">
-            <h5>WORK DELIVERY SNAPSHOT</h5>
-            <div className="ph-member-snapshot-grid">
-              <article className="ph-member-snapshot-metric">
-                <small>Tasks Allocated</small>
-                <strong>{selectedMemberInsights.tasksAllocated}</strong>
-              </article>
-              <article className="ph-member-snapshot-metric">
-                <small>Completed</small>
-                <strong>{selectedMemberInsights.completed}</strong>
-              </article>
-              <article className="ph-member-snapshot-metric">
-                <small>Leaves</small>
-                <strong>{selectedMemberInsights.leaves}</strong>
-              </article>
-              <article className="ph-member-snapshot-metric">
-                <small>Delayed Submissions</small>
-                <strong>{selectedMemberInsights.delayed}</strong>
-              </article>
-            </div>
-
-            <div className="ph-member-progress-wrap">
-              <div className="ph-member-progress-head">
-                <span>Overall Progress</span>
-                <strong>{selectedMemberInsights.overallProgress}%</strong>
-              </div>
-              <div className="ph-member-progress-track">
-                <span style={{ width: `${selectedMemberInsights.overallProgress}%` }} />
-              </div>
-            </div>
-
+          <section className="ph-member-info-card ph-member-dashboard-card">
+            <h5 className="ph-member-section-head"><Timer size={15} /> Sprint Progress</h5>
             <div className="ph-member-projects-worked">
-              <h6>PROJECTS WORKED</h6>
               <ul>
-                {selectedMemberInsights.projectsWorked.map((item) => (
-                  <li key={item.name}>
-                    <span>{item.name}</span>
-                    <strong>{item.progress}%</strong>
+                {selectedMemberInsights.sprintProgress.map((item) => (
+                  <li key={item.sprint}>
+                    <div>
+                      <strong>{item.project}</strong>
+                      <span style={{ fontSize: '12px', color: '#5f87c9', marginLeft: '4px' }}>{item.sprint}</span>
+                    </div>
+                    <span style={{ fontSize: '13px', color: '#666' }}>Allocated: {item.allocated} • Done: {item.done}</span>
                   </li>
                 ))}
               </ul>
             </div>
           </section>
 
-          <footer className="ph-member-contact-list">
-            <div><Mail size={15} /><span>{selectedMemberInsights.email}</span></div>
-            <div><Phone size={15} /><span>{selectedMemberInsights.phone}</span></div>
-            <div><MapPin size={15} /><span>{selectedMemberInsights.location}</span></div>
-          </footer>
+          <section className="ph-member-info-card project ph-member-dashboard-card">
+              <h5 className="ph-member-section-head"><BriefcaseBusiness size={15} /> Project Section</h5>
+              <div className="ph-member-projects-worked">
+                <h6>PROJECTS WORKED ON</h6>
+                <ul>
+                  {selectedMemberInsights.projectsWorked.map((item) => (
+                    <li key={`project-${item.name}`}>
+                      <div>
+                        <strong>{item.name}</strong>
+                        <span style={{ fontSize: '12px', color: '#5f87c9', marginLeft: '8px' }}>{item.role}</span>
+                      </div>
+                      <strong>{item.performance}%</strong>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+          </section>
+
+          <section className="ph-member-info-card ph-member-dashboard-card">
+            <h5 className="ph-member-section-head"><CalendarDays size={15} /> Attendance Section</h5>
+            <div className="ph-member-project-detail-panel">
+              <div><small>Total Working Days</small><strong>{selectedMemberInsights.attendanceDays}</strong></div>
+              <div><small>Present</small><strong>{selectedMemberInsights.presentDays}</strong></div>
+              <div><small>Absent</small><strong>{selectedMemberInsights.absentDays}</strong></div>
+              <div><small>Leaves</small><strong>{selectedMemberInsights.leaves}</strong></div>
+              <div><small>Attendance Rate</small><strong>{selectedMemberInsights.attendancePercent}%</strong></div>
+              <div><small>Check-in Time</small><strong>{selectedMemberInsights.checkInTime}</strong></div>
+              <div><small>Current Status</small><strong>{selectedMemberInsights.presentLabel}</strong></div>
+              <div><small>Stability</small><strong>{selectedMemberInsights.attritionScore}</strong></div>
+            </div>
+          </section>
+          </div>
         </section>
       </div>
     );
