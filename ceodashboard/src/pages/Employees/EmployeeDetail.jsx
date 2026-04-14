@@ -314,14 +314,6 @@ const EmployeeDetail = () => {
                 </svg>
               </div>
             </div>
-
-            {/* Tasks Completed */}
-            <div className="ed-card ed-card-tasks">
-              <h3 className="ed-card-title">Tasks Completed</h3>
-              <div className="ed-tasks-content">
-                <div className="ed-tasks-number">120 / 130</div>
-              </div>
-            </div>
           </section>
 
           {/* Projects Section */}
@@ -334,9 +326,11 @@ const EmployeeDetail = () => {
             </div>
 
             <div className="ed-projects-grid-enhanced">
-              {detailData.projects.map((project, idx) => {
-                const isCompleted = project.status === 'Completed';
-                const isInProgress = project.status === 'In Progress';
+              {detailData.projects.slice(0, 3).map((project, idx) => {
+                // First project should be active, others completed
+                const effectiveStatus = idx === 0 ? 'In Progress' : 'Completed';
+                const isCompleted = effectiveStatus === 'Completed';
+                const isInProgress = effectiveStatus === 'In Progress';
                 
                 return (
                   <article key={idx} className={`ed-project-card-enhanced ${isCompleted ? 'completed' : 'active'}`}>
@@ -344,7 +338,7 @@ const EmployeeDetail = () => {
                       <div className="ed-project-card-title-section">
                         <h4 className="ed-project-card-name">{project.name}</h4>
                         <span className={`ed-project-status-badge ${isCompleted ? 'completed' : 'in-progress'}`}>
-                          {isCompleted ? '✓ Completed' : '● In Progress'}
+                          {isCompleted ? '✓ Completed' : '🔄 In Progress'}
                         </span>
                       </div>
                     </div>
@@ -376,6 +370,59 @@ const EmployeeDetail = () => {
                         <div className="ed-project-progress-fill" style={{ width: isCompleted ? '100%' : '65%' }}></div>
                       </div>
                       <span className="ed-project-progress-text">{isCompleted ? '100% Complete' : '65% Complete'}</span>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Work Experience Section */}
+          <section className="ed-card ed-projects-section">
+            <div className="ed-projects-section-header">
+              <div>
+                <h3 className="ed-card-title">Work Experience</h3>
+                <p className="ed-projects-section-meta">{detailData.workExperience.length} positions • {detailData.workExperience.filter(w => w.status === 'Current').length} current</p>
+              </div>
+            </div>
+
+            <div className="ed-projects-grid-enhanced">
+              {detailData.workExperience.slice(0, 3).map((experience, idx) => {
+                const isCurrent = experience.status === 'Current';
+                const isCompleted = experience.status === 'Completed';
+                
+                return (
+                  <article key={idx} className={`ed-project-card-enhanced ${isCompleted ? 'completed' : 'active'}`}>
+                    <div className="ed-project-card-header-enhanced">
+                      <div className="ed-project-card-title-section">
+                        <h4 className="ed-project-card-name">{experience.title}</h4>
+                        <span className={`ed-project-status-badge ${isCompleted ? 'completed' : 'in-progress'}`}>
+                          {isCurrent ? '💼 Current' : '✓ Past'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="ed-project-card-body">
+                      <div className="ed-project-tech-section">
+                        <span className="ed-project-tech-label">Company</span>
+                        <p className="ed-experience-company">{experience.company}</p>
+                      </div>
+
+                      <div className="ed-project-tech-section">
+                        <span className="ed-project-tech-label">Duration</span>
+                        <p className="ed-experience-duration">{experience.duration}</p>
+                      </div>
+
+                      <div className="ed-project-tech-section">
+                        <span className="ed-project-tech-label">Description</span>
+                        <p className="ed-experience-description">{experience.description}</p>
+                      </div>
+                    </div>
+
+                    <div className={`ed-project-card-footer ${isCompleted ? 'completed' : ''}`}>
+                      <div className="ed-experience-progress">
+                        <span className="ed-experience-progress-text">{isCurrent ? 'Active Position' : 'Past Experience'}</span>
+                      </div>
                     </div>
                   </article>
                 );

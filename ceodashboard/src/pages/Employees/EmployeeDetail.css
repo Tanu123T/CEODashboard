@@ -368,6 +368,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
+  min-width: 0;
 }
 
 /* ==================== CARDS ==================== */
@@ -1243,7 +1245,7 @@
 /* ==================== METRICS GRID ==================== */
 .ed-metrics-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: 24px;
   margin-bottom: 20px;
   width: 100%;
@@ -1253,7 +1255,7 @@
   grid-column: 1 / 2;
   display: flex;
   flex-direction: column;
-  padding: 24px;
+  padding: 28px;
   height: fit-content;
   min-width: 0;
   overflow: hidden;
@@ -1261,7 +1263,7 @@
 
 .ed-chart-performance {
   width: 100%;
-  height: 220px;
+  height: 320px;
   margin-top: 12px;
   min-width: 0;
 }
@@ -1480,6 +1482,14 @@
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.96) 100%) !important;
   border: 1px solid rgba(59, 130, 246, 0.12) !important;
   box-shadow: 0 20px 40px rgba(59, 130, 246, 0.08) !important;
+  width: 100% !important;
+  display: block !important;
+  padding: 24px !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  min-width: 0 !important;
+  flex-shrink: 0 !important;
 }
 
 .ed-projects-section-header {
@@ -1489,6 +1499,8 @@
   margin-bottom: 28px;
   padding-bottom: 20px;
   border-bottom: 2px solid rgba(59, 130, 246, 0.12);
+  width: 100%;
+  flex-shrink: 0;
 }
 
 .ed-projects-section-header h3 {
@@ -1506,25 +1518,60 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-}
 
 .ed-projects-grid-enhanced {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 24px;
+  display: flex !important;
+  gap: 20px !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-behavior: smooth !important;
+  padding-bottom: 8px !important;
+  margin: 0 !important;
+  padding: 0 0 8px 0 !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ed-projects-grid-enhanced::-webkit-scrollbar {
+  height: 6px;
+}
+
+.ed-projects-grid-enhanced::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+
+.ed-projects-grid-enhanced::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.ed-projects-grid-enhanced::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .ed-project-card-enhanced {
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.94) 100%);
-  border: 1.5px solid rgba(59, 130, 246, 0.18);
-  box-shadow: 0 16px 32px rgba(59, 130, 246, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 24px !important;
+  border-radius: 24px !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.94) 100%) !important;
+  border: 1.5px solid rgba(59, 130, 246, 0.18) !important;
+  box-shadow: 0 16px 32px rgba(59, 130, 246, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  width: 380px !important;
+  min-width: 380px !important;
+  max-width: 380px !important;
+  flex: 0 0 380px !important;
+  height: 100% !important;
+  flex-shrink: 0 !important;
 }
 
 .ed-project-card-enhanced.active {
@@ -1793,6 +1840,47 @@
 }
 
 .ed-project-progress-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ed-text-muted);
+  display: block;
+  text-align: right;
+}
+
+/* ==================== WORK EXPERIENCE STYLES ==================== */
+.ed-experience-company {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ed-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ed-experience-duration {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ed-text-muted);
+  margin: 0;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ed-experience-description {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ed-text-dark);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ed-experience-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ed-experience-progress-text {
   font-size: 12px;
   font-weight: 700;
   color: var(--ed-text-muted);
@@ -2615,7 +2703,7 @@
   }
 
   .ed-chart-performance {
-    height: 200px;
+    height: 280px;
   }
 
   .ed-current-project-main {
@@ -2723,8 +2811,17 @@
   }
 
   .ed-projects-grid-enhanced {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 18px;
+    gap: 18px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+  }
+  
+  .ed-project-card-enhanced {
+    width: 360px !important;
+    min-width: 360px !important;
+    max-width: 360px !important;
+    flex: 0 0 360px !important;
   }
 
   .ed-project-card-enhanced {
@@ -2776,7 +2873,7 @@
   }
 
   .ed-chart-performance {
-    height: 160px;
+    height: 240px;
   }
 
   .ed-metrics-chart {
@@ -2846,8 +2943,17 @@
   }
 
   .ed-projects-grid-enhanced {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 16px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+  }
+  
+  .ed-project-card-enhanced {
+    width: 340px !important;
+    min-width: 340px !important;
+    max-width: 340px !important;
+    flex: 0 0 340px !important;
   }
 
   .ed-project-card-enhanced {
@@ -2915,7 +3021,7 @@
   }
 
   .ed-chart-performance {
-    height: 140px;
+    height: 200px;
   }
 
   .ed-metrics-chart {
@@ -2979,8 +3085,17 @@
   }
 
   .ed-projects-grid-enhanced {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 12px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+  }
+  
+  .ed-project-card-enhanced {
+    width: 300px !important;
+    min-width: 300px !important;
+    max-width: 300px !important;
+    flex: 0 0 300px !important;
   }
 
   .ed-project-card-enhanced {
