@@ -325,103 +325,61 @@ const EmployeeDetail = () => {
           </section>
 
           {/* Projects Section */}
-          <section className="ed-card ed-projects-card">
-            <div className="ed-projects-header-block">
+          <section className="ed-card ed-projects-section">
+            <div className="ed-projects-section-header">
               <div>
-                <p className="ed-section-kicker">Current focus</p>
-                <h3 className="ed-card-title ed-projects-title">Projects</h3>
-              </div>
-              <div className="ed-projects-summary">
-                <span className="ed-summary-dot"></span>
-                <span>{currentProject ? `${activeProjectsCount} active • ${completedProjectsCount} completed` : 'No active project'}</span>
+                <h3 className="ed-card-title">Projects</h3>
+                <p className="ed-projects-section-meta">{detailData.projects.length} total • {detailData.projects.filter(p => p.status === 'In Progress').length} active</p>
               </div>
             </div>
 
-            <div className={`ed-projects-layout ${!currentProject ? 'ed-projects-layout-history-only' : ''}`}>
-              {currentProject && (
-                <article className="ed-current-project">
-                  <div className="ed-current-project-badge-row">
-                    <span className="ed-current-project-pill">Active</span>
-                    <span className={`ed-status-tag ed-status-${currentProject.status.toLowerCase()}`}>
-                      ● {currentProject.status}
-                    </span>
-                  </div>
-
-                  <div className="ed-current-project-main">
-                    <div className="ed-current-project-copy">
-                      <h4 className="ed-current-project-name">{currentProject.name}</h4>
-                      <p className="ed-current-project-note">
-                        Primary workstream currently owned by {employee.name}, with delivery in active sprint.
-                      </p>
-
-                      <div className="ed-current-project-meta">
-                        <div className="ed-current-project-meta-card">
-                          <span className="ed-current-project-stat-label">Status</span>
-                          <strong>Active</strong>
-                          <small>Work in progress</small>
-                        </div>
-
-                        <div className="ed-current-project-meta-card">
-                          <span className="ed-current-project-stat-label">Stack</span>
-                          <strong>{currentProject.techStack.length} tools</strong>
-                          <small>Used daily</small>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="ed-current-project-rail">
-                      <div className="ed-current-project-rail-top">
-                        <span className="ed-current-project-rail-label">Current phase</span>
-                        <span className="ed-current-project-rail-value">In progress</span>
-                      </div>
-
-                      <div className="ed-current-project-progress" aria-hidden="true">
-                        <span style={{ width: `${Math.min(92, 55 + currentProject.techStack.length * 8)}%` }}></span>
-                      </div>
-
-                      <p className="ed-current-project-rail-note">Pinned to the top as the active assignment.</p>
-                    </div>
-                  </div>
-
-                  <div className="ed-tech-stack ed-current-tech-stack">
-                    {currentProject.techStack.map((tech, i) => (
-                      <span key={i} className="ed-tech-badge ed-tech-badge-current">{tech}</span>
-                    ))}
-                  </div>
-                </article>
-              )}
-
-              <div className="ed-project-history">
-                <div className="ed-project-history-label">
-                  <span>Work history</span>
-                  <span>{projectHistory.length} projects</span>
-                </div>
-
-                <div className="ed-project-history-list">
-                  {projectHistory.map((project, idx) => (
-                    <article key={idx} className="ed-project-history-item">
-                      <div className="ed-project-history-meta">
-                        <div className="ed-project-history-marker"></div>
-                        <div>
-                          <h4 className="ed-project-history-name">{project.name}</h4>
-                          <p className="ed-project-history-subtitle">Contribution log and delivery snapshot</p>
-                        </div>
-                      </div>
-
-                      <div className="ed-project-history-right">
-                        <span className={`ed-project-history-status ed-project-history-status-${project.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                          {project.status === 'Completed' ? '✓' : '●'} {project.status}
+            <div className="ed-projects-grid-enhanced">
+              {detailData.projects.map((project, idx) => {
+                const isCompleted = project.status === 'Completed';
+                const isInProgress = project.status === 'In Progress';
+                
+                return (
+                  <article key={idx} className={`ed-project-card-enhanced ${isCompleted ? 'completed' : 'active'}`}>
+                    <div className="ed-project-card-header-enhanced">
+                      <div className="ed-project-card-title-section">
+                        <h4 className="ed-project-card-name">{project.name}</h4>
+                        <span className={`ed-project-status-badge ${isCompleted ? 'completed' : 'in-progress'}`}>
+                          {isCompleted ? '✓ Completed' : '● In Progress'}
                         </span>
-                        <div className="ed-tech-stack ed-project-history-techs">
-                          {project.techStack.map((tech, techIndex) => (
-                            <span key={techIndex} className="ed-tech-badge ed-tech-badge-soft">{tech}</span>
+                      </div>
+                    </div>
+
+                    <div className="ed-project-card-body">
+                      <div className="ed-project-tech-section">
+                        <span className="ed-project-tech-label">Tech Stack</span>
+                        <div className="ed-project-tech-pills">
+                          {project.techStack.map((tech, techIdx) => (
+                            <span key={techIdx} className="ed-project-tech-pill">{tech}</span>
                           ))}
                         </div>
                       </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
+
+                      <div className="ed-project-links-section">
+                        {project.links?.demo && (
+                          <a href="#" className="ed-project-link-btn demo" title="Demo">
+                            <span>Demo</span>
+                          </a>
+                        )}
+                        {!project.links?.github && !project.links?.demo && (
+                          <span className="ed-project-no-links">No links available</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className={`ed-project-card-footer ${isCompleted ? 'completed' : ''}`}>
+                      <div className="ed-project-progress-bar">
+                        <div className="ed-project-progress-fill" style={{ width: isCompleted ? '100%' : '65%' }}></div>
+                      </div>
+                      <span className="ed-project-progress-text">{isCompleted ? '100% Complete' : '65% Complete'}</span>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </section>
 
