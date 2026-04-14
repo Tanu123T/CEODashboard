@@ -180,9 +180,8 @@ const activeSprintCards = Object.entries(sprintDetails)
       sortDate: projectEndDate ? projectEndDate.getTime() : Number.MAX_SAFE_INTEGER,
     };
   })
-  .filter(Boolean)
-  .sort((a, b) => a.sortDate - b.sortDate)
-  .slice(0, 1);
+  .filter((item) => item && item.projectId === 'data-analytics-engine' && item.sprint === 'Sprint 7')
+  .sort((a, b) => a.sortDate - b.sortDate);
 
 const holidaysData = [
   { date: "April 14, 2026", name: "Ambedkar Jayanti", type: "National Holiday" },
@@ -730,18 +729,7 @@ const Home = () => {
 
             <div className="active-sprint-list">
               {activeSprintCards.map((item) => (
-                <article
-                  className="active-sprint-row"
-                  key={`${item.project}-${item.sprint}`}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`);
-                    }
-                  }}
-                >
+                <article className="active-sprint-row" key={`${item.project}-${item.sprint}`}>
                   <div className="active-sprint-row-top">
                     <div className="active-sprint-row-title">
                       <p className="project-label">{item.project}</p>
@@ -756,6 +744,7 @@ const Home = () => {
                     <div className="active-sprint-progress">
                       <div className="active-sprint-progress-info">
                         <strong>{item.progress}%</strong>
+                        <span>Complete</span>
                       </div>
                       <div className="active-sprint-progress-bar">
                         <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
