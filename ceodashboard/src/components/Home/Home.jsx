@@ -729,7 +729,19 @@ const Home = () => {
 
             <div className="active-sprint-list">
               {activeSprintCards.map((item) => (
-                <article className="active-sprint-row" key={`${item.project}-${item.sprint}`}>
+                <article
+                  className="active-sprint-row"
+                  key={`${item.project}-${item.sprint}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`);
+                    }
+                  }}
+                >
                   <div className="active-sprint-row-top">
                     <div className="active-sprint-row-title">
                       <p className="project-label">{item.project}</p>
