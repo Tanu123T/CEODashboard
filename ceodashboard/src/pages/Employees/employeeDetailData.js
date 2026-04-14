@@ -46,6 +46,30 @@ export const getEmployeeDetailData = (employee) => {
       }
     ],
     
+    workExperience: [
+      {
+        title: 'Senior Software Engineer',
+        company: 'Tech Corporation',
+        duration: `${2020 + (seed % 3)} – Present`,
+        status: 'Current',
+        description: 'Leading development of enterprise applications and mentoring junior developers'
+      },
+      {
+        title: 'Full Stack Developer',
+        company: 'Digital Solutions Inc',
+        duration: `${2018 + (seed % 2)} – ${2020 + (seed % 3)}`,
+        status: 'Completed',
+        description: 'Developed and maintained multiple production applications'
+      },
+      {
+        title: 'Junior Developer',
+        company: 'StartUp Labs',
+        duration: `${2016 + (seed % 2)} – ${2018 + (seed % 2)}`,
+        status: 'Completed',
+        description: 'Built frontend components and API integrations'
+      }
+    ],
+    
     insights: {
       strengths: [
         'Problem Solving',
