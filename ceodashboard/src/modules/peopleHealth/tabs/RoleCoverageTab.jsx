@@ -414,11 +414,11 @@ const RoleCoverageTab = ({ members }) => {
                   className="ph-member-card ph-member-card-selectable"
                   role="button"
                   tabIndex={0}
-                  onClick={() => navigate(`/employees/role-coverage/member/${item.id}`)}
+                  onClick={() => navigate(`/employees/${item.id}`)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault();
-                      navigate(`/employees/role-coverage/member/${item.id}`);
+                      navigate(`/employees/${item.id}`);
                     }
                   }}
                 >

@@ -9,6 +9,7 @@ import { sprintProjects } from '../pages/Sprints/sprintData';
 const Home = lazy(() => import('./Home/Home'));
 const Project = lazy(() => import('../pages/Project/project'));
 const Employees = lazy(() => import('../pages/Employees/Employees'));
+const EmployeeDetail = lazy(() => import('../pages/Employees/EmployeeDetail'));
 const Sprints = lazy(() => import('../pages/Sprints/Sprints'));
 const SprintProjectSprints = lazy(() => import('../pages/Sprints/SprintProjectSprints'));
 const SprintProjectDetail = lazy(() => import('../pages/Sprints/SprintProjectDetail'));
