@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CalendarClock } from 'lucide-react';
+import EmployeeDetail from '../../pages/Employees/EmployeeDetail';
 import PeopleHealthFilters from './components/PeopleHealthFilters';
 import PeopleHealthTabNav from './components/PeopleHealthTabNav';
 import AvailabilityTab from './tabs/AvailabilityTab';
@@ -49,17 +50,22 @@ const PeopleHealthPage = () => {
     minute: '2-digit',
   }), []);
 
+  const pathSegment = useMemo(() => location.pathname.split('/')[2], [location.pathname]);
+  
+  // Check if path segment is an employee ID (e.g., "E-001") instead of a tab
+  const isEmployeeDetailRoute = pathSegment && pathSegment.startsWith('E-');
+
   const activeTab = useMemo(() => {
-    const tabFromPath = location.pathname.split('/')[2];
-    return validTabs.includes(tabFromPath) ? tabFromPath : 'availability';
-  }, [location.pathname, validTabs]);
+    if (isEmployeeDetailRoute) return null; // Don't show tabs for employee detail
+    return validTabs.includes(pathSegment) ? pathSegment : 'availability';
+  }, [pathSegment, validTabs, isEmployeeDetailRoute]);
 
   useEffect(() => {
-    const tabFromPath = location.pathname.split('/')[2];
-    if (!validTabs.includes(tabFromPath)) {
+    // Only redirect if it's not a valid tab and not an employee ID
+    if (!isEmployeeDetailRoute && !validTabs.includes(pathSegment) && pathSegment) {
       navigate('/employees/availability', { replace: true });
     }
-  }, [location.pathname, navigate, validTabs]);
+  }, [pathSegment, navigate, validTabs, isEmployeeDetailRoute]);
 
   const [filters, setFilters] = useState({
     search: '',
@@ -188,6 +194,11 @@ const PeopleHealthPage = () => {
     //   <HiringRecruitmentTab members={filteredEmployees} />
     // ),
   };
+
+  // If viewing an employee detail page, render that instead
+  if (isEmployeeDetailRoute) {
+    return <EmployeeDetail />;
+  }
 
   return (
     <div className="ph-page-root">
