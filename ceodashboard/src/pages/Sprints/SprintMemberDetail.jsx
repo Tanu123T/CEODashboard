@@ -130,10 +130,38 @@ const SprintMemberDetail = () => {
     return memberData.rows[0]?.projectId || '';
   }, [location.state, memberData.rows, sourceProjectId]);
 
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+
+  useEffect(() => {
+    if (initialProjectId && initialProjectId !== selectedProjectId) {
+      setSelectedProjectId(initialProjectId);
+    }
+  }, [initialProjectId]);
+
   const selectedProjectData = useMemo(() => {
-    const picked = memberData.rows.find((row) => row.projectId === initialProjectId);
+    const picked = memberData.rows.find((row) => row.projectId === selectedProjectId);
     return picked || memberData.rows[0] || null;
-  }, [memberData.rows, initialProjectId]);
+  }, [memberData.rows, selectedProjectId]);
+
+  const organizedProjects = useMemo(() => {
+    if (!memberData.rows || memberData.rows.length === 0) {
+      return { currentlyWorking: [], previouslyWorked: [] };
+    }
+
+    const currentlyWorking = [];
+    const previouslyWorked = [];
+
+    memberData.rows.forEach((row) => {
+      const state = String(row.sprintState || '').toLowerCase();
+      if (state === 'active' || state === 'on track') {
+        currentlyWorking.push(row);
+      } else {
+        previouslyWorked.push(row);
+      }
+    });
+
+    return { currentlyWorking, previouslyWorked };
+  }, [memberData.rows]);
 
   const sortedSprintHistory = useMemo(() => {
     if (!selectedProjectData || !Array.isArray(selectedProjectData.sprintHistory)) {
@@ -374,6 +402,35 @@ const SprintMemberDetail = () => {
           </div>
         </div>
       </header>
+
+      <div className="sprint-member-project-filter-wrapper">
+        <label htmlFor="project-filter" className="sprint-member-filter-label">Project:</label>
+        <select 
+          id="project-filter"
+          value={selectedProjectId}
+          onChange={(e) => setSelectedProjectId(e.target.value)}
+          className="sprint-member-project-select"
+        >
+          {organizedProjects.currentlyWorking.length > 0 && (
+            <optgroup label="Currently Working On">
+              {organizedProjects.currentlyWorking.map((project) => (
+                <option key={project.projectId} value={project.projectId}>
+                  {project.projectName}
+                </option>
+              ))}
+            </optgroup>
+          )}
+          {organizedProjects.previouslyWorked.length > 0 && (
+            <optgroup label="Previously Worked On">
+              {organizedProjects.previouslyWorked.map((project) => (
+                <option key={project.projectId} value={project.projectId}>
+                  {project.projectName}
+                </option>
+              ))}
+            </optgroup>
+          )}
+        </select>
+      </div>
 
       <section className="sprint-member-v2-badges">
         <article className="sprint-member-v2-badge-item">

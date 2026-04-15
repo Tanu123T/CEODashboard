@@ -2607,6 +2607,49 @@
   font-weight: 600;
 }
 
+.sprint-member-project-filter-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  margin: 0;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sprint-member-filter-label {
+  color: #587293;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 60px;
+}
+
+.sprint-member-project-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d3e2f5;
+  background: #ffffff;
+  color: #173761;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 250px;
+}
+
+.sprint-member-project-select:hover {
+  border-color: #3b82f6;
+  background: #f8fbff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.sprint-member-project-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 .sprint-member-v2-profile-corner {
   display: flex;
   align-items: center;
