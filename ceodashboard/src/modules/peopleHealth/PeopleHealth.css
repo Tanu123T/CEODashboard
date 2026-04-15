@@ -2,6 +2,8 @@
   display: grid;
   gap: 16px;
   padding: 0;
+  max-width: 1320px;
+  margin: 0 auto;
 }
 
 .ph-blank-screen {
@@ -198,6 +200,11 @@
 .ph-export-btn {
   align-self: end;
   justify-content: center;
+}
+
+.ph-tab-layout {
+  display: grid;
+  gap: 16px;
 }
 
 .ph-tab-nav {

@@ -458,7 +458,6 @@ const EmployeeDetail = () => {
                   <div className="ed-achievement-content">
                     <h4 className="ed-achievement-title">{achievement.title}</h4>
                   </div>
-                  <button className="ed-btn ed-btn-small">Download</button>
                 </div>
               ))}
             </div>
