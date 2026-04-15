@@ -70,6 +70,14 @@ const kpiCards = [
     color: "green",
     to: "/employees",
   },
+  {
+    icon: Calendar,
+    title: "ON LEAVE",
+    value: "16",
+    meta: "Out of office",
+    color: "amber",
+    to: "/employees",
+  },
 ];
 
 const projectProgressData = [
@@ -180,7 +188,7 @@ const activeSprintCards = Object.entries(sprintDetails)
       sortDate: projectEndDate ? projectEndDate.getTime() : Number.MAX_SAFE_INTEGER,
     };
   })
-  .filter((item) => item && item.projectId === 'data-analytics-engine' && item.sprint === 'Sprint 7')
+  .filter((item) => item)
   .sort((a, b) => a.sortDate - b.sortDate);
 
 const holidaysData = [
@@ -344,7 +352,6 @@ const Home = () => {
               <header>
                 <span>
                   <Sparkles size={14} />
-                  Daily CEO Quote
                 </span>
                 <button
                   type="button"

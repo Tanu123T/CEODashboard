@@ -321,7 +321,7 @@
 
 .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 12px;
 }
 
@@ -1018,14 +1018,14 @@
 
 .active-sprint-list {
     display: grid;
-    gap: 18px;
+    gap: 12px;
     margin-top: 18px;
 }
 
 .active-sprint-row {
-    padding: 22px 24px;
+    padding: 16px 24px;
     display: grid;
-    gap: 18px;
+    gap: 12px;
     border-radius: 24px;
     background: linear-gradient(180deg, #ffffff 0%, #f6f9ff 100%);
     border: 1px solid rgba(94, 125, 172, 0.15);
@@ -1057,20 +1057,20 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 18px;
+    gap: 12px;
     position: relative;
     z-index: 1;
 }
 
 .active-sprint-row-title {
     display: grid;
-    gap: 6px;
+    gap: 4px;
 }
 
 .project-label {
     margin: 0;
     color: #4d6f98;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -1078,15 +1078,15 @@
 
 .active-sprint-row h4 {
     margin: 0;
-    font-size: 19px;
+    font-size: 17px;
     color: #101f37;
-    line-height: 1.15;
+    line-height: 1.2;
 }
 
 .active-sprint-title {
     margin: 0;
     color: #506b8a;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
 }
 
@@ -1095,7 +1095,7 @@
     align-items: center;
     justify-content: center;
     min-width: 96px;
-    padding: 8px 16px;
+    padding: 6px 12px;
     border-radius: 999px;
     font-size: 12px;
     font-weight: 700;
@@ -1120,7 +1120,7 @@
 
 .active-sprint-row-body {
     display: grid;
-    gap: 14px;
+    gap: 10px;
     position: relative;
     z-index: 1;
 }
@@ -1128,13 +1128,13 @@
 .active-sprint-meta {
     margin: 0;
     color: #5c7793;
-    font-size: 13.2px;
+    font-size: 12px;
     letter-spacing: 0.01em;
 }
 
 .active-sprint-progress {
     display: grid;
-    gap: 14px;
+    gap: 10px;
     position: relative;
     z-index: 1;
 }
@@ -1148,7 +1148,7 @@
 }
 
 .active-sprint-progress-info strong {
-    font-size: 22px;
+    font-size: 20px;
 }
 
 .active-sprint-progress-info span {
@@ -1160,7 +1160,7 @@
 
 .active-sprint-progress-bar {
     width: 100%;
-    height: 14px;
+    height: 12px;
     border-radius: 999px;
     background: #e6edf6;
     overflow: hidden;
