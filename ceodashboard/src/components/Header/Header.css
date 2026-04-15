@@ -280,6 +280,10 @@
 }
 
 @media (max-width: 768px) {
+    .menu-toggle {
+        display: inline-flex;
+    }
+
     .title-wrap p {
         display: none;
     }

@@ -12,7 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 
-const Navbar = ({ isOpen, onCloseSidebar }) => {
+const Navbar = ({ isOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isOverviewRoute = location.pathname === '/' || location.pathname.startsWith('/overview');
@@ -40,12 +40,7 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
 
   const handleLogout = () => {
     alert("Successfully logged out!");
-    onCloseSidebar();
     navigate("/");
-  };
-
-  const handleNavClick = () => {
-    onCloseSidebar();
   };
 
   return (
@@ -53,7 +48,7 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
       <div className="nav-menu">
 
         <div className={`nav-group ${overviewMenuOpen ? 'open' : ''}`}>
-          <Link to="/" className={`nav-item ${isOverviewRoute ? 'active' : ''}`} onClick={handleNavClick}>
+          <Link to="/" className={`nav-item ${isOverviewRoute ? 'active' : ''}`}>
             <LayoutDashboard className="icon"/>
             <span>Overview</span>
             <button
@@ -78,7 +73,6 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
                   key={item.to}
                   to={item.to}
                   className={`nav-subitem ${location.pathname === item.to ? 'active' : ''}`}
-                  onClick={handleNavClick}
                 >
                   {item.label}
                 </Link>
@@ -88,7 +82,7 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
         </div>
 
         <div className={`nav-group ${executionMenuOpen ? 'open' : ''}`}>
-          <Link to="/projects" className={`nav-item ${isExecutionRoute ? 'active' : ''}`} onClick={handleNavClick}>
+          <Link to="/projects" className={`nav-item ${isExecutionRoute ? 'active' : ''}`}>
             <BriefcaseBusiness className="icon"/>
             <span>Execution</span>
             <button
@@ -113,7 +107,6 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
                   key={item.to}
                   to={item.to}
                   className={`nav-subitem ${location.pathname.startsWith(item.to) ? 'active' : ''}`}
-                  onClick={handleNavClick}
                 >
                   {item.label}
                 </Link>
@@ -123,7 +116,7 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
         </div>
 
         <div className={`nav-group ${peopleHealthMenuOpen ? 'open' : ''}`}>
-          <Link to="/employees/availability" className={`nav-item ${isPeopleHealthRoute ? 'active' : ''}`} onClick={handleNavClick}>
+          <Link to="/employees/availability" className={`nav-item ${isPeopleHealthRoute ? 'active' : ''}`}>
             <Users className="icon"/>
             <span>People Health</span>
             <button
@@ -148,7 +141,6 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
                   key={item.to}
                   to={item.to}
                   className={`nav-subitem ${location.pathname === item.to ? 'active' : ''}`}
-                  onClick={handleNavClick}
                 >
                   {item.label}
                 </Link>
@@ -161,7 +153,7 @@ const Navbar = ({ isOpen, onCloseSidebar }) => {
 
       <div className="bottom-menu">
 
-        <Link to="/settings" className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`} onClick={handleNavClick}>
+        <Link to="/settings" className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`}>
           <Settings className="icon"/>
           <span>Settings</span>
         </Link>
