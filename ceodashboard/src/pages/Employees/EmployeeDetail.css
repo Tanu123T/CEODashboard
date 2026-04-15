@@ -80,7 +80,7 @@
 
 /* ==================== BACK BUTTON ==================== */
 .ed-back-button-container {
-  padding: 12px 32px;
+  padding: 10px 32px;
   background: linear-gradient(135deg, var(--ed-bg) 0%, #fafbfc 100%);
   border-bottom: 1px solid var(--ed-border);
   display: flex;
@@ -90,6 +90,8 @@
   z-index: 50;
   backdrop-filter: blur(8px);
   background-color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+  gap: 0;
 }
 
 .ed-back-button {
@@ -1668,8 +1670,7 @@
 }
 
 .ed-project-card-enhanced:hover .ed-project-status-badge {
-  transform: scale(1.08);
-  box-shadow: 0 6px 16px currentColor;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
 .ed-project-card-body {

@@ -6,6 +6,7 @@ import {
   Timer,
   CalendarDays,
   X,
+  Search,
 } from 'lucide-react';
 import PeopleHealthPanelCard from '../components/PeopleHealthPanelCard';
 
@@ -54,7 +55,21 @@ const RoleCoverageTab = ({ members }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showAllMembers, setShowAllMembers] = useState(false);
-  const visibleMembers = showAllMembers ? members : members.slice(0, 6);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const filteredMembers = useMemo(() => {
+    if (!searchQuery.trim()) return members;
+    
+    const query = searchQuery.toLowerCase();
+    return members.filter(item => 
+      item.name.toLowerCase().includes(query) ||
+      item.role.toLowerCase().includes(query) ||
+      item.department.toLowerCase().includes(query) ||
+      item.location.toLowerCase().includes(query)
+    );
+  }, [members, searchQuery]);
+  
+  const visibleMembers = showAllMembers ? filteredMembers : filteredMembers.slice(0, 6);
   const pathSegments = location.pathname.split('/').filter(Boolean);
   const selectedMemberId = pathSegments[1] === 'role-coverage' && pathSegments[2] === 'member'
     ? pathSegments[3]
@@ -393,7 +408,7 @@ const RoleCoverageTab = ({ members }) => {
       <section className="ph-full-card">
         <PeopleHealthPanelCard
           title="All Members"
-          subtitle={`Complete member directory - ${visibleMembers.length} of ${members.length} shown`}
+          subtitle={`Complete member directory - ${visibleMembers.length} of ${filteredMembers.length} shown`}
           action={(
             <button
               type="button"
@@ -404,6 +419,15 @@ const RoleCoverageTab = ({ members }) => {
             </button>
           )}
         >
+          <div className="ph-search-wrap" style={{ marginBottom: '16px' }}>
+            <Search size={18} />
+            <input 
+              type="text" 
+              placeholder="Search by name, role, department, or location..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           <div className="ph-member-grid">
             {visibleMembers.map((item) => {
               const statusLabel = item.status === 'leave' ? 'On Leave' : 'Active';

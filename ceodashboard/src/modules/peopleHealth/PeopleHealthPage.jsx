@@ -216,17 +216,6 @@ const PeopleHealthPage = () => {
         </div>
       </section>
 
-      {activeTab !== 'holiday-calendar' ? (
-        <PeopleHealthFilters
-          activeTab={activeTab}
-          filters={filters}
-          setFilters={setFilters}
-          departments={getUniqueValues(employees, 'department')}
-          projects={['All', ...projects.map((item) => item.name)]}
-          ranges={['Last 7 days', 'Last 30 days', 'Last Quarter', 'YTD']}
-        />
-      ) : null}
-
       <PeopleHealthTabNav
         tabs={tabItems}
         activeTab={activeTab}

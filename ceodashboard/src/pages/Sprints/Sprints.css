@@ -20,6 +20,8 @@
   padding: 24px;
   background: #f8fafc;
   position: relative;
+  max-width: 1320px;
+  margin: 0 auto;
 }
 
 .sprint-page::before {
