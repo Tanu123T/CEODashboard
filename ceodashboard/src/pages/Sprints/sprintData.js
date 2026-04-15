@@ -1090,12 +1090,12 @@ export const sprintDetails = {
       { id: 'MA-804', title: 'Dark mode implementation', owner: 'Mike', priority: 'Low', points: 3, status: 'Done' },
       { id: 'MA-805', title: 'Testing dark mode UI', owner: 'James', priority: 'Medium', points: 3, status: 'Done' },
       { id: 'MA-806', title: 'API integration tests', owner: 'Mike', priority: 'High', points: 5, status: 'In Progress' },
-      { id: 'MA-807', title: 'Push notification setup', owner: 'Sarah', priority: 'Medium', points: 3, status: 'To Do' },
+      { id: 'MA-807', title: 'Push notification setup', owner: 'Emma', priority: 'Medium', points: 3, status: 'Done' },
       { id: 'MA-808', title: 'QA testing and bug fixes', owner: 'James', priority: 'Medium', points: 4, status: 'To Do' },
-      { id: 'MA-809', title: 'User feedback analytics', owner: 'Karan', priority: 'Medium', points: 4, status: 'Done' },
+      { id: 'MA-809', title: 'User feedback analytics', owner: 'Emma', priority: 'Medium', points: 4, status: 'Done' },
       { id: 'MA-810', title: 'Offline mode support', owner: 'Zara', priority: 'High', points: 6, status: 'In Progress' },
       { id: 'MA-811', title: 'Accessibility improvements', owner: 'Vik', priority: 'Low', points: 3, status: 'Review' },
-      { id: 'MA-812', title: 'Beta testing coordination', owner: 'Raj', priority: 'Medium', points: 5, status: 'To Do' },
+      { id: 'MA-812', title: 'Beta testing coordination', owner: 'Emma', priority: 'Medium', points: 5, status: 'In Progress' },
     ],
     goals: [
       'Complete mobile UI redesign with modern design patterns.',
@@ -1116,7 +1116,6 @@ export const sprintDetails = {
     sprints: [
       { id: 'Sprint 11', title: 'Settings UI', subtitle: 'Mobile App Redesign', status: 'completed', progress: 100, tasks: '0/0' },
       { id: 'Sprint 12', title: 'Onboarding Flow', subtitle: 'Mobile App Redesign', status: 'active', progress: 67, tasks: '5/9' },
-      { id: 'Sprint 13', title: 'Push Notifications', subtitle: 'Mobile App Redesign', status: 'upcoming', progress: 0, tasks: '0/0' },
     ],
   },
   'platform-api-v3': {
