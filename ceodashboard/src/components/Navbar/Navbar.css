@@ -8,6 +8,13 @@
     border-right:1px solid #d7e1ec;
     height: calc(100vh - 58px);
     box-sizing:border-box;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    overflow-y:auto;
+}
+
+.navbar.open{
+    transform: translateX(0);
 }
 
 /* MENU */
@@ -129,14 +136,7 @@
         width:280px;
         max-width:85vw;
         height: calc(100vh - 58px);
-        transform: translateX(-100%);
-        transition: transform 0.25s ease;
         z-index:999;
-        overflow-y:auto;
-    }
-
-    .navbar.open{
-        transform: translateX(0);
     }
 
     .bottom-menu{

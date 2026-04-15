@@ -62,7 +62,10 @@ function AppShell({ isSidebarOpen, onToggleSidebar, onCloseSidebar }) {
 
   return (
     <div className={`app-container ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-      <Header onToggleSidebar={onToggleSidebar} />
+      <Header
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={onToggleSidebar}
+      />
       <div className="body-wrapper">
         <Navbar isOpen={isSidebarOpen} onCloseSidebar={onCloseSidebar} />
         <div className="sidebar-overlay" onClick={onCloseSidebar} />
@@ -77,7 +80,7 @@ function AppShell({ isSidebarOpen, onToggleSidebar, onCloseSidebar }) {
 }
 
 function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev)
