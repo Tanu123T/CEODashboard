@@ -41,15 +41,20 @@
 
 .main-content {
   flex: 1;
-  margin-left: 260px;
+  margin-left: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 14px 16px;
-  width: calc(100% - 260px);
+  width: 100%;
   box-sizing: border-box;
   background: #eef3f8;
   display: grid;
   gap: 12px;
+}
+
+.app-container.sidebar-open .main-content {
+  margin-left: 260px;
+  width: calc(100% - 260px);
 }
 
 .main-content-view {
@@ -106,6 +111,11 @@
     margin-left: 0;
     width: 100%;
     padding: 12px;
+  }
+
+  .app-container.sidebar-open .main-content {
+    margin-left: 0;
+    width: 100%;
   }
 
   .sidebar-overlay {

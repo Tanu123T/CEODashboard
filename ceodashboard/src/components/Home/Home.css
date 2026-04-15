@@ -216,8 +216,30 @@
 .top-schedule-panel {
     height: 100%;
     max-height: 200px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #c5d9f0 #f4f7fc;
+}
+
+.top-schedule-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.top-schedule-panel::-webkit-scrollbar-track {
+    background: #f4f7fc;
+    border-radius: 10px;
+}
+
+.top-schedule-panel::-webkit-scrollbar-thumb {
+    background: #c5d9f0;
+    border-radius: 10px;
+    border: 2px solid #f4f7fc;
+}
+
+.top-schedule-panel::-webkit-scrollbar-thumb:hover {
+    background: #a5c5e8;
 }
 
 .top-schedule-panel .schedule-item {

@@ -21,7 +21,7 @@
 }
 
 .menu-toggle{
-    display:none;
+    display:inline-flex;
     align-items:center;
     justify-content:center;
     width:32px;
@@ -39,19 +39,6 @@
     background:rgba(255,255,255,0.18);
 }
 
-.close-chip{
-    width:32px;
-    height:32px;
-    border:1px solid rgba(255,255,255,0.18);
-    border-radius:12px;
-    background:rgba(255,255,255,0.16);
-    color:#e9f3ff;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:0;
-    cursor:pointer;
-}
 
 .logo-box{
     width:34px;
@@ -251,14 +238,6 @@
 @media (max-width: 1024px) {
     .header {
         padding: 0 12px;
-    }
-
-    .menu-toggle {
-        display: inline-flex;
-    }
-
-    .close-chip{
-        display:none;
     }
 
     .header-right {
