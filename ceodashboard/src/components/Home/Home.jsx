@@ -544,6 +544,67 @@ const Home = () => {
       <section className="dashboard-section">
         <header className="section-head">
           <div className="section-title">
+            <Timer size={16} />
+            <h2>Sprint</h2>
+          </div>
+        </header>
+
+        <section className="sprint-section-grid">
+          <article className="panel compact-panel">
+            <header className="panel-head panel-head-link">
+              <h2>Current Active Sprints</h2>
+              <button className="link-button" type="button" onClick={() => navigate('/sprints')}>
+                <span>View all</span>
+                <ArrowRight size={14} />
+              </button>
+            </header>
+
+            <div className="active-sprint-list">
+              {activeSprintCards.map((item) => (
+                <article
+                  className="active-sprint-row"
+                  key={`${item.project}-${item.sprint}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`);
+                    }
+                  }}
+                >
+                  <div className="active-sprint-row-top">
+                    <div className="active-sprint-row-title">
+                      <p className="project-label">{item.project}</p>
+                      <h4>{item.sprint}</h4>
+                      {item.title ? <p className="active-sprint-title">{item.title}</p> : null}
+                    </div>
+                    <span className={`status-pill ${item.tone}`}>{item.status}</span>
+                  </div>
+
+                  <div className="active-sprint-row-body">
+                    <p className="active-sprint-meta">{item.meta}</p>
+                    <div className="active-sprint-progress">
+                      <div className="active-sprint-progress-info">
+                        <strong>{item.progress}%</strong>
+                        <span>Complete</span>
+                      </div>
+                      <div className="active-sprint-progress-bar">
+                        <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <section className="dashboard-section">
+        <header className="section-head">
+          <div className="section-title">
             <Building2 size={16} />
             <h2>Organization</h2>
           </div>
@@ -701,67 +762,6 @@ const Home = () => {
                       <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
                     </div>
                     <p>{entry.date}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </article>
-        </section>
-      </section>
-
-      <section className="dashboard-section">
-        <header className="section-head">
-          <div className="section-title">
-            <Timer size={16} />
-            <h2>Sprint</h2>
-          </div>
-        </header>
-
-        <section className="sprint-section-grid">
-          <article className="panel compact-panel">
-            <header className="panel-head panel-head-link">
-              <h2>Current Active Sprints</h2>
-              <button className="link-button" type="button" onClick={() => navigate('/sprints')}>
-                <span>View all</span>
-                <ArrowRight size={14} />
-              </button>
-            </header>
-
-            <div className="active-sprint-list">
-              {activeSprintCards.map((item) => (
-                <article
-                  className="active-sprint-row"
-                  key={`${item.project}-${item.sprint}`}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`);
-                    }
-                  }}
-                >
-                  <div className="active-sprint-row-top">
-                    <div className="active-sprint-row-title">
-                      <p className="project-label">{item.project}</p>
-                      <h4>{item.sprint}</h4>
-                      {item.title ? <p className="active-sprint-title">{item.title}</p> : null}
-                    </div>
-                    <span className={`status-pill ${item.tone}`}>{item.status}</span>
-                  </div>
-
-                  <div className="active-sprint-row-body">
-                    <p className="active-sprint-meta">{item.meta}</p>
-                    <div className="active-sprint-progress">
-                      <div className="active-sprint-progress-info">
-                        <strong>{item.progress}%</strong>
-                        <span>Complete</span>
-                      </div>
-                      <div className="active-sprint-progress-bar">
-                        <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
-                      </div>
-                    </div>
                   </div>
                 </article>
               ))}
