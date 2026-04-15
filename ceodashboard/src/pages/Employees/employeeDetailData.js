@@ -18,27 +18,30 @@ export const getEmployeeDetailData = (employee) => {
     
     projects: [
       {
-        name: 'Employee Management System',
+        id: 1,
+        name: 'Enterprise CRM Overhaul',
         status: 'In Progress',
-        techStack: ['JavaScript', 'React', 'Node.js'],
+        techStack: ['React', 'Node.js', 'PostgreSQL', 'Redis'],
         links: {
           github: false,
           demo: seed % 2 === 0
         }
       },
       {
-        name: 'E-Commerce Platform',
-        status: 'Completed',
-        techStack: ['JavaScript', 'React', 'Node.js'],
+        id: 2,
+        name: 'AI Analytics Dashboard',
+        status: 'In Progress',
+        techStack: ['React', 'Python', 'TensorFlow', 'Node.js'],
         links: {
           github: false,
           demo: seed % 3 === 0
         }
       },
       {
-        name: 'Internal Chat Application',
+        id: 3,
+        name: 'Multi-Tenant Auth System',
         status: 'Completed',
-        techStack: ['JavaScript', 'React', 'Node.js'],
+        techStack: ['Node.js', 'PostgreSQL', 'OAuth2', 'Express'],
         links: {
           github: false,
           demo: false
