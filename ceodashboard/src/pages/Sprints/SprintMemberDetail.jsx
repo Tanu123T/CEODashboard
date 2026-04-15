@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Briefcase, Bug, Clock3, Star, Target, Users } from 'lucide-react';
+import { ArrowLeft, Briefcase, Bug, ChevronLeft, ChevronRight, Clock3, Star, Target, Users } from 'lucide-react';
 import './Sprints.css';
 import { sprintDetails, sprintProjects } from './sprintData';
 
@@ -23,6 +23,15 @@ const SprintMemberDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const decodedMemberName = decodeURIComponent(memberName || '').trim();
+  const deepDiveRef = useRef(null);
+
+  const scrollDeepDive = (direction) => {
+    if (!deepDiveRef.current) return;
+    deepDiveRef.current.scrollBy({
+      left: direction === 'next' ? 520 : -520,
+      behavior: 'smooth',
+    });
+  };
 
   const memberData = useMemo(() => {
     const rows = [];
@@ -126,13 +135,21 @@ const SprintMemberDetail = () => {
     return picked || memberData.rows[0] || null;
   }, [memberData.rows, initialProjectId]);
 
+  const sortedSprintHistory = useMemo(() => {
+    if (!selectedProjectData || !Array.isArray(selectedProjectData.sprintHistory)) {
+      return [];
+    }
+
+    return [...selectedProjectData.sprintHistory].reverse();
+  }, [selectedProjectData]);
+
   const sprintOptions = useMemo(() => {
     if (!selectedProjectData) {
       return [];
     }
 
-    if (Array.isArray(selectedProjectData.sprintHistory) && selectedProjectData.sprintHistory.length > 0) {
-      return selectedProjectData.sprintHistory;
+    if (sortedSprintHistory.length > 0) {
+      return sortedSprintHistory;
     }
 
     return [
@@ -237,7 +254,7 @@ const SprintMemberDetail = () => {
     const baseAssigned = Math.max(selectedProjectData.assigned, 1);
     const basePoints = Math.max(selectedProjectData.points, baseAssigned);
 
-    return selectedProjectData.sprintHistory.map((item, index, list) => {
+    return sortedSprintHistory.map((item, index, list) => {
       const completionRate = clamp(Number(item.progress || 0), 0, 100);
       const sprintLoadFactor = 0.8 + (index * 0.08);
       const total = Math.max(1, Math.round(baseAssigned * sprintLoadFactor));
@@ -386,14 +403,32 @@ const SprintMemberDetail = () => {
       </section>
 
       <section className="sprint-panel sprint-member-deep-dive-shell">
-        <div className="sprint-panel-heading">
+        <div className="sprint-panel-heading sprint-member-deep-dive-heading">
           <div>
             <h2>Sprint-wise Deep Dive</h2>
             <p className="sprint-panel-copy">Detailed sprint-level contribution and delivery quality trends</p>
           </div>
+          <div className="sprint-member-deep-nav">
+            <button
+              type="button"
+              className="sprint-member-deep-nav-btn"
+              onClick={() => scrollDeepDive('prev')}
+              aria-label="Previous sprint"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              type="button"
+              className="sprint-member-deep-nav-btn"
+              onClick={() => scrollDeepDive('next')}
+              aria-label="Next sprint"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
 
-        <div className="sprint-member-deep-dive-list">
+        <div className="sprint-member-deep-dive-list" ref={deepDiveRef}>
           {deepDiveRows.map((row) => {
             const isActive = row.id === selectedSprintData?.id;
 
@@ -403,11 +438,11 @@ const SprintMemberDetail = () => {
                 className={`sprint-member-deep-card ${isActive ? 'active' : ''}`}
                 role="button"
                 tabIndex={0}
-                onClick={() => setSelectedSprintId(row.id)}
+                onClick={() => navigate(`/sprints/${selectedProjectData.projectId}/${encodeURIComponent(row.id)}`)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
-                    setSelectedSprintId(row.id);
+                    navigate(`/sprints/${selectedProjectData.projectId}/${encodeURIComponent(row.id)}`);
                   }
                 }}
               >
