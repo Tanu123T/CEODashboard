@@ -1,3 +1,8 @@
+.settings-page {
+	max-width: 1320px;
+	margin: 0 auto;
+}
+
 .settings-page .main-header {
 	margin-bottom: 18px;
 }

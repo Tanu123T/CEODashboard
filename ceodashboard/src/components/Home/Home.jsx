@@ -34,6 +34,7 @@ import {
   RefreshCcw,
 } from "lucide-react";
 
+import { sprintProjects, sprintDetails } from "../../pages/Sprints/sprintData";
 import { departmentDistribution, trendLabels, trendValues } from "../team/teamData";
 
 const kpiCards = [
@@ -128,11 +129,59 @@ const scheduleItems = [
 ];
 
 
-const sprintOverview = [
-  { title: "Sprint 24", meta: "TechNova CRM • 3 days left", stats: "32/40 story points", progress: 72, tone: "green" },
-  { title: "Sprint 11", meta: "Orbit Analytics • 8 days left", stats: "18/48 story points", progress: 38, tone: "amber" },
-  { title: "Sprint 7", meta: "RetailPro Mobile • Delayed", stats: "9/36 story points", progress: 24, tone: "red" },
-];
+const parseDateValue = (value) => {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const getSprintTone = (health) => {
+  const normalized = (health || "").toLowerCase();
+  if (normalized.includes("risk") || normalized.includes("attention")) return "amber";
+  if (normalized.includes("track") || normalized.includes("active")) return "green";
+  return "red";
+};
+
+const today = new Date();
+if (!Number.isNaN(today.getTime())) {
+  today.setHours(0, 0, 0, 0);
+}
+
+const projectMetaById = sprintProjects.reduce((acc, project) => {
+  acc[project.id] = project;
+  return acc;
+}, {});
+
+const activeSprintCards = Object.entries(sprintDetails)
+  .map(([projectId, details]) => {
+    const activeSprint = Array.isArray(details.sprints)
+      ? details.sprints.find((sprint) => sprint.status?.toLowerCase() === "active")
+      : null;
+
+    if (!activeSprint) return null;
+
+    const projectMeta = projectMetaById[projectId] || {};
+    const projectEndDate = parseDateValue(projectMeta.endDate);
+    const daysLeft = projectEndDate
+      ? Math.max(0, Math.ceil((projectEndDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)))
+      : null;
+
+    return {
+      projectId,
+      project: projectMeta.name || details.about || "Unknown Project",
+      sprint: activeSprint.id,
+      title: activeSprint.title,
+      status: "On Track",
+      meta:
+        daysLeft != null
+          ? `${daysLeft} day${daysLeft === 1 ? "" : "s"} left · ${activeSprint.tasks}`
+          : `${activeSprint.tasks}`,
+      progress: activeSprint.progress || 0,
+      tone: "green",
+      sortDate: projectEndDate ? projectEndDate.getTime() : Number.MAX_SAFE_INTEGER,
+    };
+  })
+  .filter((item) => item && item.projectId === 'data-analytics-engine' && item.sprint === 'Sprint 7')
+  .sort((a, b) => a.sortDate - b.sortDate);
 
 const holidaysData = [
   { date: "April 14, 2026", name: "Ambedkar Jayanti", type: "National Holiday" },
@@ -495,6 +544,67 @@ const Home = () => {
       <section className="dashboard-section">
         <header className="section-head">
           <div className="section-title">
+            <Timer size={16} />
+            <h2>Sprint</h2>
+          </div>
+        </header>
+
+        <section className="sprint-section-grid">
+          <article className="panel compact-panel">
+            <header className="panel-head panel-head-link">
+              <h2>Current Active Sprints</h2>
+              <button className="link-button" type="button" onClick={() => navigate('/sprints')}>
+                <span>View all</span>
+                <ArrowRight size={14} />
+              </button>
+            </header>
+
+            <div className="active-sprint-list">
+              {activeSprintCards.map((item) => (
+                <article
+                  className="active-sprint-row"
+                  key={`${item.project}-${item.sprint}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      navigate(`/sprints/${item.projectId}/${encodeURIComponent(item.sprint)}`);
+                    }
+                  }}
+                >
+                  <div className="active-sprint-row-top">
+                    <div className="active-sprint-row-title">
+                      <p className="project-label">{item.project}</p>
+                      <h4>{item.sprint}</h4>
+                      {item.title ? <p className="active-sprint-title">{item.title}</p> : null}
+                    </div>
+                    <span className={`status-pill ${item.tone}`}>{item.status}</span>
+                  </div>
+
+                  <div className="active-sprint-row-body">
+                    <p className="active-sprint-meta">{item.meta}</p>
+                    <div className="active-sprint-progress">
+                      <div className="active-sprint-progress-info">
+                        <strong>{item.progress}%</strong>
+                        <span>Complete</span>
+                      </div>
+                      <div className="active-sprint-progress-bar">
+                        <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <section className="dashboard-section">
+        <header className="section-head">
+          <div className="section-title">
             <Building2 size={16} />
             <h2>Organization</h2>
           </div>
@@ -652,46 +762,6 @@ const Home = () => {
                       <span className={`info-tag ${entry.tone}`}>{entry.type}</span>
                     </div>
                     <p>{entry.date}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </article>
-        </section>
-      </section>
-
-      <section className="dashboard-section">
-        <header className="section-head">
-          <div className="section-title">
-            <Timer size={16} />
-            <h2>Sprint</h2>
-          </div>
-        </header>
-
-        <section className="sprint-section-grid">
-          <article className="panel compact-panel">
-            <header className="panel-head panel-head-link">
-              <h2>Sprint Overview</h2>
-              <button className="link-button" type="button" onClick={() => navigate('/sprints')}>
-                <span>View all</span>
-                <ArrowRight size={14} />
-              </button>
-            </header>
-
-            <div className="progress-list1">
-              {sprintOverview.map((item) => (
-                <article className="progress-item" key={item.title}>
-                  <div className={`progress-dot ${item.tone}`} />
-                  <div className="progress-copy">
-                    <h4>{item.title}</h4>
-                    <p>{item.meta}</p>
-                    <p className="progress-submeta">{item.stats}</p>
-                  </div>
-                  <div className="progress-value-wrap">
-                    <strong>{item.progress}%</strong>
-                    <div className="progress-track">
-                      <span className={`progress-fill ${item.tone}`} style={{ width: `${item.progress}%` }} />
-                    </div>
                   </div>
                 </article>
               ))}

@@ -1,4 +1,7 @@
 .tm-page {
+  max-width: 1320px;
+  margin: 0 auto;
+
   .tm-performance-root {
     display: grid;
     gap: 12px;

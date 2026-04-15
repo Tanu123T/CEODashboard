@@ -21,7 +21,7 @@
 }
 
 .menu-toggle{
-    display:none;
+    display:inline-flex;
     align-items:center;
     justify-content:center;
     width:30px;
@@ -78,7 +78,7 @@
     min-width:0;
 }
 
-.title{
+.title1{
     font-size:27px;
     font-weight:600;
     margin:0;
@@ -262,14 +262,6 @@
 @media (max-width: 1024px) {
     .header {
         padding: 0 12px;
-    }
-
-    .menu-toggle {
-        display: inline-flex;
-    }
-
-    .close-chip{
-        display:none;
     }
 
     .header-right {

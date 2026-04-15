@@ -1,14 +1,75 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { BriefcaseBusiness, CheckCircle2, ChevronDown, ChevronUp, Mail, MapPin, Phone, X } from 'lucide-react';
+import {
+  BriefcaseBusiness,
+  UserRound,
+  Timer,
+  CalendarDays,
+  X,
+  Search,
+} from 'lucide-react';
 import PeopleHealthPanelCard from '../components/PeopleHealthPanelCard';
+
+const getInitials = (name) => name
+  .split(' ')
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((part) => part[0])
+  .join('');
+
+const getAvatarPalette = (seed) => {
+  const palettes = [
+    ['#4b8fe7', '#2fc7a6'],
+    ['#6f5ef6', '#4b8fe7'],
+    ['#f08a5d', '#f9c74f'],
+    ['#3d8bfd', '#6dd5c1'],
+    ['#8f63d7', '#4ac0d9'],
+    ['#1f9f73', '#5d89e3'],
+  ];
+
+  return palettes[seed % palettes.length];
+};
+
+const getMemberAvatarSrc = (member) => {
+  const seed = Number(member.id.split('-')[1] || '1');
+  const initials = getInitials(member.name);
+  const [startColor, endColor] = getAvatarPalette(seed);
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="${member.name} profile picture">
+      <defs>
+        <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${startColor}" />
+          <stop offset="100%" stop-color="${endColor}" />
+        </linearGradient>
+      </defs>
+      <rect width="160" height="160" rx="32" fill="url(#g)" />
+      <circle cx="80" cy="80" r="58" fill="rgba(255,255,255,0.12)" />
+      <text x="80" y="93" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="58" font-weight="800" fill="#ffffff" letter-spacing="2">${initials}</text>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+};
 
 const RoleCoverageTab = ({ members }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showAllMembers, setShowAllMembers] = useState(false);
-  const [showProjectDetails, setShowProjectDetails] = useState(false);
-  const visibleMembers = showAllMembers ? members : members.slice(0, 6);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const filteredMembers = useMemo(() => {
+    if (!searchQuery.trim()) return members;
+    
+    const query = searchQuery.toLowerCase();
+    return members.filter(item => 
+      item.name.toLowerCase().includes(query) ||
+      item.role.toLowerCase().includes(query) ||
+      item.department.toLowerCase().includes(query) ||
+      item.location.toLowerCase().includes(query)
+    );
+  }, [members, searchQuery]);
+  
+  const visibleMembers = showAllMembers ? filteredMembers : filteredMembers.slice(0, 6);
   const pathSegments = location.pathname.split('/').filter(Boolean);
   const selectedMemberId = pathSegments[1] === 'role-coverage' && pathSegments[2] === 'member'
     ? pathSegments[3]
@@ -19,7 +80,6 @@ const RoleCoverageTab = ({ members }) => {
       if (selectedMemberId) {
         navigate('/employees/role-coverage');
       }
-      setShowProjectDetails(false);
       return;
     }
 
@@ -30,13 +90,8 @@ const RoleCoverageTab = ({ members }) => {
     const exists = members.some((item) => item.id === selectedMemberId);
     if (!exists) {
       navigate('/employees/role-coverage');
-      setShowProjectDetails(false);
     }
   }, [members, selectedMemberId, navigate]);
-
-  useEffect(() => {
-    setShowProjectDetails(false);
-  }, [selectedMemberId]);
 
   const selectedMember = useMemo(() => {
     if (!selectedMemberId) return null;
@@ -101,6 +156,9 @@ const RoleCoverageTab = ({ members }) => {
     const checkInMinute = (personId * 7) % 60;
 
     const projectCatalog = ['Platform v3.0 Rebuild', 'ML Recommendation Engine', 'Identity Security Upgrade', 'Revenue Insights Hub', 'Client Success Portal'];
+    const roleCatalog = ['Project Lead', 'Technical Architect', 'Core Engineer', 'QA Lead', 'Data Engineer'];
+    const sprintCatalog = ['Sprint 12', 'Sprint 13', 'Sprint 14', 'Sprint 15'];
+    
     const projectSeed = personId % projectCatalog.length;
     const currentProject = projectCatalog[projectSeed];
     const projectsWorked = [
@@ -109,15 +167,39 @@ const RoleCoverageTab = ({ members }) => {
       projectCatalog[(projectSeed + 2) % projectCatalog.length],
     ].map((name, index) => ({
       name,
-      progress: Math.max(38, Math.min(89, overallProgress + 8 - (index * 11) + (personId % 6))),
+      role: roleCatalog[(personId + index) % roleCatalog.length],
+      performance: Math.max(38, Math.min(89, overallProgress + 8 - (index * 11) + (personId % 6))),
     }));
 
-    const roleCatalog = ['Project Lead', 'Technical Architect', 'Core Engineer', 'QA Lead', 'Data Engineer'];
-    const sprintCatalog = ['Sprint 12', 'Sprint 13', 'Sprint 14', 'Sprint 15'];
     const durationWeeks = 8 + (personId % 7);
     const totalTasks = tasksAllocated + 10 + (personId % 8);
     const closedTasks = Math.min(totalTasks, completed + 8);
     const inProgressTasks = Math.max(0, totalTasks - closedTasks - delayed);
+    const attendanceDays = 22;
+    const presentDays = Math.max(12, Math.min(attendanceDays, Math.round((selectedMember.stabilityIndex / 100) * attendanceDays)));
+    const absentDays = Math.max(0, attendanceDays - presentDays - leaves);
+    const attendancePercent = Math.round((presentDays / Math.max(attendanceDays, 1)) * 100);
+
+    const sprintProgress = [
+      {
+        sprint: sprintCatalog[personId % sprintCatalog.length],
+        project: projectCatalog[personId % projectCatalog.length],
+        allocated: Math.max(10, Math.round(tasksAllocated * 0.45)),
+        done: Math.max(6, Math.round(completed * 0.4)),
+      },
+      {
+        sprint: sprintCatalog[(personId + 1) % sprintCatalog.length],
+        project: projectCatalog[(personId + 1) % projectCatalog.length],
+        allocated: Math.max(10, Math.round(tasksAllocated * 0.42)),
+        done: Math.max(5, Math.round(completed * 0.35)),
+      },
+      {
+        sprint: sprintCatalog[(personId + 2) % sprintCatalog.length],
+        project: projectCatalog[(personId + 2) % projectCatalog.length],
+        allocated: Math.max(9, Math.round(tasksAllocated * 0.38)),
+        done: Math.max(4, Math.round(completed * 0.3)),
+      },
+    ];
 
     return {
       employee: selectedMember.name,
@@ -134,11 +216,15 @@ const RoleCoverageTab = ({ members }) => {
       resignationSignal,
       lastPromotion: promotionDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
       compensationBand: `Band ${String.fromCharCode(65 + (personId % 5))}-${(personId % 3) + 1}`,
-      salary: `$${Math.round(132 + selectedMember.stabilityIndex * 0.7)}K`,
       successionReadiness,
       managerNote: managerNotes[personId % managerNotes.length],
       checkInTime: `${String(checkInHour).padStart(2, '0')}:${String(checkInMinute).padStart(2, '0')}`,
       presentLabel: selectedMember.status === 'leave' ? 'On Leave' : 'Present',
+      attendanceDays,
+      presentDays,
+      absentDays,
+      attendancePercent,
+      sprintProgress,
       taskLoad,
       tasksAllocated,
       completed,
@@ -191,16 +277,12 @@ const RoleCoverageTab = ({ members }) => {
           >
             Back to members
           </button>
-          <div>
-            <p className="ph-member-detail-breadcrumb">Employee Hub</p>
-            <h3>{selectedMemberInsights.employee}</h3>
-          </div>
         </div>
 
-        <section className="ph-member-modal ph-member-modal-card ph-member-detail-card">
+        <section className="ph-member-detail-shell">
           <button
             type="button"
-            className="ph-member-modal-close"
+            className="ph-member-modal-close ph-member-detail-close"
             onClick={() => navigate('/employees/role-coverage')}
             aria-label="Close employee details"
           >
@@ -210,12 +292,10 @@ const RoleCoverageTab = ({ members }) => {
           <header className="ph-member-modal-headline">
             <div className="ph-member-modal-identity">
               <span className="ph-member-modal-avatar" aria-hidden="true">
-                {selectedMemberInsights.employee
-                  .split(' ')
-                  .filter(Boolean)
-                  .slice(0, 2)
-                  .map((part) => part[0])
-                  .join('')}
+                <img
+                  src={getMemberAvatarSrc(selectedMember)}
+                  alt={`${selectedMemberInsights.employee} profile picture`}
+                />
               </span>
               <div>
                 <h4>{selectedMemberInsights.employee}</h4>
@@ -224,105 +304,100 @@ const RoleCoverageTab = ({ members }) => {
             </div>
           </header>
 
-          <section className="ph-member-id-salary">
-            <span>{selectedMemberInsights.employeeCode}</span>
-            <strong>{selectedMemberInsights.salary}</strong>
-          </section>
-
-          <section className="ph-member-top-panels">
-            <article className="ph-member-info-card">
-              <h5>TODAY'S STATUS</h5>
-              <div className="ph-member-highlight-line">
-                <CheckCircle2 size={16} />
-                <strong>{selectedMemberInsights.presentLabel}</strong>
-              </div>
-              <p>Checked in at {selectedMemberInsights.checkInTime}</p>
-            </article>
-
-            <article className="ph-member-info-card project">
-              <h5>CURRENT PROJECT</h5>
-              <button
-                type="button"
-                className="ph-member-project-trigger"
-                onClick={() => setShowProjectDetails((value) => !value)}
-              >
-                <span className="ph-member-highlight-line">
-                  <BriefcaseBusiness size={16} />
-                  <strong>{selectedMemberInsights.currentProject}</strong>
-                </span>
-                <span className="ph-member-project-trigger-icon" aria-hidden="true">
-                  {showProjectDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </span>
-              </button>
-              <p>{selectedMemberInsights.tasksDone} tasks done • {selectedMemberInsights.openTasks} open</p>
-            </article>
-          </section>
-
-          {showProjectDetails ? (
-            <section className="ph-member-info-card ph-member-project-expanded">
-              <h5>PROJECT EXECUTION DETAILS</h5>
+          <div className="ph-member-dashboard-grid">
+          <div className="ph-member-column-left">
+            <section className="ph-member-info-card ph-member-dashboard-card">
+              <h5 className="ph-member-section-head"><UserRound size={15} /> Personal Information</h5>
               <div className="ph-member-project-detail-panel">
-                <div><small>Assigned Role</small><strong>{selectedMemberInsights.projectRole}</strong></div>
-                <div><small>Total Tasks</small><strong>{selectedMemberInsights.totalTasks}</strong></div>
-                <div><small>Closed Tasks</small><strong>{selectedMemberInsights.closedTasks}</strong></div>
-                <div><small>In Progress</small><strong>{selectedMemberInsights.inProgressTasks}</strong></div>
-                <div><small>Duration</small><strong>{selectedMemberInsights.projectDuration}</strong></div>
-                <div><small>Current Sprint</small><strong>{selectedMemberInsights.projectSprint}</strong></div>
-                <div><small>Start Date</small><strong>{selectedMemberInsights.projectStartDate}</strong></div>
-                <div><small>Expected Completion</small><strong>{selectedMemberInsights.projectEta}</strong></div>
+                <div><small>Employee Code</small><strong>{selectedMemberInsights.employeeCode}</strong></div>
+                <div><small>Department</small><strong>{selectedMemberInsights.department}</strong></div>
+                <div><small>Role</small><strong>{selectedMemberInsights.role}</strong></div>
+                <div><small>Location</small><strong>{selectedMemberInsights.location}</strong></div>
+                <div><small>Joined On</small><strong>{selectedMemberInsights.joinedOn}</strong></div>
+                <div><small>Tenure</small><strong>{selectedMemberInsights.tenure}</strong></div>
+                <div><small>Email</small><strong style={{ fontSize: '12px', wordBreak: 'break-all' }}>{selectedMemberInsights.email}</strong></div>
+                <div><small>Phone</small><strong>{selectedMemberInsights.phone}</strong></div>
               </div>
             </section>
-          ) : null}
 
-          <section className="ph-member-info-card snapshot">
-            <h5>WORK DELIVERY SNAPSHOT</h5>
-            <div className="ph-member-snapshot-grid">
-              <article className="ph-member-snapshot-metric">
-                <small>Tasks Allocated</small>
-                <strong>{selectedMemberInsights.tasksAllocated}</strong>
-              </article>
-              <article className="ph-member-snapshot-metric">
-                <small>Completed</small>
-                <strong>{selectedMemberInsights.completed}</strong>
-              </article>
-              <article className="ph-member-snapshot-metric">
-                <small>Leaves</small>
-                <strong>{selectedMemberInsights.leaves}</strong>
-              </article>
-              <article className="ph-member-snapshot-metric">
-                <small>Delayed Submissions</small>
-                <strong>{selectedMemberInsights.delayed}</strong>
-              </article>
-            </div>
-
-            <div className="ph-member-progress-wrap">
-              <div className="ph-member-progress-head">
-                <span>Overall Progress</span>
-                <strong>{selectedMemberInsights.overallProgress}%</strong>
+            <section className="ph-member-info-card ph-member-dashboard-card">
+              <h5 className="ph-member-section-head"><BriefcaseBusiness size={15} /> Project Section</h5>
+              <div style={{ fontSize: '11px', color: '#7a8ea7', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '12px' }}>Projects Worked On</div>
+              <div className="ph-member-projects-worked">
+                <ul>
+                  {selectedMemberInsights.projectsWorked.map((item) => (
+                    <li key={`project-${item.name}`}>
+                      <div>
+                        <strong>{item.name}</strong>
+                        <span style={{ fontSize: '11px', color: '#5f87c9', marginLeft: '8px', fontWeight: '700', textTransform: 'uppercase' }}>{item.role}</span>
+                      </div>
+                      <strong style={{ minWidth: '35px', textAlign: 'right' }}>{item.performance}%</strong>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <div className="ph-member-progress-track">
-                <span style={{ width: `${selectedMemberInsights.overallProgress}%` }} />
+            </section>
+          </div>
+
+          <div className="ph-member-column-right">
+            <section className="ph-member-info-card ph-member-dashboard-card">
+              <h5 className="ph-member-section-head"><Timer size={15} /> Sprint Progress</h5>
+              <div className="ph-member-projects-worked">
+                <ul>
+                  {selectedMemberInsights.sprintProgress.map((item) => (
+                    <li key={item.sprint} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
+                      <div>
+                        <strong>{item.project}</strong>
+                        <span style={{ fontSize: '11px', color: '#5f87c9', marginLeft: '4px', fontWeight: '700', textTransform: 'uppercase' }}>{item.sprint}</span>
+                      </div>
+                      <span style={{ fontSize: '13px', color: '#0a1e3a', fontWeight: '700', alignSelf: 'flex-end' }}>
+                        Allocated: {item.allocated} • Done: {item.done}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
+            </section>
 
-            <div className="ph-member-projects-worked">
-              <h6>PROJECTS WORKED</h6>
-              <ul>
-                {selectedMemberInsights.projectsWorked.map((item) => (
-                  <li key={item.name}>
-                    <span>{item.name}</span>
-                    <strong>{item.progress}%</strong>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-
-          <footer className="ph-member-contact-list">
-            <div><Mail size={15} /><span>{selectedMemberInsights.email}</span></div>
-            <div><Phone size={15} /><span>{selectedMemberInsights.phone}</span></div>
-            <div><MapPin size={15} /><span>{selectedMemberInsights.location}</span></div>
-          </footer>
+            <section className="ph-member-info-card ph-member-dashboard-card">
+              <h5 className="ph-member-section-head"><CalendarDays size={15} /> Attendance Section</h5>
+              <div className="ph-member-attendance-grid">
+                <div className="ph-member-att-box">
+                  <small>Total Working Days</small>
+                  <strong>{selectedMemberInsights.attendanceDays}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Present</small>
+                  <strong style={{ color: '#10b981' }}>{selectedMemberInsights.presentDays}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Absent</small>
+                  <strong style={{ color: '#bf4a4a' }}>{selectedMemberInsights.absentDays}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Leaves</small>
+                  <strong>{selectedMemberInsights.leaves}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Attendance Rate</small>
+                  <strong>{selectedMemberInsights.attendancePercent}%</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Check-in Time</small>
+                  <strong>{selectedMemberInsights.checkInTime}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Current Status</small>
+                  <strong style={{ color: selectedMemberInsights.presentLabel === 'Present' ? '#10b981' : '#a97216' }}>{selectedMemberInsights.presentLabel}</strong>
+                </div>
+                <div className="ph-member-att-box">
+                  <small>Stability</small>
+                  <strong>{selectedMemberInsights.attritionScore}</strong>
+                </div>
+              </div>
+            </section>
+          </div>
+          </div>
         </section>
       </div>
     );
@@ -333,7 +408,7 @@ const RoleCoverageTab = ({ members }) => {
       <section className="ph-full-card">
         <PeopleHealthPanelCard
           title="All Members"
-          subtitle={`Complete member directory - ${visibleMembers.length} of ${members.length} shown`}
+          subtitle={`Complete member directory - ${visibleMembers.length} of ${filteredMembers.length} shown`}
           action={(
             <button
               type="button"
@@ -344,15 +419,18 @@ const RoleCoverageTab = ({ members }) => {
             </button>
           )}
         >
+          <div className="ph-search-wrap" style={{ marginBottom: '16px' }}>
+            <Search size={18} />
+            <input 
+              type="text" 
+              placeholder="Search by name, role, department, or location..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           <div className="ph-member-grid">
             {visibleMembers.map((item) => {
               const statusLabel = item.status === 'leave' ? 'On Leave' : 'Active';
-              const initials = item.name
-                .split(' ')
-                .filter(Boolean)
-                .slice(0, 2)
-                .map((part) => part[0])
-                .join('');
 
               return (
                 <article
@@ -360,17 +438,17 @@ const RoleCoverageTab = ({ members }) => {
                   className="ph-member-card ph-member-card-selectable"
                   role="button"
                   tabIndex={0}
-                  onClick={() => navigate(`/employees/role-coverage/member/${item.id}`)}
+                  onClick={() => navigate(`/employees/${item.id}`)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault();
-                      navigate(`/employees/role-coverage/member/${item.id}`);
+                      navigate(`/employees/${item.id}`);
                     }
                   }}
                 >
                   <div className="ph-member-card-head">
-                    <div className="ph-member-avatar" aria-hidden="true">
-                      {initials}
+                    <div className="ph-member-avatar">
+                      <img src={getMemberAvatarSrc(item)} alt={`${item.name} profile picture`} />
                     </div>
                     <div className="ph-member-title">
                       <strong>{item.name}</strong>

@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Briefcase, Bug, Clock3, Star, Target, Users } from 'lucide-react';
+import { ArrowLeft, Briefcase, Bug, ChevronLeft, ChevronRight, Clock3, Star, Target, Users } from 'lucide-react';
 import './Sprints.css';
 import { sprintDetails, sprintProjects } from './sprintData';
 
@@ -23,6 +23,15 @@ const SprintMemberDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const decodedMemberName = decodeURIComponent(memberName || '').trim();
+  const deepDiveRef = useRef(null);
+
+  const scrollDeepDive = (direction) => {
+    if (!deepDiveRef.current) return;
+    deepDiveRef.current.scrollBy({
+      left: direction === 'next' ? 520 : -520,
+      behavior: 'smooth',
+    });
+  };
 
   const memberData = useMemo(() => {
     const rows = [];
@@ -126,13 +135,21 @@ const SprintMemberDetail = () => {
     return picked || memberData.rows[0] || null;
   }, [memberData.rows, initialProjectId]);
 
+  const sortedSprintHistory = useMemo(() => {
+    if (!selectedProjectData || !Array.isArray(selectedProjectData.sprintHistory)) {
+      return [];
+    }
+
+    return [...selectedProjectData.sprintHistory].reverse();
+  }, [selectedProjectData]);
+
   const sprintOptions = useMemo(() => {
     if (!selectedProjectData) {
       return [];
     }
 
-    if (Array.isArray(selectedProjectData.sprintHistory) && selectedProjectData.sprintHistory.length > 0) {
-      return selectedProjectData.sprintHistory;
+    if (sortedSprintHistory.length > 0) {
+      return sortedSprintHistory;
     }
 
     return [
@@ -237,7 +254,7 @@ const SprintMemberDetail = () => {
     const baseAssigned = Math.max(selectedProjectData.assigned, 1);
     const basePoints = Math.max(selectedProjectData.points, baseAssigned);
 
-    return selectedProjectData.sprintHistory.map((item, index, list) => {
+    return sortedSprintHistory.map((item, index, list) => {
       const completionRate = clamp(Number(item.progress || 0), 0, 100);
       const sprintLoadFactor = 0.8 + (index * 0.08);
       const total = Math.max(1, Math.round(baseAssigned * sprintLoadFactor));
@@ -306,6 +323,10 @@ const SprintMemberDetail = () => {
     return Number(clamp(selectedSprintMetrics.score / 20, 1, 5).toFixed(1));
   }, [selectedSprintMetrics]);
 
+  const profileImageUrl = useMemo(() => (
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(decodedMemberName)}&background=4b8fe7&color=ffffff&size=256&bold=true`
+  ), [decodedMemberName]);
+
   if (!decodedMemberName || memberData.rows.length === 0 || !selectedProjectData) {
     return (
       <div className="dashboard-wrapper sprint-page sprint-member-page">
@@ -325,17 +346,31 @@ const SprintMemberDetail = () => {
   return (
     <div className="dashboard-wrapper sprint-page sprint-member-page sprint-member-v2-page">
       <header className="sprint-member-v2-header">
-        <div>
+        <div className="sprint-member-v2-headline">
           <button type="button" className="sprint-back-link" onClick={() => navigate(backTo)}>
             <ArrowLeft size={14} /> Back
           </button>
+          <p className="sprint-member-v2-eyebrow">Member Performance Profile</p>
           <h1>{decodedMemberName}</h1>
+          <p className="sprint-member-v2-subtitle">{selectedProjectData.projectName} · {selectedSprintData?.id || 'Sprint'} Insights</p>
         </div>
-        <div className="sprint-member-v2-profile">
-          <div className="sprint-member-v2-avatar">{decodedMemberName.slice(0, 2).toUpperCase()}</div>
+
+        <div className="sprint-member-v2-profile-corner">
+          <div className="sprint-member-v2-avatar-ring">
+            <div className="sprint-member-v2-avatar">
+              <span>{decodedMemberName.slice(0, 2).toUpperCase()}</span>
+              <img
+                src={profileImageUrl}
+                alt={`${decodedMemberName} profile`}
+                onError={(event) => {
+                  event.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          </div>
           <div>
             <strong>{decodedMemberName}</strong>
-            <span>{selectedProjectData.projectName}</span>
+            <span>Sprint Contributor</span>
           </div>
         </div>
       </header>
@@ -362,24 +397,38 @@ const SprintMemberDetail = () => {
           <strong>{selectedSprintMetrics?.qualityRate ?? 0}%</strong>
         </article>
         <article className="sprint-member-v2-badge-item">
-          <span className="sprint-member-v2-badge-label"><Briefcase size={14} /> Sprint</span>
-          <strong>{selectedSprintData?.id || '-'}</strong>
-        </article>
-        <article className="sprint-member-v2-badge-item">
           <span className="sprint-member-v2-badge-label"><Users size={14} /> Progress</span>
           <strong>{selectedSprintMetrics?.completionRate ?? 0}%</strong>
         </article>
       </section>
 
       <section className="sprint-panel sprint-member-deep-dive-shell">
-        <div className="sprint-panel-heading">
+        <div className="sprint-panel-heading sprint-member-deep-dive-heading">
           <div>
             <h2>Sprint-wise Deep Dive</h2>
             <p className="sprint-panel-copy">Detailed sprint-level contribution and delivery quality trends</p>
           </div>
+          <div className="sprint-member-deep-nav">
+            <button
+              type="button"
+              className="sprint-member-deep-nav-btn"
+              onClick={() => scrollDeepDive('prev')}
+              aria-label="Previous sprint"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              type="button"
+              className="sprint-member-deep-nav-btn"
+              onClick={() => scrollDeepDive('next')}
+              aria-label="Next sprint"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
 
-        <div className="sprint-member-deep-dive-list">
+        <div className="sprint-member-deep-dive-list" ref={deepDiveRef}>
           {deepDiveRows.map((row) => {
             const isActive = row.id === selectedSprintData?.id;
 
@@ -389,11 +438,11 @@ const SprintMemberDetail = () => {
                 className={`sprint-member-deep-card ${isActive ? 'active' : ''}`}
                 role="button"
                 tabIndex={0}
-                onClick={() => setSelectedSprintId(row.id)}
+                onClick={() => navigate(`/sprints/${selectedProjectData.projectId}/${encodeURIComponent(row.id)}`)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
-                    setSelectedSprintId(row.id);
+                    navigate(`/sprints/${selectedProjectData.projectId}/${encodeURIComponent(row.id)}`);
                   }
                 }}
               >
@@ -423,11 +472,6 @@ const SprintMemberDetail = () => {
                     <Clock3 size={14} />
                     <strong>{row.hours}h</strong>
                     <span>Hours</span>
-                  </div>
-                  <div className="sprint-member-deep-metric">
-                    <Users size={14} />
-                    <strong>{row.collaboration}/10</strong>
-                    <span>Collab</span>
                   </div>
                 </div>
 

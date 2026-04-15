@@ -1,10 +1,12 @@
 import React, { useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Building2, CalendarCheck2, CalendarDays, Clock3, Coffee, Download, UserCheck, UserMinus } from 'lucide-react';
 import { ResponsiveContainer, Tooltip, AreaChart, Area, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
 import PeopleHealthKpiCard from '../components/PeopleHealthKpiCard';
 import PeopleHealthPanelCard from '../components/PeopleHealthPanelCard';
 
 const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchlist, members }) => {
+  const navigate = useNavigate();
   const todayDateKey = useMemo(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -174,7 +176,19 @@ const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchli
                 {attendanceLogs.map((item) => (
                   <tr key={item.id}>
                     <td>
-                      <div className="ph-attendance-employee">
+                      <div 
+                        className="ph-attendance-employee" 
+                        onClick={() => navigate(`/employees/${item.id}`)}
+                        style={{ cursor: 'pointer' }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            navigate(`/employees/${item.id}`);
+                          }
+                        }}
+                      >
                         <span className="ph-attendance-avatar" aria-hidden="true">{item.initials}</span>
                         <div>
                           <strong>{item.name}</strong>
