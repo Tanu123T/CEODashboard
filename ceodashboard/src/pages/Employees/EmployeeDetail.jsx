@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Mail, Phone, MapPin, Calendar, FolderOpen, Trophy, FileText, CheckCircle2, Briefcase, Award } from 'lucide-react';
 import { employees } from '../../modules/peopleHealth/data/employees';
 import { getEmployeeDetailData } from '../../pages/Employees/employeeDetailData';
 import './EmployeeDetail.css';
@@ -9,11 +10,11 @@ const StarIcon = ({ filled = false }) => (
   <span className={`star-icon ${filled ? 'filled' : ''}`}>★</span>
 );
 
-const CheckIcon = () => <span className="check-icon">✓</span>;
+const CheckIcon = () => <CheckCircle2 size={14} className="text-green-600" />;
 const DownloadIcon = () => <span className="download-icon">⬇</span>;
 const LinkIcon = () => <span className="link-icon">🔗</span>;
-const TrophyIcon = () => <span className="trophy-icon">🏆</span>;
-const PageIcon = () => <span className="page-icon">📄</span>;
+const TrophyIcon = () => <Trophy size={16} className="text-yellow-600" />;
+const PageIcon = () => <FileText size={14} />;
 const StarBadgeIcon = () => <span className="star-badge-icon">⭐</span>;
 
 const EmployeeDetail = () => {
@@ -76,19 +77,19 @@ const EmployeeDetail = () => {
               <h4 className="ed-sidebar-section-title">Personal Information</h4>
               <div className="ed-sidebar-info">
                 <div className="ed-sidebar-info-item">
-                  <span className="ed-sidebar-icon">✉</span>
+                  <Mail size={16} className="ed-icon-mail" />
                   <span className="ed-sidebar-info-text">{detailData.email}</span>
                 </div>
                 <div className="ed-sidebar-info-item">
-                  <span className="ed-sidebar-icon">📞</span>
+                  <Phone size={16} className="ed-icon-phone" />
                   <span className="ed-sidebar-info-text">{detailData.phone}</span>
                 </div>
                 <div className="ed-sidebar-info-item">
-                  <span className="ed-sidebar-icon">📍</span>
+                  <MapPin size={16} className="ed-icon-location" />
                   <span className="ed-sidebar-info-text">{detailData.location}</span>
                 </div>
                 <div className="ed-sidebar-info-item">
-                  <span className="ed-sidebar-icon">📅</span>
+                  <Calendar size={16} className="ed-icon-calendar" />
                   <span className="ed-sidebar-info-text">{detailData.experience}</span>
                 </div>
               </div>
@@ -113,7 +114,7 @@ const EmployeeDetail = () => {
                   .slice(0, 2)
                   .map((project, idx) => (
                     <div key={idx} className="ed-sidebar-project-item">
-                      <span className="ed-project-icon">📁</span>
+                      <FolderOpen size={14} />
                       <span className="ed-sidebar-project-name">{project.name}</span>
                     </div>
                   ))}
@@ -333,37 +334,38 @@ const EmployeeDetail = () => {
                 const isInProgress = effectiveStatus === 'In Progress';
                 
                 return (
-                  <article key={idx} className={`ed-project-card-enhanced ${isCompleted ? 'completed' : 'active'}`}>
+                  <article key={idx} className={`ed-project-card-enhanced ${isCompleted ? 'completed' : 'active'}`} onClick={() => navigate(`/projects/${project.id}`)} style={{ cursor: 'pointer' }}>
                     <div className="ed-project-card-header-enhanced">
                       <div className="ed-project-card-title-section">
                         <h4 className="ed-project-card-name">{project.name}</h4>
                         <span className={`ed-project-status-badge ${isCompleted ? 'completed' : 'in-progress'}`}>
-                          {isCompleted ? '✓ Completed' : '🔄 In Progress'}
+                          {isCompleted ? <><CheckCircle2 size={14} /> Completed</> : <><Award size={14} /> In Progress</>}
                         </span>
                       </div>
                     </div>
 
                     <div className="ed-project-card-body">
-                      <div className="ed-project-tech-section">
-                        <span className="ed-project-tech-label">Tech Stack</span>
-                        <div className="ed-project-tech-pills">
-                          {project.techStack.map((tech, techIdx) => (
-                            <span key={techIdx} className="ed-project-tech-pill">{tech}</span>
-                          ))}
+                        <div className="ed-project-tech-section">
+                          <span className="ed-project-tech-label">Tech Stack</span>
+                          <div className="ed-project-tech-pills">
+                            {project.techStack.map((tech, techIdx) => (
+                              <span key={techIdx} className="ed-project-tech-pill">{tech}</span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="ed-project-links-section">
+                          {project.links?.demo && (
+                            <a href="#" className="ed-project-link-btn demo" title="Demo" onClick={(e) => e.stopPropagation()}>
+                              <span>Demo</span>
+                            </a>
+                          )}
+                          {project.links?.github && (
+                            <a href="#" className="ed-project-link-btn github" title="GitHub" onClick={(e) => e.stopPropagation()}>
+                              <span>GitHub</span>
+                            </a>
+                          )}
                         </div>
                       </div>
-
-                      <div className="ed-project-links-section">
-                        {project.links?.demo && (
-                          <a href="#" className="ed-project-link-btn demo" title="Demo">
-                            <span>Demo</span>
-                          </a>
-                        )}
-                        {!project.links?.github && !project.links?.demo && (
-                          <span className="ed-project-no-links">No links available</span>
-                        )}
-                      </div>
-                    </div>
 
                     <div className={`ed-project-card-footer ${isCompleted ? 'completed' : ''}`}>
                       <div className="ed-project-progress-bar">
@@ -397,7 +399,7 @@ const EmployeeDetail = () => {
                       <div className="ed-project-card-title-section">
                         <h4 className="ed-project-card-name">{experience.title}</h4>
                         <span className={`ed-project-status-badge ${isCompleted ? 'completed' : 'in-progress'}`}>
-                          {isCurrent ? '💼 Current' : '✓ Past'}
+                          {isCurrent ? <><Briefcase size={14} /> Current</> : <><CheckCircle2 size={14} /> Past</>}
                         </span>
                       </div>
                     </div>
@@ -436,7 +438,7 @@ const EmployeeDetail = () => {
             <div className="ed-education-list">
               {detailData.education.map((edu, idx) => (
                 <div key={idx} className="ed-education-item">
-                  <div className="ed-edu-icon">🎓</div>
+                  <Award size={18} className="ed-edu-icon" />
                   <div className="ed-edu-content">
                     <h4 className="ed-edu-degree">{edu.degree}</h4>
                     <p className="ed-edu-institution">{edu.institution}</p>
@@ -454,7 +456,7 @@ const EmployeeDetail = () => {
             <div className="ed-achievements-list">
               {detailData.achievements.map((achievement, idx) => (
                 <div key={idx} className="ed-achievement-item">
-                  <span className="ed-achievement-icon">🏆</span>
+                  <Trophy size={18} className="ed-achievement-icon" />
                   <div className="ed-achievement-content">
                     <h4 className="ed-achievement-title">{achievement.title}</h4>
                   </div>
