@@ -31,7 +31,7 @@
   background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 }
 
-.header-left {
+.calendar-header .header-left {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -54,7 +54,7 @@
   background-color: #edf5ff;
 }
 
-.header-left h2 {
+.calendar-header .header-left h2 {
   font-size: 18px;
   font-weight: 700;
   color: #1f3d60;
@@ -62,7 +62,7 @@
   margin: 0;
 }
 
-.header-right {
+.calendar-header .header-right {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -913,5 +913,103 @@
   .week-header,
   .calendar-grid {
     font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .work-calendar-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px;
+    overflow: visible;
+  }
+
+  .work-calendar-main,
+  .calendar-sidebar {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .calendar-sidebar {
+    width: auto;
+    padding: 12px;
+    margin-right: 4px;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .calendar-header .header-left,
+  .calendar-header .header-right {
+    width: 100%;
+  }
+
+  .calendar-header .header-right {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .work-calendar-main {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .week-header,
+  .calendar-grid {
+    min-width: 620px;
+  }
+
+  .schedule-inline-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .work-calendar-container {
+    padding: 8px;
+  }
+
+  .work-calendar-main,
+  .calendar-sidebar {
+    border-radius: 14px;
+  }
+
+  .calendar-sidebar {
+    margin-right: 6px;
+  }
+
+  .calendar-header {
+    padding: 10px;
+  }
+
+  .calendar-header .header-left h2 {
+    font-size: 16px;
+    min-width: 0;
+  }
+
+  .today-button {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .view-button {
+    padding: 5px;
+  }
+
+  .week-header,
+  .calendar-grid {
+    min-width: 560px;
+  }
+
+  .selected-day-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
