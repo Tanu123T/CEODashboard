@@ -43,8 +43,8 @@ export const sprintDashboardData = {
   ],
   metrics: [
     { label: 'Total Planned Sprints', value: '7' },
-    { label: 'Completed', value: '6' },
-    { label: 'Active', value: '1' },
+    { label: 'Completed', value: '4' },
+    { label: 'Active', value: '3' },
     { label: 'Avg. Completion', value: '86%' },
   ],
   progressTrend: [
@@ -196,6 +196,24 @@ export const sprintDashboardData = {
       status: 'active',
       progress: 43,
       tasks: '3/7',
+    },
+    {
+      id: 'a8',
+      projectId: 'mobile-app-redesign',
+      title: 'Sprint 11 — Settings UI',
+      subtitle: 'Mobile App Redesign',
+      status: 'active',
+      progress: 56,
+      tasks: '5/9',
+    },
+    {
+      id: 'a9',
+      projectId: 'platform-api-v3',
+      title: 'Sprint 12 — Onboarding Flow',
+      subtitle: 'Platform API v3',
+      status: 'active',
+      progress: 68,
+      tasks: '6/9',
     },
   ],
 };
