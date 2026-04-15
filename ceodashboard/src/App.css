@@ -106,7 +106,7 @@
   color: #888;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .main-content {
     margin-left: 0;
     width: 100%;

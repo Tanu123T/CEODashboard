@@ -17,6 +17,8 @@
     transform: translateX(0);
 }
 
+
+
 /* MENU */
 
 .nav-menu{
@@ -131,12 +133,17 @@
     margin-bottom: 6px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .navbar{
         width:280px;
         max-width:85vw;
         height: calc(100vh - 58px);
         z-index:999;
+        transform: translateX(-100%);
+    }
+
+    .navbar.open{
+        transform: translateX(0);
     }
 
     .bottom-menu{
