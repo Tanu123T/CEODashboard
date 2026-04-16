@@ -24,9 +24,10 @@ const EmployeeDetail = () => {
   const [detailData, setDetailData] = useState(null);
 
   useEffect(() => {
-    // Extract employeeId from the URL path (e.g., /employees/E-001)
-    const pathSegments = location.pathname.split('/');
-    const employeeId = pathSegments[2]; // Get the second segment after '/employees/'
+    // Supports /employees/E-001 and /employees/detail/E-001
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const candidateId = pathSegments[pathSegments.length - 1];
+    const employeeId = /^E-\d+$/i.test(candidateId) ? candidateId : null;
     
     // Find employee by ID from the employees list
     const emp = employees.find(e => e.id === employeeId) || employees[0];

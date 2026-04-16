@@ -178,14 +178,14 @@ const AvailabilityTab = ({ summary, attendanceSnapshot, departments, lateWatchli
                     <td>
                       <div 
                         className="ph-attendance-employee" 
-                        onClick={() => navigate(`/employees/${item.id}`)}
+                        onClick={() => navigate(`/employees/detail/${item.id}`)}
                         style={{ cursor: 'pointer' }}
                         role="button"
                         tabIndex={0}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            navigate(`/employees/${item.id}`);
+                            navigate(`/employees/detail/${item.id}`);
                           }
                         }}
                       >

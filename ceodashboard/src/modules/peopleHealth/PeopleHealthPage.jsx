@@ -51,21 +51,26 @@ const PeopleHealthPage = () => {
   }), []);
 
   const pathSegment = useMemo(() => location.pathname.split('/')[2], [location.pathname]);
-  
-  // Check if path segment is an employee ID (e.g., "E-001") instead of a tab
-  const isEmployeeDetailRoute = pathSegment && pathSegment.startsWith('E-');
-
+  const detailEmployeeId = useMemo(() => {
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    if (pathParts.length >= 3 && pathParts[0] === 'employees' && pathParts[1] === 'detail') {
+      return /^E-\d+$/i.test(pathParts[2]) ? pathParts[2] : null;
+    }
+    return null;
+  }, [location.pathname]);
   const activeTab = useMemo(() => {
-    if (isEmployeeDetailRoute) return null; // Don't show tabs for employee detail
     return validTabs.includes(pathSegment) ? pathSegment : 'availability';
-  }, [pathSegment, validTabs, isEmployeeDetailRoute]);
+  }, [pathSegment, validTabs]);
 
   useEffect(() => {
-    // Only redirect if it's not a valid tab and not an employee ID
-    if (!isEmployeeDetailRoute && !validTabs.includes(pathSegment) && pathSegment) {
+    if (detailEmployeeId) {
+      return;
+    }
+
+    if (!validTabs.includes(pathSegment) && pathSegment) {
       navigate('/employees/availability', { replace: true });
     }
-  }, [pathSegment, navigate, validTabs, isEmployeeDetailRoute]);
+  }, [pathSegment, navigate, validTabs, detailEmployeeId]);
 
   const [filters, setFilters] = useState({
     search: '',
@@ -195,8 +200,7 @@ const PeopleHealthPage = () => {
     // ),
   };
 
-  // If viewing an employee detail page, render that instead
-  if (isEmployeeDetailRoute) {
+  if (detailEmployeeId) {
     return <EmployeeDetail />;
   }
 

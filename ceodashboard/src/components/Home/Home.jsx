@@ -38,6 +38,31 @@ import { sprintProjects, sprintDetails } from "../../pages/Sprints/sprintData";
 import { departmentDistribution, trendLabels, trendValues } from "../team/teamData";
 
 const kpiCards = [
+  
+    {
+    icon: Users,
+    title: "TOTAL WORKFORCE",
+    value: "8",
+    meta: "All squads",
+    color: "green",
+    to: "/employees",
+  },
+    {
+    icon: UserCheck,
+    title: "EMPLOYEES PRESENT TODAY",
+    value: "231",
+    meta: "93.5% attendance",
+    color: "green",
+    to: "/employees",
+  },
+    {
+    icon: Calendar,
+    title: "ON LEAVE",
+    value: "16",
+    meta: "Out of office",
+    color: "amber",
+    to: "/employees",
+  },
   {
     icon: Briefcase,
     title: "ACTIVE PROJECTS",
@@ -47,14 +72,6 @@ const kpiCards = [
     to: "/projects",
   },
   {
-    icon: Users,
-    title: "TOTAL WORKFORCE",
-    value: "8",
-    meta: "All squads",
-    color: "green",
-    to: "/employees",
-  },
-  {
     icon: Zap,
     title: "ACTIVE SPRINTS",
     value: "2",
@@ -62,22 +79,8 @@ const kpiCards = [
     color: "teal",
     to: "/sprints",
   },
-  {
-    icon: UserCheck,
-    title: "EMPLOYEES PRESENT TODAY",
-    value: "231",
-    meta: "93.5% attendance",
-    color: "green",
-    to: "/employees",
-  },
-  {
-    icon: Calendar,
-    title: "ON LEAVE",
-    value: "16",
-    meta: "Out of office",
-    color: "amber",
-    to: "/employees",
-  },
+
+
 ];
 
 const projectProgressData = [
@@ -367,7 +370,6 @@ const Home = () => {
                 <p className="hero-quote-text">"{dailyQuote.text}"</p>
                 <p className="hero-quote-author">
                   <span>{dailyQuote.author}</span>
-                  <small>{dailyQuote.source}</small>
                 </p>
               </div>
             </article>

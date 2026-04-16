@@ -327,12 +327,12 @@
 }
 
 .kpi-grid > * {
-    width: 100%;
     min-width: 0;
     justify-self: stretch;
 }
 
 .kpi-card {
+    box-sizing: border-box;
     background: #ffffff;
     border: 1px solid #e7edf3;
     border-radius: 14px;
