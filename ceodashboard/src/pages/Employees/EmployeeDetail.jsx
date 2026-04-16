@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Mail, Phone, MapPin, Calendar, FolderOpen, Trophy, FileText, CheckCircle2, Briefcase, Award } from 'lucide-react';
 import { employees } from '../../modules/peopleHealth/data/employees';
@@ -22,6 +22,7 @@ const EmployeeDetail = () => {
   const navigate = useNavigate();
   const [employee, setEmployee] = useState(null);
   const [detailData, setDetailData] = useState(null);
+  const [selectedAttendanceMonth, setSelectedAttendanceMonth] = useState('');
 
   useEffect(() => {
     // Supports /employees/E-001 and /employees/detail/E-001
@@ -34,6 +35,44 @@ const EmployeeDetail = () => {
     setEmployee(emp);
     setDetailData(getEmployeeDetailData(emp));
   }, [location.pathname]);
+
+  const employeeSeed = Number((employee?.id || 'E-001').split('-')[1] || 1);
+
+  const attendanceMonthOptions = useMemo(() => {
+    const now = new Date();
+    return Array.from({ length: 6 }, (_, index) => {
+      const date = new Date(now.getFullYear(), now.getMonth() - index, 1);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      // Keep values deterministic per employee while varying by month.
+      const monthSeed = (employeeSeed * 7) + month + (year % 100);
+      const presentDays = Math.max(18, Math.min(totalDays, totalDays - (2 + (monthSeed % 7))));
+      const absentDays = Math.max(0, totalDays - presentDays);
+      const attendanceRate = Math.round((presentDays / totalDays) * 100);
+
+      return {
+        key: `${year}-${String(month + 1).padStart(2, '0')}`,
+        label: date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+        totalDays,
+        presentDays,
+        absentDays,
+        attendanceRate,
+      };
+    });
+  }, [employeeSeed]);
+
+  useEffect(() => {
+    if (!attendanceMonthOptions.length) return;
+    if (!selectedAttendanceMonth || !attendanceMonthOptions.some((item) => item.key === selectedAttendanceMonth)) {
+      setSelectedAttendanceMonth(attendanceMonthOptions[0].key);
+    }
+  }, [attendanceMonthOptions, selectedAttendanceMonth]);
+
+  const selectedAttendance = attendanceMonthOptions.find((item) => item.key === selectedAttendanceMonth) || attendanceMonthOptions[0];
+  const attendanceCircumference = 2 * Math.PI * 65;
+  const attendanceDash = selectedAttendance ? (selectedAttendance.attendanceRate / 100) * attendanceCircumference : 0;
 
   if (!employee || !detailData) {
     return <div className="employee-detail">Loading...</div>;
@@ -291,7 +330,19 @@ const EmployeeDetail = () => {
 
             {/* Attendance Rate */}
             <div className="ed-card ed-card-metrics">
-              <h3 className="ed-card-title ed-card-title-sm">Attendance Rate</h3>
+              <div className="ed-attendance-card-head">
+                <h3 className="ed-card-title ed-card-title-sm">Attendance Rate</h3>
+                <select
+                  className="ed-attendance-month-select"
+                  value={selectedAttendanceMonth}
+                  onChange={(event) => setSelectedAttendanceMonth(event.target.value)}
+                  aria-label="Select attendance month"
+                >
+                  {attendanceMonthOptions.map((month) => (
+                    <option key={month.key} value={month.key}>{month.label}</option>
+                  ))}
+                </select>
+              </div>
               <div className="ed-metrics-chart">
                 <svg className="ed-metrics-viz" viewBox="0 0 240 220" preserveAspectRatio="xMidYMid meet">
                   <defs>
@@ -310,10 +361,25 @@ const EmployeeDetail = () => {
                   <g>
                     <circle cx="120" cy="85" r="65" fill="none" stroke="#dbeafe" strokeWidth="8"/>
                     <circle cx="120" cy="85" r="65" fill="none" stroke="url(#attendanceGrad)" strokeWidth="8" 
-                            strokeDasharray="396.16 408.41" strokeLinecap="round" filter="url(#glow)" transform="rotate(-90 120 85)"/>
-                    <text x="120" y="95" fontSize="42" fontWeight="900" fill="#1e40af" textAnchor="middle">97%</text>
+                            strokeDasharray={`${attendanceDash} ${attendanceCircumference}`} strokeLinecap="round" filter="url(#glow)" transform="rotate(-90 120 85)"/>
+                    <text x="120" y="95" fontSize="42" fontWeight="900" fill="#1e40af" textAnchor="middle">{selectedAttendance?.attendanceRate || 0}%</text>
                   </g>
                 </svg>
+              </div>
+
+              <div className="ed-attendance-breakdown">
+                <div className="ed-attendance-metric">
+                  <small>Total days</small>
+                  <strong>{selectedAttendance?.totalDays || 0}</strong>
+                </div>
+                <div className="ed-attendance-metric present">
+                  <small>Present days</small>
+                  <strong>{selectedAttendance?.presentDays || 0}</strong>
+                </div>
+                <div className="ed-attendance-metric absent">
+                  <small>Absent days</small>
+                  <strong>{selectedAttendance?.absentDays || 0}</strong>
+                </div>
               </div>
             </div>
           </section>

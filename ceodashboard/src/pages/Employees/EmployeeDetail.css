@@ -688,6 +688,81 @@
   margin: 0 0 14px 0;
 }
 
+.ed-attendance-card-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.ed-attendance-month-select {
+  border: 1px solid #d7e3f2;
+  border-radius: 9px;
+  background: #f8fbff;
+  color: #2f4a70;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 10px;
+  outline: none;
+}
+
+.ed-attendance-month-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
+}
+
+.ed-attendance-breakdown {
+  margin-top: 8px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ed-attendance-metric {
+  border: 1px solid #dbe7f5;
+  border-radius: 10px;
+  padding: 8px;
+  background: #f8fbff;
+  display: grid;
+  gap: 2px;
+  text-align: center;
+}
+
+.ed-attendance-metric small {
+  font-size: 10px;
+  color: #6f86a4;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ed-attendance-metric strong {
+  font-size: 16px;
+  color: #173a6a;
+  line-height: 1.1;
+}
+
+.ed-attendance-metric.present {
+  background: #eefbf4;
+  border-color: #ccefdc;
+}
+
+.ed-attendance-metric.present strong {
+  color: #0f8f61;
+}
+
+.ed-attendance-metric.absent {
+  background: #fff4f4;
+  border-color: #f3d6d6;
+}
+
+.ed-attendance-metric.absent strong {
+  color: #ba4444;
+}
+
 .ed-link {
   color: var(--ed-primary);
   text-decoration: none;
@@ -1467,7 +1542,7 @@
   align-items: center;
   text-align: center;
   padding: 24px;
-  height: fit-content;
+  min-height: 430px;
   min-width: 0;
   overflow: hidden;
 }
@@ -2717,6 +2792,7 @@
 
   .ed-card-metrics {
     padding: 20px;
+    min-height: 360px;
   }
 
   .ed-chart-performance {
@@ -2786,6 +2862,7 @@
 
   .ed-card-metrics {
     padding: 16px;
+    min-height: 320px;
   }
 
   .ed-projects-header-block {
@@ -2899,6 +2976,7 @@
 
   .ed-card-metrics {
     padding: 16px !important;
+    min-height: 300px;
   }
 
   .ed-card-tasks {
@@ -3047,6 +3125,7 @@
 
   .ed-card-metrics {
     padding: 12px !important;
+    min-height: 280px;
   }
 
   .ed-card-tasks {
