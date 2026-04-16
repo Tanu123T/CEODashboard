@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarDays, ChevronLeft, ChevronRight, Eye, LayoutGrid, X } from 'lucide-react';
-import { teamMembers, nextMeeting } from '../data/ceoSchedule';
+import { CalendarDays, ChevronLeft, ChevronRight, LayoutGrid, X } from 'lucide-react';
+import { teamMembers } from '../data/ceoSchedule';
 import './WorkCalendar.css';
 
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -35,6 +35,26 @@ const AUTO_MEETING_DURATION_MINUTES = 30;
 const timeToMinutes = (timeText) => {
   const [hours, minutes] = timeText.split(':').map(Number);
   return hours * 60 + minutes;
+};
+
+const formatTime12Hour = (timeText) => {
+  const [hours, minutes] = timeText.split(':').map(Number);
+  const date = new Date(2000, 0, 1, hours, minutes);
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+};
+
+const formatTimeLabel = (timeText) => {
+  const [hours, minutes] = timeText.split(':').map(Number);
+  const date = new Date(2000, 0, 1, hours, minutes);
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: minutes === 0 ? undefined : '2-digit',
+    hour12: true,
+  });
 };
 
 const minutesToTime = (value) => {
@@ -159,6 +179,10 @@ const createDraftEvent = (dateKey) => ({
   category: 'meeting',
   color: '#4b8fe7',
 });
+
+const getSlotEndTime = (startTime) => {
+  return minutesToTime(Math.min(timeToMinutes(startTime) + 60, (23 * 60) + 59));
+};
 
 const getDefaultDemoDate = () => {
   const now = getCurrentDate();
@@ -286,6 +310,7 @@ const WorkCalendarTab = () => {
   const [meetWithQuery, setMeetWithQuery] = useState('');
   const [focusedMemberId, setFocusedMemberId] = useState(null);
   const [editingEventId, setEditingEventId] = useState(null);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const hasInitializedAutoMeetings = useRef(false);
   const [events, setEvents] = useState(() => {
     if (typeof window === 'undefined') {
@@ -448,10 +473,10 @@ const WorkCalendarTab = () => {
     return slots.map((slot) => `${prefix} ${minutesToTime(slot.start)} - ${minutesToTime(slot.end)}`);
   }, [selectedDayEvents, selectedDateKey]);
 
-  // Generate time slots (from 9 AM to 16:00)
+  // Generate time slots (from 9 AM to 6 PM)
   const timeSlots = useMemo(() => {
     const slots = [];
-    for (let hour = 9; hour <= 16; hour++) {
+    for (let hour = 9; hour <= 18; hour++) {
       slots.push(`${String(hour).padStart(2, '0')}:00`);
     }
     return slots;
@@ -504,6 +529,21 @@ const WorkCalendarTab = () => {
     setSelectedDateKey(toLocalDateKey(date));
   };
 
+  const handleDayColumnClick = (clickEvent, date) => {
+    const headerHeight = 44;
+    const slotHeight = 60;
+    const rect = clickEvent.currentTarget.getBoundingClientRect();
+    const relativeY = clickEvent.clientY - rect.top - headerHeight;
+
+    if (relativeY < 0) {
+      handleDateSelect(date);
+      return;
+    }
+
+    const slotIndex = Math.max(0, Math.min(Math.floor(relativeY / slotHeight), timeSlots.length - 1));
+    handleOpenScheduleModalForSlot(date, timeSlots[slotIndex]);
+  };
+
   const handleEditEvent = (eventItem) => {
     setEditingEventId(eventItem.id);
     setDraftEvent({
@@ -514,6 +554,9 @@ const WorkCalendarTab = () => {
       category: eventItem.category,
       color: eventItem.color,
     });
+    setSelectedDateKey(eventItem.date);
+    setCurrentDate(fromLocalDateKey(eventItem.date));
+    setIsScheduleModalOpen(true);
   };
 
   const handleDeleteEvent = (eventId) => {
@@ -524,9 +567,32 @@ const WorkCalendarTab = () => {
     }
   };
 
-  const handleCancelEdit = () => {
+  const handleCloseScheduleModal = () => {
+    setIsScheduleModalOpen(false);
     setEditingEventId(null);
     setDraftEvent(createDraftEvent(selectedDateKey));
+  };
+
+  const handleCancelEdit = () => {
+    handleCloseScheduleModal();
+  };
+
+  const handleOpenScheduleModalForSlot = (date, startTime) => {
+    const dateKey = toLocalDateKey(date);
+    const category = categoryOptions[0];
+
+    setCurrentDate(new Date(date));
+    setSelectedDateKey(dateKey);
+    setEditingEventId(null);
+    setDraftEvent({
+      title: '',
+      date: dateKey,
+      startTime,
+      endTime: getSlotEndTime(startTime),
+      category: category.value,
+      color: category.color,
+    });
+    setIsScheduleModalOpen(true);
   };
 
   const handleDraftChange = (field, value) => {
@@ -575,6 +641,7 @@ const WorkCalendarTab = () => {
     setSelectedDateKey(draftEvent.date);
     setCurrentDate(fromLocalDateKey(draftEvent.date));
     setDraftEvent(createDraftEvent(draftEvent.date));
+    setIsScheduleModalOpen(false);
   };
 
   const scheduleAutoMeetingForMember = (member, dateKey) => {
@@ -710,7 +777,7 @@ const WorkCalendarTab = () => {
             <div className="time-slot-header" />
             {timeSlots.map((time, idx) => (
               <div key={idx} className="time-label">
-                {time}
+                {formatTimeLabel(time)}
               </div>
             ))}
           </div>
@@ -721,16 +788,24 @@ const WorkCalendarTab = () => {
             const eventLayout = getEventLayoutForDay(dayEvents);
 
             return (
-              <button
+              <div
                 key={dayIdx}
-                type="button"
                 className={`day-column ${toLocalDateKey(date) === selectedDateKey ? 'selected' : ''}`}
-                onClick={() => handleDateSelect(date)}
+                onClick={(clickEvent) => handleDayColumnClick(clickEvent, date)}
               >
                 <div className="day-grid-header" />
                 <div className="time-slots-container">
                   {timeSlots.map((time, timeIdx) => (
-                    <div key={timeIdx} className="time-slot" />
+                    <button
+                      key={timeIdx}
+                      type="button"
+                      className="time-slot"
+                      onClick={(clickEvent) => {
+                        clickEvent.stopPropagation();
+                        handleOpenScheduleModalForSlot(date, time);
+                      }}
+                      aria-label={`Add schedule on ${formatLongDate(toLocalDateKey(date))} at ${formatTime12Hour(time)}`}
+                    />
                   ))}
                 </div>
 
@@ -754,23 +829,27 @@ const WorkCalendarTab = () => {
                           zIndex: layout.lane + 2,
                         }}
                         title={event.title}
+                        onClick={(clickEvent) => {
+                          clickEvent.stopPropagation();
+                          handleEditEvent(event);
+                        }}
                       >
                         <div className="event-time">
-                          {event.startTime} — {event.endTime}
+                          {formatTime12Hour(event.startTime)} - {formatTime12Hour(event.endTime)}
                         </div>
                         <div className="event-title">{event.title}</div>
                       </div>
                     );
                   })}
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
 
         {/* Morning indicator */}
         <div className="morning-indicator">
-          <span className="morning-badge">09:45</span>
+          <span className="morning-badge">9:45 AM</span>
         </div>
       </div>
 
@@ -832,7 +911,7 @@ const WorkCalendarTab = () => {
           <div className="selected-day-events">
             {selectedDayEvents.length ? selectedDayEvents.map((event) => (
               <div key={event.id} className="selected-day-event" style={{ borderLeftColor: event.color }}>
-                <div className="selected-day-event-time">{event.startTime} - {event.endTime}</div>
+                <div className="selected-day-event-time">{formatTime12Hour(event.startTime)} - {formatTime12Hour(event.endTime)}</div>
                 <div className="selected-day-event-title">{event.title}</div>
                 <div className="selected-day-event-actions">
                   <button type="button" className="event-action-button" onClick={() => handleEditEvent(event)}>Edit</button>
@@ -845,140 +924,76 @@ const WorkCalendarTab = () => {
           </div>
         </div>
 
-        <div className="sidebar-section next-meeting-section">
-          <h3 className="sidebar-title">Next meeting</h3>
-          <div className="next-meeting-card">
-            <img src={nextMeeting.image} alt="Team" className="meeting-image" />
-            <div className="meeting-info">
-              <h4>{nextMeetingForSelectedDay?.title || nextMeeting.title}</h4>
-              <p>{nextMeetingForSelectedDay ? `${nextMeetingForSelectedDay.startTime} - ${nextMeetingForSelectedDay.endTime}` : nextMeeting.timeUntil}</p>
-            </div>
-          </div>
-        </div>
-
-        <form className="sidebar-section schedule-form-section" onSubmit={handleAddEvent}>
-          <div className="schedule-form-header">
-            <h3>{editingEventId ? 'Update schedule item' : 'Add schedule item'}</h3>
-            <span>{editingEventId ? 'Editing selected event' : 'Ready for new input'}</span>
-          </div>
-          <input
-            type="text"
-            className="add-people-input"
-            value={draftEvent.title}
-            onChange={(event) => handleDraftChange('title', event.target.value)}
-            placeholder="Event title"
-          />
-          <div className="schedule-inline-row">
-            <input
-              type="date"
-              className="schedule-input"
-              value={draftEvent.date}
-              onChange={(event) => handleDraftChange('date', event.target.value)}
-            />
-            <input
-              type="time"
-              className="schedule-input"
-              value={draftEvent.startTime}
-              onChange={(event) => handleDraftChange('startTime', event.target.value)}
-            />
-            <input
-              type="time"
-              className="schedule-input"
-              value={draftEvent.endTime}
-              onChange={(event) => handleDraftChange('endTime', event.target.value)}
-            />
-          </div>
-          <div className="schedule-inline-row">
-            <select
-              className="schedule-input"
-              value={draftEvent.category}
-              onChange={(event) => handleDraftChange('category', event.target.value)}
-            >
-              {categoryOptions.map((option) => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-            <button type="submit" className="schedule-submit-button" disabled={!canAddEvent}>
-              {editingEventId ? 'Update event' : 'Add event'}
-            </button>
-            {editingEventId ? (
-              <button type="button" className="schedule-cancel-button" onClick={handleCancelEdit}>Cancel</button>
-            ) : (
-              <span className="schedule-inline-spacer" aria-hidden="true" />
-            )}
-          </div>
-        </form>
-
-        <div className="sidebar-section">
-          <div className="meet-with-header">
-            <h3>Meet with</h3>
-            <button className="clear-button" onClick={handleClearMembers} disabled={!meetWith.length}>Clear All</button>
-          </div>
-
-          <div className="meet-with-input">
-            <input
-              type="text"
-              placeholder="Search and add people"
-              className="add-people-input"
-              value={meetWithQuery}
-              onChange={(event) => setMeetWithQuery(event.target.value)}
-              onKeyDown={handleMemberSearchKeyDown}
-            />
-            {memberSearchResults.length ? (
-              <div className="member-search-results" role="listbox" aria-label="Member search results">
-                {memberSearchResults.map((member) => (
-                  <button
-                    key={member.id}
-                    type="button"
-                    className="member-search-option"
-                    onClick={() => handleAddMember(member)}
-                  >
-                    <span>{member.name}</span>
-                    <small>{member.email}</small>
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          <div className="team-members-list">
-            {filteredMeetWith.map((member) => (
-              <div key={member.id} className={`team-member ${focusedMemberId === member.id ? 'focused' : ''}`}>
-                <div className="member-content">
-                  <div className="member-initials" title={member.name}>
-                    {member.initials}
-                  </div>
-                  <div className="member-info">
-                    <div className="member-name">{member.name}</div>
-                    <div className="member-email">{member.email}</div>
-                  </div>
-                </div>
-                <div className="member-actions">
-                  <button className="action-button" title="Focus member" onClick={() => handleToggleMemberFocus(member.id)}>
-                    <Eye size={16} />
-                  </button>
-                  <button className="action-button" title="Remove" onClick={() => handleRemoveMember(member.id)}>
-                    <X size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
-            {filteredMeetWith.length === 0 ? (
-              <div className="team-member-empty">No matching people found.</div>
-            ) : null}
-          </div>
-
-          {meetWith.length > 0 && (
-            <div className="time-suggestions">
-              <p>Time slot suggestions</p>
-              {timeSlotSuggestions.map((entry) => (
-                <p key={entry}>{entry}</p>
-              ))}
-              <p className="suggestion-note">You can also select time directly on the calendar.</p>
-            </div>
-          )}
-        </div>
       </div>
+
+      {isScheduleModalOpen ? (
+        <div className="schedule-modal-backdrop" onClick={handleCloseScheduleModal}>
+          <div className="schedule-modal-card" onClick={(event) => event.stopPropagation()}>
+            <div className="schedule-modal-header">
+              <div>
+                <h3>{editingEventId ? 'Update schedule item' : 'Add schedule item'}</h3>
+                <p>{formatLongDate(draftEvent.date)} - {formatTime12Hour(draftEvent.startTime)} to {formatTime12Hour(draftEvent.endTime)}</p>
+              </div>
+              <button
+                type="button"
+                className="schedule-modal-close"
+                onClick={handleCloseScheduleModal}
+                aria-label="Close schedule dialog"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <form className="schedule-modal-form" onSubmit={handleAddEvent}>
+              <input
+                type="text"
+                className="add-people-input"
+                value={draftEvent.title}
+                onChange={(event) => handleDraftChange('title', event.target.value)}
+                placeholder="Event title"
+                autoFocus
+              />
+
+              <div className="schedule-inline-row">
+                <input
+                  type="date"
+                  className="schedule-input"
+                  value={draftEvent.date}
+                  onChange={(event) => handleDraftChange('date', event.target.value)}
+                />
+                <input
+                  type="time"
+                  className="schedule-input"
+                  value={draftEvent.startTime}
+                  onChange={(event) => handleDraftChange('startTime', event.target.value)}
+                />
+                <input
+                  type="time"
+                  className="schedule-input"
+                  value={draftEvent.endTime}
+                  onChange={(event) => handleDraftChange('endTime', event.target.value)}
+                />
+              </div>
+
+              <div className="schedule-inline-row schedule-modal-actions-row">
+                <select
+                  className="schedule-input"
+                  value={draftEvent.category}
+                  onChange={(event) => handleDraftChange('category', event.target.value)}
+                >
+                  {categoryOptions.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+                <button type="button" className="schedule-cancel-button" onClick={handleCloseScheduleModal}>Cancel</button>
+                <button type="submit" className="schedule-submit-button" disabled={!canAddEvent}>
+                  {editingEventId ? 'Update event' : 'Add event'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

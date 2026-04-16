@@ -19,13 +19,16 @@
 }
 
 .settings-layout {
-	display: grid;
-	grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-	gap: 18px;
-	align-items: start;
+	column-count: 2;
+	column-gap: 18px;
 }
 
 .settings-card {
+	display: inline-block;
+	width: 100%;
+	margin: 0 0 18px;
+	break-inside: avoid;
+	page-break-inside: avoid;
 	background: #ffffff;
 	border-radius: 14px;
 	border: 1px solid rgba(56, 189, 248, 0.16);
@@ -304,7 +307,12 @@
 
 @media (max-width: 1100px) {
 	.settings-layout {
-		grid-template-columns: 1fr;
+		column-count: 1;
+		column-gap: 0;
+	}
+
+	.settings-card {
+		margin-bottom: 14px;
 	}
 }
 

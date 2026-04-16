@@ -95,10 +95,20 @@ const Projects = () => {
       plannedSprints,
       Math.round((progress / 100) * plannedSprints)
     );
-    const sprintRoadmapDots = Array.from({ length: plannedSprints }, (_, index) => ({
-      id: index + 1,
-      completed: index < completedSprints,
-    }));
+    const activeSprintNumber = completedSprints < plannedSprints ? completedSprints + 1 : null;
+    const sprintRoadmapDots = Array.from({ length: plannedSprints }, (_, index) => {
+      const sprintId = index + 1;
+      const status = sprintId <= completedSprints
+        ? 'completed'
+        : sprintId === activeSprintNumber
+          ? 'active'
+          : 'planned';
+
+      return {
+        id: sprintId,
+        status,
+      };
+    });
 
     return (
       <div className="projects-page project-detail-page">
@@ -146,7 +156,7 @@ const Projects = () => {
               className="meta-card-action"
               onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
             >
-              <p><Zap size={14} /> SPRINTS</p>
+              <p><Zap size={14} /> TOTAL PLANNED SPRINTS</p>
               <h3>{selectedProject.sprints}</h3>
             </button>
           </div>
@@ -206,37 +216,53 @@ const Projects = () => {
           <div className="project-detail-side">
             <section className="project-detail-panel sprint-insight-panel">
               <div className="sprint-insight-header">
-                <h3>SPRINT INSIGHT</h3>
-                <button
-                  type="button"
-                  className="view-sprint-btn"
-                  onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
-                >
-                  <span>View Sprint</span>
-                  <ArrowRight size={16} />
-                </button>
+                <div className="sprint-insight-title-block">
+                  <h3>SPRINT TIMELINE</h3>
+                  <p><strong>{completedSprints}</strong> of <strong>{plannedSprints}</strong> sprints completed</p>
+                  <span>{activeSprintNumber ? `1 active (S${activeSprintNumber})` : 'No active sprint'}</span>
+                </div>
+
+                <div className="sprint-insight-actions">
+                  <div className="sprint-progress-stat">
+                    <span>Overall Progress</span>
+                    <strong>{selectedProject.progress}%</strong>
+                  </div>
+                  <button
+                    type="button"
+                    className="view-sprint-btn"
+                    onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
+                  >
+                    <span>View Active</span>
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
               </div>
 
               <div className="sprint-insight-content">
-                <div className="sprint-roadmap-header">
-                  <p>
-                    <strong>{completedSprints}</strong> of <strong>{plannedSprints}</strong> sprints completed
-                  </p>
-                  <span>{selectedProject.progress}% overall progress</span>
-                </div>
-
                 <div className="sprint-roadmap-track" aria-label="Sprint roadmap progress">
-                  {sprintRoadmapDots.map((dot) => (
-                    <span
-                      key={dot.id}
-                      className={`sprint-roadmap-dot ${dot.completed ? 'completed' : 'planned'}`}
-                      title={`Sprint ${dot.id} ${dot.completed ? 'completed' : 'planned'}`}
-                    />
-                  ))}
+                  {sprintRoadmapDots.map((dot) => {
+                    const statusLabel = dot.status === 'completed'
+                      ? 'Done'
+                      : dot.status === 'active'
+                        ? 'Active'
+                        : 'Planned';
+
+                    return (
+                      <div
+                        key={dot.id}
+                        className="sprint-roadmap-item"
+                        title={`Sprint ${dot.id} ${statusLabel.toLowerCase()}`}
+                      >
+                        <span className={`sprint-roadmap-dot ${dot.status}`}>S{dot.id}</span>
+                        <span className={`sprint-roadmap-status ${dot.status}`}>{statusLabel}</span>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <div className="sprint-roadmap-legend" aria-hidden="true">
                   <span><i className="legend-dot completed" /> Completed</span>
+                  <span><i className="legend-dot active" /> Active</span>
                   <span><i className="legend-dot planned" /> Planned</span>
                 </div>
               </div>
