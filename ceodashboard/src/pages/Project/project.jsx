@@ -303,57 +303,61 @@ const Projects = () => {
       </section>
 
       <section className="projects-grid">
-        {projectRecords.map((project) => (
-          <button
-            key={project.id}
-            type="button"
-            className="project-card"
-            onClick={() => navigate(`/projects/${project.id}`)}
-          >
-            <div className="project-row-top">
-              <div className="project-head-left">
-                <span className={`project-icon ${project.iconTone}`}>
-                  <BriefcaseBusiness size={17} />
-                </span>
-                <div className="project-head-copy">
-                  <div className="project-title-row">
-                    <h3 className="project-name">{project.name}</h3>
-                    <span className={`project-status-pill ${project.statusTone}`}>
-                      <Circle size={8} fill="currentColor" />
-                      {project.statusLabel}
-                    </span>
+        {projectRecords.map((project) => {
+          const progressValue = Math.max(0, Math.min(100, Number(project.progress) || 0));
+
+          return (
+            <button
+              key={project.id}
+              type="button"
+              className="project-card"
+              onClick={() => navigate(`/projects/${project.id}`)}
+            >
+              <div className="project-row-top">
+                <div className="project-head-left">
+                  <span className={`project-icon ${project.iconTone}`}>
+                    <BriefcaseBusiness size={17} />
+                  </span>
+                  <div className="project-head-copy">
+                    <div className="project-title-row">
+                      <h3 className="project-name">{project.name}</h3>
+                      <span className={`project-status-pill ${project.statusTone}`}>
+                        <Circle size={8} fill="currentColor" />
+                        {project.statusLabel}
+                      </span>
+                    </div>
+                    <p>{project.client}</p>
                   </div>
-                  <p>{project.client}</p>
+                </div>
+                <ArrowRight size={18} className="project-arrow" />
+              </div>
+
+              <div className="project-progress-block">
+                <div className="project-progress-head">
+                  <span>Progress</span>
+                  <strong>{progressValue}%</strong>
+                </div>
+                <div className="project-progress-track">
+                  <span
+                    className={`project-progress-fill ${project.statusTone}`}
+                    style={{ width: `${progressValue}%` }}
+                  />
                 </div>
               </div>
-              <ArrowRight size={18} className="project-arrow" />
-            </div>
 
-            <div className="project-progress-block">
-              <div className="project-progress-head">
-                <span>Progress</span>
-                <strong>{project.progress}%</strong>
+              <div className="project-meta-row">
+                <article className="meta-chip">
+                  <p>Lead</p>
+                  <strong>{project.lead}</strong>
+                </article>
+                <article className="meta-chip">
+                  <p>Due Date</p>
+                  <strong>{project.dueDate}</strong>
+                </article>
               </div>
-              <div className="project-progress-track">
-                <span
-                  className={`project-progress-fill ${project.statusTone}`}
-                  style={{ width: `${project.progress}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="project-meta-row">
-              <article className="meta-chip">
-                <p>Lead</p>
-                <strong>{project.lead}</strong>
-              </article>
-              <article className="meta-chip">
-                <p>Due Date</p>
-                <strong>{project.dueDate}</strong>
-              </article>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </section>
     </div>
   );
