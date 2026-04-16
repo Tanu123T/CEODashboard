@@ -317,6 +317,14 @@
   font-size: 13px;
 }
 
+/* Hide all progress bars */
+.project-progress-block,
+.project-progress-head,
+.project-progress-track,
+.project-progress-fill {
+  display: none !important;
+}
+
 .project-section-heading {
   display: flex;
   align-items: center;
