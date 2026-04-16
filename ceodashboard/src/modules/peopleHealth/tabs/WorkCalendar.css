@@ -235,9 +235,19 @@
 }
 
 .time-slot {
+  appearance: none;
+  width: 100%;
+  border: 0;
+  background: transparent;
   height: 60px;
   border-bottom: 1px solid #edf3f9;
   position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.time-slot:hover {
+  background: rgba(75, 143, 231, 0.08);
 }
 
 .events-container {
@@ -866,6 +876,91 @@
   display: block;
 }
 
+.schedule-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 35, 57, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1200;
+}
+
+.schedule-modal-card {
+  width: min(560px, 100%);
+  border-radius: 18px;
+  border: 1px solid #d7e5f4;
+  background:
+    radial-gradient(circle at top right, rgba(47, 199, 166, 0.14), transparent 45%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: 0 30px 70px rgba(12, 30, 52, 0.24);
+  padding: 18px;
+  animation: scheduleModalEnter 0.2s ease;
+}
+
+.schedule-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.schedule-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #1d3c61;
+}
+
+.schedule-modal-header p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #6f839e;
+}
+
+.schedule-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid #d7e3f1;
+  background: #fff;
+  color: #5f7690;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.schedule-modal-close:hover {
+  background: #edf5ff;
+  color: #305a87;
+}
+
+.schedule-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.schedule-modal-actions-row {
+  align-items: center;
+}
+
+@keyframes scheduleModalEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Scrollbar styling */
 .calendar-grid::-webkit-scrollbar,
 .calendar-sidebar::-webkit-scrollbar {
@@ -968,6 +1063,15 @@
 
   .schedule-inline-row {
     grid-template-columns: 1fr;
+  }
+
+  .schedule-modal-backdrop {
+    padding: 12px;
+  }
+
+  .schedule-modal-card {
+    border-radius: 14px;
+    padding: 14px;
   }
 }
 

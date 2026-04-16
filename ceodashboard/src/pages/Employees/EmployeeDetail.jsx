@@ -367,12 +367,6 @@ const EmployeeDetail = () => {
                         </div>
                       </div>
 
-                    <div className={`ed-project-card-footer ${isCompleted ? 'completed' : ''}`}>
-                      <div className="ed-project-progress-bar">
-                        <div className="ed-project-progress-fill" style={{ width: isCompleted ? '100%' : '65%' }}></div>
-                      </div>
-                      <span className="ed-project-progress-text">{isCompleted ? '100% Complete' : '65% Complete'}</span>
-                    </div>
                   </article>
                 );
               })}
