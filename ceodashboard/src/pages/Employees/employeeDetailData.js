@@ -57,7 +57,7 @@ export const getEmployeeDetailData = (employee) => {
         status: 'Current',
         description: 'Leading development of enterprise applications and mentoring junior developers'
       },
-      {
+      {y
         title: 'Full Stack Developer',
         company: 'Digital Solutions Inc',
         duration: `${2018 + (seed % 2)} – ${2020 + (seed % 3)}`,

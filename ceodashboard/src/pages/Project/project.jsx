@@ -224,8 +224,8 @@ const Projects = () => {
 
                 <div className="sprint-insight-actions">
                   <div className="sprint-progress-stat">
-                    <span>Overall Progress</span>
-                    <strong>{selectedProject.progress}%</strong>
+                    {/* <span>Overall Progress</span> */}
+                   {/* <strong>{selectedProject.progress}%</strong>*/}
                   </div>
                   <button
                     type="button"
