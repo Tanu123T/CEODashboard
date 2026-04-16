@@ -978,8 +978,8 @@
 
 /* ==================== EDUCATION ==================== */
 .ed-education-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
 }
 
@@ -1049,8 +1049,8 @@
 
 /* ==================== ACHIEVEMENTS ==================== */
 .ed-achievements-grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 12px;
 }
 
@@ -2615,8 +2615,8 @@
 
 /* ==================== EDUCATION ==================== */
 .ed-education-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 10px;
 }
 
@@ -2666,8 +2666,8 @@
 
 /* ==================== ACHIEVEMENTS ==================== */
 .ed-achievements-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 10px;
 }
 
