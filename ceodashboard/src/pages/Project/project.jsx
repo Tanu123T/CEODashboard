@@ -303,19 +303,6 @@ const Projects = () => {
               <ArrowRight size={18} className="project-arrow" />
             </div>
 
-            <div className="project-progress-block">
-              <div className="project-progress-head">
-                <span>Progress</span>
-                <strong>{project.progress}%</strong>
-              </div>
-              <div className="project-progress-track">
-                <span
-                  className={`project-progress-fill ${project.statusTone}`}
-                  style={{ width: `${project.progress}%` }}
-                />
-              </div>
-            </div>
-
             <div className="project-meta-row">
               <article className="meta-chip">
                 <p>Lead</p>
