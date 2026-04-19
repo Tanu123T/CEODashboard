@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, AlertTriangle, CheckCircle2, Clock3, TrendingUp } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle2, Clock3, TrendingUp, Users } from 'lucide-react';
 
 const metricIcons = {
   'Total Planned Sprints': { icon: <Activity size={22} />, colorClass: 'blue' },
@@ -7,6 +7,7 @@ const metricIcons = {
   Completed: { icon: <CheckCircle2 size={22} />, colorClass: 'green' },
   Delayed: { icon: <AlertTriangle size={22} />, colorClass: 'red' },
   'Avg. Completion': { icon: <TrendingUp size={22} />, colorClass: 'teal' },
+  'Team Size': { icon: <Users size={22} />, colorClass: 'blue' },
 };
 
 const SprintSummaryCards = ({ metrics }) => (

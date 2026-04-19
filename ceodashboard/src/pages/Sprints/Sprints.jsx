@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Calendar,
   ChevronDown,
+  Users,
 } from 'lucide-react';
 import { sprintDashboardData } from './sprintData';
 import PageLoader from '../../components/common/PageLoader';
@@ -20,6 +21,7 @@ const metricIcons = {
   'Active': <Clock3 size={22} />,
   'Completed': <CheckCircle2 size={22} />,
   'Avg. Completion': <TrendingUp size={22} />,
+  'Team Size': <Users size={22} />,
 };
 
 const statusClass = {
