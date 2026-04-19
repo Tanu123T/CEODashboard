@@ -197,7 +197,7 @@ const SprintProjectDetail = () => {
                   stroke="none"
                   paddingAngle={0}
                 >
-                  <Cell fill="#2563eb" />
+                  <Cell fill="#10b981" />
                   <Cell fill="#e2e8f0" />
                 </Pie>
               </PieChart>
@@ -227,12 +227,12 @@ const SprintProjectDetail = () => {
                   <YAxis axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.08)' }} />
                   <Line type="monotone" dataKey="ideal" name="Ideal" stroke="#94a3b8" strokeDasharray="5 5" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="actual" name="Actual" stroke="#2563eb" strokeWidth={3} dot={false} />
+                  <Line type="monotone" dataKey="actual" name="Actual" stroke="#10b981" strokeWidth={3} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
               <div className="sprint-chart-legend">
                 <span><span className="sprint-legend-dot" style={{ background: '#94a3b8' }} /> Ideal</span>
-                <span><span className="sprint-legend-dot" style={{ background: '#2563eb' }} /> Actual</span>
+                <span><span className="sprint-legend-dot" style={{ background: '#10b981' }} /> Actual</span>
               </div>
             </article>
 
@@ -357,7 +357,7 @@ const SprintProjectDetail = () => {
                       dataKey="value"
                       stroke="none"
                     >
-                      <Cell fill="#8b5cf6" />
+                      <Cell fill="#3b82f6" />
                       <Cell fill="#e5e7eb" />
                     </Pie>
                   </PieChart>

@@ -151,27 +151,24 @@ const SprintProjectSprints = () => {
         </div>
       </section>
 
-      <div className="sprint-tabs-container">
-        <div className="sprint-tabs">
-          {[
-            { key: 'all', label: 'All Sprints' },
-            { key: 'active', label: 'Active' },
-            { key: 'completed', label: 'Completed' },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              className={`sprint-tab ${selectedTab === tab.key ? 'active' : ''}`}
-              onClick={() => setSelectedTab(tab.key)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <article className="sprint-panel sprint-sprints-panel">
         <div className="sprint-section-header">
           <h2>Sprints ({sprintList.length})</h2>
+          <div className="sprint-panel-filter">
+            {[
+              { key: 'all', label: 'All Sprints' },
+              { key: 'active', label: 'Active' },
+              { key: 'completed', label: 'Completed' },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                className={`sprint-filter-tab ${selectedTab === tab.key ? 'active' : ''}`}
+                onClick={() => setSelectedTab(tab.key)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="sprint-card-grid">
           {sprintList.map((item) => (
@@ -193,7 +190,7 @@ const SprintProjectSprints = () => {
                 <span>{item.progress}%</span>
               </div>
               <div className="sprint-progress-bar">
-                <div className="sprint-progress-fill" style={{ width: `${item.progress}%` }} />
+                <div className={`sprint-progress-fill ${item.status}`} style={{ width: `${item.progress}%` }} />
               </div>
               <div className="sprint-card-footer">
                 <span><CalendarClock size={14} /> {project.startDate} – {project.endDate}</span>
