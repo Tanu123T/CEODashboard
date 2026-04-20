@@ -43,8 +43,7 @@ const HiringRecruitmentTab = ({ members }) => {
 
   return (
     <div className="ph-tab-layout">
-      {/* Org hierarchy temporarily hidden */}
-      {/* <section className="ph-full-card">
+      <section className="ph-full-card">
         <PeopleHealthPanelCard
           title="Organization Hierarchy"
           subtitle="Hierarchy view with CEO, leadership, and staff cards"
@@ -102,7 +101,7 @@ const HiringRecruitmentTab = ({ members }) => {
             </div>
           </div>
         </PeopleHealthPanelCard>
-      </section> */}
+      </section>
     </div>
   );
 };
