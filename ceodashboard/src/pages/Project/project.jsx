@@ -232,7 +232,7 @@ const Projects = () => {
                     className="view-sprint-btn"
                     onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
                   >
-                    <span>View Active</span>
+                    <span>View Sprint</span>
                     <ArrowRight size={16} />
                   </button>
                 </div>
