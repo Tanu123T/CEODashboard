@@ -86,7 +86,7 @@ const EmployeeDetail = () => {
   return (
     <div className="employee-detail">
       {/* Back Button */}
-      <button className="ed-back-button-right" onClick={() => navigate('/employees')}>
+      <button className="ed-back-button-right" onClick={() => navigate('/employees/role-coverage')}>
         ← Back
       </button>
 
