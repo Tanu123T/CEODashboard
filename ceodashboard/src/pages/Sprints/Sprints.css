@@ -1623,6 +1623,11 @@
   transition: all 0.2s ease;
 }
 
+.sprint-member-deep-metric svg {
+  color: #000000;
+  stroke: #000000;
+}
+
 .sprint-member-deep-metric:hover {
   background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
   transform: translateY(-2px);
