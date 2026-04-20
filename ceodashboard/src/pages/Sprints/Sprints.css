@@ -1130,6 +1130,23 @@
   line-height: 1.4;
   width: 100%;
   box-sizing: border-box;
+
+  --sprint-primary: #5d9fff;
+  --sprint-info: #30c9c2;
+  --sprint-success: #29bf86;
+  --sprint-success-bg: #e8f8f1;
+  --sprint-success-text: #0f9166;
+  --sprint-warning: #f0a93b;
+  --sprint-warning-bg: #fff5e8;
+  --sprint-warning-text: #a76807;
+  --sprint-danger: #f17778;
+  --sprint-danger-bg: #feeff0;
+  --sprint-danger-text: #b03e47;
+  --sprint-border: #e7edf3;
+  --sprint-bg: #ffffff;
+  --sprint-bg-hover: #f8fbff;
+  --sprint-text: #0b1f44;
+  --sprint-muted: #8390a6;
 }
 
 .sprint-member-v2-header {
