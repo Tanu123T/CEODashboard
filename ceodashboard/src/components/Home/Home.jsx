@@ -137,8 +137,31 @@ const scheduleItems = [
     tone: "purple",
     tag: "Deep Work",
   },
+  {
+    time: "05:30 PM",
+    title: "Team Retrospective - Alpha Squad",
+    meta: "45 min - Arjun, Priya, Ravi, Sneha, Rahul",
+    icon: Users,
+    tone: "blue",
+    tag: "Retrospective",
+  },
+  {
+    time: "06:15 PM",
+    title: "Client Call - TechNova Solutions",
+    meta: "30 min - Client discussion on deliverables",
+    icon: Briefcase,
+    tone: "green",
+    tag: "Client Call",
+  },
+  {
+    time: "07:00 PM",
+    title: "Code Review - Dashboard Module",
+    meta: "1 hr - Review PRs from team",
+    icon: FileText,
+    tone: "amber",
+    tag: "Code Review",
+  },
 ];
-
 
 const parseDateValue = (value) => {
   const parsed = new Date(value);
