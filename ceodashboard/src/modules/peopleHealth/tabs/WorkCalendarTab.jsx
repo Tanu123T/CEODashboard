@@ -983,7 +983,6 @@ const WorkCalendarTab = () => {
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
-                <button type="button" className="schedule-cancel-button" onClick={handleCloseScheduleModal}>Cancel</button>
                 <button type="submit" className="schedule-submit-button" disabled={!canAddEvent}>
                   {editingEventId ? 'Update event' : 'Add event'}
                 </button>
