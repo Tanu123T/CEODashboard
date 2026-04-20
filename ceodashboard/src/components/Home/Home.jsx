@@ -563,7 +563,7 @@ const Home = () => {
 
 
           <div className="active-sprint-list">
-            {activeSprintCards.map((item) => (
+            {activeSprintCards.slice(0, 3).map((item) => (
               <article
                 className="active-sprint-row"
                 key={`${item.project}-${item.sprint}`}
