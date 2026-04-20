@@ -1,0 +1,33 @@
+/* Action Button Styles */
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #e7edf3;
+  background: #ffffff;
+  color: #0b1f44;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  border-color: #cbd5e1;
+  background: #f8fbff;
+  box-shadow: 0 1px 3px rgba(15, 31, 61, 0.08);
+}
+
+.action-btn.primary-btn {
+  background: #ffffff;
+  border-color: #d2d8e0;
+  color: #0b1f44;
+}
+
+.action-btn.primary-btn:hover {
+  background: #f8fbff;
+  border-color: #a5b8d4;
+  box-shadow: 0 1px 3px rgba(15, 31, 61, 0.08);
+}
