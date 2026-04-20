@@ -809,6 +809,29 @@
 
 .schedule-panel {
     padding-bottom: 10px;
+    max-height: 240px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #c5d9f0 #f4f7fc;
+}
+
+.schedule-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.schedule-panel::-webkit-scrollbar-track {
+    background: #f4f7fc;
+    border-radius: 10px;
+}
+
+.schedule-panel::-webkit-scrollbar-thumb {
+    background: #c5d9f0;
+    border-radius: 10px;
+    border: 2px solid #f4f7fc;
+}
+
+.schedule-panel::-webkit-scrollbar-thumb:hover {
+    background: #a5c5e8;
 }
 
 .schedule-list {
@@ -1046,23 +1069,6 @@
     position: relative;
     overflow: hidden;
     cursor: pointer;
-}
-
-.active-sprint-row::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 6px;
-    background: linear-gradient(90deg, rgba(57, 200, 155, 0.95) 0%, rgba(244, 189, 31, 0.85) 50%, rgba(242, 109, 109, 0.85) 100%);
-    opacity: 0.22;
-}
-
-.active-sprint-row:hover {
-    transform: translateY(-4px);
-    border-color: rgba(57, 200, 155, 0.25);
-    box-shadow: 0 30px 80px rgba(29, 63, 110, 0.12);
 }
 
 .active-sprint-row-top {
