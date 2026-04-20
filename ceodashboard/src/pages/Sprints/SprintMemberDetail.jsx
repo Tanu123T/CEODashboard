@@ -473,7 +473,7 @@ const SprintMemberDetail = () => {
         </button>
 
         <div className="sprint-member-deep-dive-list" ref={deepDiveRef}>
-          {deepDiveRows.slice(0, 3).map((row) => {
+          {deepDiveRows.map((row) => {
             const isActive = row.id === selectedSprintData?.id;
 
             return (
