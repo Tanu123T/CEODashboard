@@ -1,165 +1,248 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Sprints.css';
 import {
-  Search,
   ArrowRight,
-  CalendarClock,
-  Users,
-  FolderKanban,
-  Target,
+  Activity,
   AlertTriangle,
   CheckCircle2,
+  Clock3,
+  TrendingUp,
+  Calendar,
+  ChevronDown,
+  Users,
 } from 'lucide-react';
-import { sprintProjects } from './sprintData';
-import EmptyState from '../../components/common/EmptyState';
+import { sprintDashboardData } from './sprintData';
 import PageLoader from '../../components/common/PageLoader';
 import useSimulatedLoading from '../../hooks/useSimulatedLoading';
 
-const healthClass = (health) => {
-  if (health === 'On Track') return 'sprint-health-good';
-  if (health === 'Needs Attention') return 'sprint-health-warning';
-  return 'sprint-health-risk';
+const metricIcons = {
+  'Total Planned Sprints': <Activity size={22} />,
+  'Active': <Clock3 size={22} />,
+  'Completed': <CheckCircle2 size={22} />,
+  'Avg. Completion': <TrendingUp size={22} />,
+  'Team Size': <Users size={22} />,
 };
 
-const progress = (done, total) => {
-  if (!total) return 0;
-  return Math.round((done / total) * 100);
+const statusClass = {
+  active: 'sprint-status-active',
+  completed: 'sprint-status-completed',
+  upcoming: 'sprint-status-upcoming',
+};
+
+const statusColors = {
+  active: '#06b6d4',
+  completed: '#4f46e5',
+  upcoming: '#f59e0b',
+};
+
+const getProgressTone = (progress) => {
+  if (progress >= 67) return 'progress-high';
+  if (progress >= 34) return 'progress-medium';
+  return 'progress-low';
 };
 
 const Sprints = () => {
   const isLoading = useSimulatedLoading(600);
   const navigate = useNavigate();
-  const [query, setQuery] = useState('');
-  const [healthFilter, setHealthFilter] = useState('All');
+  const [projectFilter, setProjectFilter] = useState('all');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [sprintTab, setSprintTab] = useState('all');
 
-  const filteredProjects = useMemo(() => {
-    return sprintProjects.filter((project) => {
-      const matchesQuery =
-        project.name.toLowerCase().includes(query.toLowerCase()) ||
-        project.client.toLowerCase().includes(query.toLowerCase()) ||
-        project.squad.toLowerCase().includes(query.toLowerCase());
+  const getProjectColor = (projectId) => {
+    const colors = {
+      'all': '#6b7280',
+      'data-analytics-engine': '#f59e0b',
+      'platform-api-v3': '#06b6d4',
+      'mobile-app-redesign': '#3b82f6',
+    };
+    return colors[projectId] || '#6b7280';
+  };
 
-      const matchesHealth = healthFilter === 'All' || project.health === healthFilter;
+  const getProjectLabel = (projectId) => {
+    const project = sprintDashboardData.projects.find((p) => p.id === projectId);
+    return project ? project.label : 'All Projects';
+  };
 
-      return matchesQuery && matchesHealth;
-    });
-  }, [query, healthFilter]);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredDeadlines = useMemo(() => {
+    if (projectFilter === 'all') return sprintDashboardData.upcomingDeadlines;
+    return sprintDashboardData.upcomingDeadlines.filter((item) => item.projectId === projectFilter);
+  }, [projectFilter]);
+
+  const filteredActivity = useMemo(() => {
+    if (projectFilter === 'all') return sprintDashboardData.activity;
+    return sprintDashboardData.activity.filter((item) => item.projectId === projectFilter);
+  }, [projectFilter]);
+
+  const filteredActivityByTab = useMemo(() => {
+    if (sprintTab === 'all') return filteredActivity;
+    return filteredActivity.filter((item) => item.status === sprintTab);
+  }, [filteredActivity, sprintTab]);
 
   if (isLoading) {
-    return <PageLoader title="Loading Sprint Explorer..." />;
+    return <PageLoader title="Loading Sprint Dashboard..." />;
   }
 
   return (
-    <div className="dashboard-wrapper sprint-selector-page">
-      <header className="main-header">
+    <div className="dashboard-wrapper sprint-dashboard-page">
+      <header className="main-header sprint-dashboard-header">
         <div>
-          <h1>Sprint Explorer</h1>
-          <p>Select a project to open its full detailed sprint command center.</p>
+          <p className="sprint-dashboard-eyebrow">Sprint Dashboard</p>
+          <h1>Executive overview across all projects</h1>
+        </div>
+        <div className="sprint-dashboard-filter">
+          <div className="sprint-project-dropdown" ref={dropdownRef}>
+            <button
+              className="sprint-project-select-button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <span>{getProjectLabel(projectFilter)}</span>
+              <ChevronDown size={20} />
+            </button>
+
+            {isDropdownOpen && (
+              <div className="sprint-project-dropdown-menu">
+                {sprintDashboardData.projects.map((project) => (
+                  <button
+                    key={project.id}
+                    className={`sprint-project-dropdown-item ${projectFilter === project.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setProjectFilter(project.id);
+                      setIsDropdownOpen(false);
+                      navigate(project.id === 'all' ? '/sprints' : `/sprints/${project.id}`);
+                    }}
+                  >
+                    <span
+                      className="sprint-project-dot"
+                      style={{ backgroundColor: getProjectColor(project.id) }}
+                    />
+                    <span>{project.label}</span>
+                    {projectFilter === project.id && <CheckCircle2 size={18} />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
-      <section className="sprint-selector-controls table-container">
-        <div className="sprint-search-wrap">
-          <Search size={16} />
-          <input
-            type="text"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search by project, client, or squad"
-          />
-        </div>
-
-        <div className="sprint-filter-row">
-          {['All', 'On Track', 'Needs Attention', 'At Risk'].map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={`sprint-filter-chip ${healthFilter === item ? 'active' : ''}`}
-              onClick={() => setHealthFilter(item)}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+      <section className="sprint-metrics-grid">
+        {sprintDashboardData.metrics.map((item) => (
+          <article key={item.label} className="sprint-stat-card">
+            <div className="sprint-stat-card-body">
+              <div className="sprint-stat-card-content">
+                <p>{item.label}</p>
+                <h2>{item.value}</h2>
+              </div>
+              <span className="sprint-stat-icon">{metricIcons[item.label]}</span>
+            </div>
+          </article>
+        ))}
       </section>
 
-      <section className="sprint-project-grid">
-        {filteredProjects.map((project) => {
-          const completion = progress(project.donePoints, project.totalPoints);
-
-          return (
-            <button
-              key={project.id}
-              type="button"
-              className="sprint-project-card"
-              onClick={() => navigate(`/sprints/${project.id}`)}
-            >
-              <div className="sprint-project-head">
-                <div>
-                  <p className="sprint-project-client">{project.client}</p>
-                  <h3>{project.name}</h3>
+      <section className="sprint-dashboard-main-grid">
+        <article className="sprint-panel sprint-upcoming-card">
+          <div className="sprint-panel-heading">
+            <div className="sprint-panel-heading-top">
+              <Calendar size={18} />
+              <h2>Upcoming Deadlines</h2>
+            </div>
+          </div>
+          <div className="sprint-upcoming-list">
+            {filteredDeadlines.map((item) => (
+              <div key={item.id} className="sprint-upcoming-item">
+                <div className="sprint-upcoming-item-content">
+                  <div className="sprint-upcoming-item-border" style={{ borderLeftColor: statusColors[item.status] }} />
+                  <div>
+                    <strong>{item.title}</strong>
+                    <p>{item.subtitle}</p>
+                  </div>
                 </div>
-                <span className={`sprint-health-pill ${healthClass(project.health)}`}>{project.health}</span>
+                <span className={`sprint-upcoming-badge ${statusClass[item.status]}`}>{item.due}</span>
               </div>
-
-              <p className="sprint-project-meta-line">
-                <FolderKanban size={14} /> {project.sprint} | {project.squad}
-              </p>
-              <p className="sprint-project-meta-line">
-                <CalendarClock size={14} /> {project.startDate} to {project.endDate}
-              </p>
-
-              <div className="sprint-project-stats">
-                <div>
-                  <p>Progress</p>
-                  <strong>{project.donePoints}/{project.totalPoints} pts ({completion}%)</strong>
-                </div>
-                <div>
-                  <p>Blockers</p>
-                  <strong>{project.blockers}</strong>
-                </div>
-                <div>
-                  <p>Contributors</p>
-                  <strong>{project.contributors}</strong>
-                </div>
-              </div>
-
-              <div className="sprint-project-progress-bar">
-                <div style={{ width: `${completion}%` }} />
-              </div>
-
-              <div className="sprint-project-actions">
-                <span className="sprint-project-link">
-                  Open sprint details <ArrowRight size={15} />
-                </span>
-              </div>
-            </button>
-          );
-        })}
-      </section>
-
-      {filteredProjects.length === 0 ? (
-        <EmptyState
-          title="No sprint projects found"
-          description="Adjust search keywords or health filter to view sprint project options."
-        />
-      ) : null}
-
-      <section className="sprint-summary-row">
-        <article className="info-card">
-          <h3><Target size={17} /> Portfolio Snapshot</h3>
-          <p className="sprint-summary-copy">
-            Choose any project above to open a detailed sprint page with burndown, velocity trend,
-            blockers, sprint board, capacity, and scope-change visibility.
-          </p>
-          <div className="sprint-summary-metrics">
-            <span><CheckCircle2 size={14} /> {sprintProjects.filter((p) => p.health === 'On Track').length} on-track</span>
-            <span><AlertTriangle size={14} /> {sprintProjects.reduce((acc, p) => acc + p.blockers, 0)} total blockers</span>
-            <span><Users size={14} /> {sprintProjects.reduce((acc, p) => acc + p.contributors, 0)} total contributors</span>
+            ))}
           </div>
         </article>
       </section>
+
+      <article className="sprint-panel sprint-activity-panel">
+        <div className="sprint-panel-heading sprint-activity-heading">
+          <h2>Sprints</h2>
+          <span>({filteredActivityByTab.length})</span>
+        </div>
+
+        <div className="sprint-tabs-container">
+          <button 
+            className={`sprint-tab ${sprintTab === 'all' ? 'active' : ''}`}
+            onClick={() => setSprintTab('all')}
+          >
+            All Sprints
+          </button>
+          <button 
+            className={`sprint-tab ${sprintTab === 'active' ? 'active' : ''}`}
+            onClick={() => setSprintTab('active')}
+          >
+            Active
+          </button>
+          <button 
+            className={`sprint-tab ${sprintTab === 'completed' ? 'active' : ''}`}
+            onClick={() => setSprintTab('completed')}
+          >
+            Completed
+          </button>
+        </div>
+
+        <div className="sprint-activity-list">
+          {filteredActivityByTab.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className="sprint-activity-row sprint-activity-button"
+              onClick={() => {
+                const sprintId = item.title.split(' — ')[0];
+                navigate(`/sprints/${item.projectId}/${sprintId}`);
+              }}
+            >
+              <div className="sprint-activity-left">
+                <span className={`sprint-activity-dot ${statusClass[item.status]}`} />
+                <div className="sprint-activity-content">
+                  <strong>{item.title}</strong>
+                  <p>{item.subtitle}</p>
+                </div>
+              </div>
+
+              <span className={`sprint-activity-pill ${statusClass[item.status]}`}>{item.status}</span>
+
+              <div className="sprint-activity-progress-section">
+                <span className="sprint-progress-label">Progress</span>
+                <div className="sprint-activity-progress-bar">
+                  <div className={`sprint-activity-progress-fill ${getProgressTone(item.progress)}`} style={{ width: `${item.progress}%` }} />
+                </div>
+              </div>
+
+              <span className="sprint-activity-percentage">{item.progress}%</span>
+
+              <div className="sprint-activity-tasks-section">
+                <span className="sprint-activity-tasks">{item.tasks} tasks done</span>
+                <ArrowRight size={16} className="sprint-activity-arrow" />
+              </div>
+            </button>
+          ))}
+        </div>
+      </article>
     </div>
   );
 };

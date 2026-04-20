@@ -41,13 +41,29 @@
 
 .main-content {
   flex: 1;
-  margin-left: 260px;
+  margin-left: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 18px;
-  width: calc(100% - 260px);
+  padding: 14px 16px;
+  width: 100%;
   box-sizing: border-box;
   background: #eef3f8;
+  display: grid;
+  gap: 12px;
+}
+
+.app-container.sidebar-open .main-content {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+}
+
+.main-content-view {
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  min-height: calc(100vh - 168px);
+  padding: 0;
 }
 
 .sidebar-overlay {
@@ -90,11 +106,16 @@
   color: #888;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .main-content {
     margin-left: 0;
     width: 100%;
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .app-container.sidebar-open .main-content {
+    margin-left: 0;
+    width: 100%;
   }
 
   .sidebar-overlay {
@@ -124,6 +145,10 @@
 
   .main-content {
     padding: 12px;
+  }
+
+  .main-content-view {
+    padding: 0;
   }
 
   .sidebar-overlay {

@@ -11,14 +11,13 @@ export const trendValues = [216, 224, 228, 234, 241, 247];
 export const trendLabels = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
 
 export const departmentDistribution = [
-  { name: 'Eng', count: 82, color: '#2f71c7' },
-  { name: 'Sales', count: 42, color: '#18b7a6' },
-  { name: 'Mktg', count: 35, color: '#f0a84b' },
-  { name: 'Product', count: 28, color: '#38bdf8' },
-  { name: 'Ops', count: 24, color: '#22c55e' },
-  { name: 'Finance', count: 16, color: '#0ca8c7' },
-  { name: 'Design', count: 10, color: '#66a3ff' },
-  { name: 'HR', count: 10, color: '#667085' },
+  { name: 'Developer', count: 72, color: '#2f71c7' },
+  { name: 'Manager', count: 58, color: '#18b7a6' },
+  { name: 'Tester', count: 26, color: '#f0a84b' },
+  { name: 'HR', count: 20, color: '#64748b' },
+  { name: 'Scrum Master', count: 14, color: '#22c55e' },
+  { name: 'Others', count: 12, color: '#94a3b8' },
+  
 ];
 
 export const alerts = [

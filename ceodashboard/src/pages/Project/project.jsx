@@ -6,10 +6,7 @@ import {
   ArrowRight,
   BriefcaseBusiness,
   CalendarDays,
-  CheckCircle,
   Circle,
-  Clock3,
-  TriangleAlert,
   UserRound,
   Zap,
 } from 'lucide-react';
@@ -19,19 +16,37 @@ import { projectRecords } from '../../data/projectsData';
 
 const formatCurrency = (value) => `₹${value.toLocaleString('en-IN')}`;
 
+const sprintRouteByProjectId = {
+  1: 'hospital-crm',
+  2: 'ai-chatbot',
+  3: 'banking-portal',
+  4: 'travel-app',
+  5: 'hospital-crm',
+  6: 'banking-portal',
+};
+
 const Projects = () => {
   const isLoading = useSimulatedLoading(650);
   const navigate = useNavigate();
   const { projectId } = useParams();
+  const pageLastUpdated = useMemo(() => new Date().toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }), []);
 
   const totals = useMemo(() => {
-    const onTrack = projectRecords.filter((item) => item.statusTone === 'on-track').length;
-    const needsAttention = projectRecords.filter((item) => item.statusTone !== 'on-track').length;
+    const complete = projectRecords.filter((item) => item.statusTone === 'complete').length;
+    const inProgress = projectRecords.filter((item) => item.statusTone === 'in-progress').length;
+    const delayed = projectRecords.filter((item) => item.statusTone === 'delayed').length;
 
     return {
       total: projectRecords.length,
-      onTrack,
-      needsAttention,
+      complete,
+      inProgress,
+      delayed,
     };
   }, []);
 
@@ -47,6 +62,14 @@ const Projects = () => {
   if (projectId && !selectedProject) {
     return (
       <div className="projects-page project-detail-page">
+        <section className="projects-top-header">
+          <div>
+            <h1>Project Health</h1>
+            <p>Portfolio status, execution pace, and delivery health</p>
+          </div>
+          <span className="projects-updated-pill">Last updated: {pageLastUpdated}</span>
+        </section>
+
         <button type="button" className="project-back" onClick={() => navigate('/projects')}>
           <ArrowLeft size={17} />
           <span>Back to Projects</span>
@@ -66,9 +89,37 @@ const Projects = () => {
     const progress = Math.max(0, Math.min(100, selectedProject.progress));
     const dashOffset = circumference - (progress / 100) * circumference;
     const remaining = Math.max(selectedProject.budgetTotal - selectedProject.budgetSpent, 0);
+    const sprintRouteId = sprintRouteByProjectId[selectedProject.id];
+    const plannedSprints = Math.max(1, Number(selectedProject.sprints) || 1);
+    const completedSprints = Math.min(
+      plannedSprints,
+      Math.round((progress / 100) * plannedSprints)
+    );
+    const activeSprintNumber = completedSprints < plannedSprints ? completedSprints + 1 : null;
+    const sprintRoadmapDots = Array.from({ length: plannedSprints }, (_, index) => {
+      const sprintId = index + 1;
+      const status = sprintId <= completedSprints
+        ? 'completed'
+        : sprintId === activeSprintNumber
+          ? 'active'
+          : 'planned';
+
+      return {
+        id: sprintId,
+        status,
+      };
+    });
 
     return (
       <div className="projects-page project-detail-page">
+        <section className="projects-top-header">
+          <div>
+            <h1>Project Health</h1>
+            <p>{selectedProject.name} - execution, sprint, and budget overview</p>
+          </div>
+          <span className="projects-updated-pill">Last updated: {pageLastUpdated}</span>
+        </section>
+
         <button type="button" className="project-back" onClick={() => navigate('/projects')}>
           <ArrowLeft size={17} />
           <span>Back to Projects</span>
@@ -100,10 +151,14 @@ const Projects = () => {
               <p><UserRound size={14} /> LEAD</p>
               <h3>{selectedProject.lead}</h3>
             </article>
-            <article>
-              <p><Zap size={14} /> SPRINTS</p>
+            <button
+              type="button"
+              className="meta-card-action"
+              onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
+            >
+              <p><Zap size={14} /> TOTAL PLANNED SPRINTS</p>
               <h3>{selectedProject.sprints}</h3>
-            </article>
+            </button>
           </div>
         </section>
 
@@ -130,6 +185,13 @@ const Projects = () => {
           <article className="project-detail-panel project-completion-panel">
             <div className="progress-ring-wrap">
               <svg viewBox="0 0 180 180" className="progress-ring" aria-label="Project completion">
+                <defs>
+                  <linearGradient id="gradientStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#38bdf8" />
+                    <stop offset="50%" stopColor="#22c55e" />
+                    <stop offset="100%" stopColor="#18b7a6" />
+                  </linearGradient>
+                </defs>
                 <circle cx="90" cy="90" r={radius} className="progress-ring-track" />
                 <circle
                   cx="90"
@@ -147,83 +209,64 @@ const Projects = () => {
                 <span>Complete</span>
               </div>
             </div>
-            <p>{selectedProject.milestonesDone} of {selectedProject.milestones.length} milestones done</p>
           </article>
         </section>
 
-        <section className="project-detail-panel">
-          <h3>BUDGET</h3>
-          <div className="budget-head-row">
-            <strong>{formatCurrency(selectedProject.budgetSpent)}</strong>
-            <span>of {formatCurrency(selectedProject.budgetTotal)}</span>
-            <em>{selectedProject.progress}% utilized</em>
-          </div>
-          <div className="project-progress-track detail-budget-track">
-            <span className="project-progress-fill on-track" style={{ width: `${selectedProject.progress}%` }} />
-          </div>
-
-          <div className="budget-stat-grid">
-            <article>
-              <p>BUDGET</p>
-              <h4>{formatCurrency(selectedProject.budgetTotal)}</h4>
-            </article>
-            <article>
-              <p>SPENT</p>
-              <h4 className="green-text">{formatCurrency(selectedProject.budgetSpent)}</h4>
-            </article>
-            <article>
-              <p>REMAINING</p>
-              <h4 className="green-text">{formatCurrency(remaining)}</h4>
-            </article>
-          </div>
-        </section>
-
-        <section className="project-detail-panel">
-          <h3>MILESTONES</h3>
-          <div className="milestone-list">
-            {selectedProject.milestones.map((item) => (
-              <article key={item.title} className="milestone-item">
-                <div className={`milestone-name ${item.done ? 'done' : ''}`}>
-                  {item.done ? <CheckCircle size={20} /> : <Circle size={20} />}
-                  <span>{item.title}</span>
+        <section className="project-detail-grid bottom">
+          <div className="project-detail-side">
+            <section className="project-detail-panel sprint-insight-panel">
+              <div className="sprint-insight-header">
+                <div className="sprint-insight-title-block">
+                  <h3>SPRINT TIMELINE</h3>
+                  <p><strong>{completedSprints}</strong> of <strong>{plannedSprints}</strong> sprints completed</p>
+                  <span>{activeSprintNumber ? `1 active (S${activeSprintNumber})` : 'No active sprint'}</span>
                 </div>
-                <strong>{item.date}</strong>
-              </article>
-            ))}
-          </div>
-        </section>
 
-        <section className="project-detail-panel">
-          <h3>RISKS</h3>
-          <div className="risk-list">
-            {selectedProject.risks.length > 0 ? (
-              selectedProject.risks.map((risk) => (
-                <div key={risk} className="risk-item">
-                  <TriangleAlert size={18} />
-                  <span>{risk}</span>
+                <div className="sprint-insight-actions">
+                  <div className="sprint-progress-stat">
+                    {/* <span>Overall Progress</span> */}
+                   {/* <strong>{selectedProject.progress}%</strong>*/}
+                  </div>
+                  <button
+                    type="button"
+                    className="view-sprint-btn"
+                    onClick={() => navigate(sprintRouteId ? `/sprints/${sprintRouteId}` : '/sprints')}
+                  >
+                    <span>View Sprint</span>
+                    <ArrowRight size={16} />
+                  </button>
                 </div>
-              ))
-            ) : (
-              <div className="risk-item neutral">
-                <CheckCircle size={18} />
-                <span>No active risks logged.</span>
               </div>
-            )}
-          </div>
-        </section>
 
-        <section className="project-detail-panel">
-          <h3>RECENT ACTIVITY</h3>
-          <div className="activity-list">
-            {selectedProject.activity.map((item) => (
-              <article key={`${item.actor}-${item.time}`} className="activity-item">
-                <Clock3 size={16} />
-                <div>
-                  <p><strong>{item.actor}</strong> {item.action}</p>
-                  <span>{item.time}</span>
+              <div className="sprint-insight-content">
+                <div className="sprint-roadmap-track" aria-label="Sprint roadmap progress">
+                  {sprintRoadmapDots.map((dot) => {
+                    const statusLabel = dot.status === 'completed'
+                      ? 'Done'
+                      : dot.status === 'active'
+                        ? 'Active'
+                        : 'Planned';
+
+                    return (
+                      <div
+                        key={dot.id}
+                        className="sprint-roadmap-item"
+                        title={`Sprint ${dot.id} ${statusLabel.toLowerCase()}`}
+                      >
+                        <span className={`sprint-roadmap-dot ${dot.status}`}>S{dot.id}</span>
+                        <span className={`sprint-roadmap-status ${dot.status}`}>{statusLabel}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-              </article>
-            ))}
+
+                <div className="sprint-roadmap-legend" aria-hidden="true">
+                  <span><i className="legend-dot completed" /> Completed</span>
+                  <span><i className="legend-dot active" /> Active</span>
+                  <span><i className="legend-dot planned" /> Planned</span>
+                </div>
+              </div>
+            </section>
           </div>
         </section>
       </div>
@@ -232,10 +275,13 @@ const Projects = () => {
 
   return (
     <div className="projects-page">
-      <header className="projects-header">
-        <h1>Projects</h1>
-        <p>All active and in-progress projects</p>
-      </header>
+      <section className="projects-top-header">
+        <div>
+          <h1>Project Health</h1>
+          <p>Portfolio status, execution pace, and delivery health</p>
+        </div>
+        <span className="projects-updated-pill">Last updated: {pageLastUpdated}</span>
+      </section>
 
       <section className="projects-kpi-grid">
         <article className="projects-kpi-card">
@@ -243,12 +289,16 @@ const Projects = () => {
           <h3 className="kpi-blue">{totals.total}</h3>
         </article>
         <article className="projects-kpi-card">
-          <p>On Track</p>
-          <h3 className="kpi-green">{totals.onTrack}</h3>
+          <p>Complete</p>
+          <h3 className="kpi-green">{totals.complete}</h3>
         </article>
         <article className="projects-kpi-card">
-          <p>Needs Attention / At Risk</p>
-          <h3 className="kpi-red">{totals.needsAttention}</h3>
+          <p>In Progress</p>
+          <h3 className="kpi-amber">{totals.inProgress}</h3>
+        </article>
+        <article className="projects-kpi-card">
+          <p>Delayed</p>
+          <h3 className="kpi-red">{totals.delayed}</h3>
         </article>
       </section>
 
@@ -265,14 +315,14 @@ const Projects = () => {
                 <span className={`project-icon ${project.iconTone}`}>
                   <BriefcaseBusiness size={17} />
                 </span>
-                <div>
-                  <h3>
-                    {project.name}
+                <div className="project-head-copy">
+                  <div className="project-title-row">
+                    <h3 className="project-name">{project.name}</h3>
                     <span className={`project-status-pill ${project.statusTone}`}>
                       <Circle size={8} fill="currentColor" />
                       {project.statusLabel}
                     </span>
-                  </h3>
+                  </div>
                   <p>{project.client}</p>
                 </div>
               </div>
@@ -293,18 +343,14 @@ const Projects = () => {
             </div>
 
             <div className="project-meta-row">
-              <span>
-                Lead: <strong>{project.lead}</strong>
-              </span>
-              <span>
-                Due: <strong>{project.dueDate}</strong>
-              </span>
-              {project.riskCount > 0 ? (
-                <span className="risk-meta">
-                  <TriangleAlert size={14} />
-                  {project.riskCount} {project.riskCount === 1 ? 'risk' : 'risks'}
-                </span>
-              ) : null}
+              <article className="meta-chip">
+                <p>Lead</p>
+                <strong>{project.lead}</strong>
+              </article>
+              <article className="meta-chip">
+                <p>Due Date</p>
+                <strong>{project.dueDate}</strong>
+              </article>
             </div>
           </button>
         ))}

@@ -1,20 +1,18 @@
-import React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CalendarCheck2,
   CheckCircle2,
-  ChevronDown,
   CircleX,
   Clock3,
   Download,
-  Fingerprint,
-  ScanFace,
 } from 'lucide-react';
 import {
   attendanceDays,
   attendanceLog,
+  members,
   attendanceSeries,
   attendanceSummaryCards,
-  biometricCards,
+  statusTone,
 } from '../teamData';
 
 const iconMap = {
@@ -24,9 +22,45 @@ const iconMap = {
   leave: CalendarCheck2,
 };
 
-const biometricIconMap = {
-  face: ScanFace,
-  print: Fingerprint,
+const toneToStatus = {
+  present: 'Present',
+  absent: 'Absent',
+  late: 'Late',
+  leave: 'On Leave',
+};
+
+const statusToTone = {
+  Present: 'present',
+  Absent: 'absent',
+  Late: 'late',
+  'On Leave': 'leave',
+};
+
+const weeklyAttendanceSeries = {
+  'this-week': {
+    label: 'This Week',
+    present: attendanceSeries.present,
+    late: attendanceSeries.late,
+    absent: attendanceSeries.absent,
+  },
+  'last-week': {
+    label: 'Last Week',
+    present: [9, 10, 9, 10, 11, 10, 9],
+    late: [2, 2, 3, 2, 1, 2, 2],
+    absent: [1, 0, 1, 0, 0, 1, 1],
+  },
+  'two-weeks-ago': {
+    label: '2 Weeks Ago',
+    present: [8, 9, 9, 10, 10, 9, 8],
+    late: [3, 2, 2, 2, 1, 2, 3],
+    absent: [1, 1, 1, 0, 1, 1, 1],
+  },
+  'three-weeks-ago': {
+    label: '3 Weeks Ago',
+    present: [10, 9, 10, 9, 10, 11, 10],
+    late: [1, 2, 1, 2, 1, 1, 2],
+    absent: [1, 1, 0, 1, 1, 0, 1],
+  },
 };
 
 const attendancePoints = (series) => series
@@ -37,8 +71,8 @@ const attendancePoints = (series) => series
   })
   .join(' ');
 
-const attendanceAreaPoints = () => {
-  const points = attendanceSeries.present
+const attendanceAreaPoints = (presentSeries) => {
+  const points = presentSeries
     .map((value, index) => {
       const x = 44 + index * 90;
       const y = 192 - (value / 12) * 156;
@@ -48,7 +82,50 @@ const attendanceAreaPoints = () => {
   return `44,192 ${points} 584,192`;
 };
 
+const pointY = (value) => 192 - (value / 12) * 156;
+
 const AttendanceTab = () => {
+  const [selectedWeek, setSelectedWeek] = useState('this-week');
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [selectedToneFilter, setSelectedToneFilter] = useState(null);
+  const filterResultsRef = useRef(null);
+
+  const weekSeries = useMemo(
+    () => weeklyAttendanceSeries[selectedWeek] || weeklyAttendanceSeries['this-week'],
+    [selectedWeek]
+  );
+
+  const attendanceRows = useMemo(() => {
+    const logByCode = new Map(attendanceLog.map((row) => [row.code, row]));
+
+    return members.map((member) => {
+      const logEntry = logByCode.get(member.employeeCode);
+
+      return {
+        name: member.name,
+        code: member.employeeCode,
+        department: member.department,
+        checkIn: member.checkIn || logEntry?.checkIn || '--',
+        checkOut: logEntry?.checkOut || '--',
+        hours: logEntry?.hours || '--',
+        device: logEntry?.device || '--',
+        status: member.attendanceStatus,
+        initials: member.initials,
+      };
+    });
+  }, []);
+
+  const filteredRows = useMemo(() => {
+    if (!selectedToneFilter) return attendanceRows;
+    const selectedStatus = toneToStatus[selectedToneFilter];
+    return attendanceRows.filter((row) => row.status === selectedStatus);
+  }, [attendanceRows, selectedToneFilter]);
+
+  useEffect(() => {
+    if (!selectedToneFilter || !filterResultsRef.current) return;
+    filterResultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [selectedToneFilter]);
+
   return (
     <div className="tm-attendance-root">
       <section className="tm-att-summary-grid">
@@ -57,8 +134,17 @@ const AttendanceTab = () => {
           return (
             <article
               key={item.title}
-              className="tm-att-summary-card tm-att-anim-card"
+              className={`tm-att-summary-card tm-att-anim-card ${selectedToneFilter === item.tone ? 'active' : ''}`}
               style={{ '--att-index': index }}
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedToneFilter((current) => (current === item.tone ? null : item.tone))}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  setSelectedToneFilter((current) => (current === item.tone ? null : item.tone));
+                }
+              }}
             >
               <span className={`tm-att-summary-icon ${item.tone}`}><Icon size={17} /></span>
               <div>
@@ -70,53 +156,56 @@ const AttendanceTab = () => {
         })}
       </section>
 
-      <section className="tm-att-biometric-grid">
-        {biometricCards.map((card, index) => {
-          const Icon = biometricIconMap[card.tone];
-          return (
-            <article
-              key={card.key}
-              className={`tm-att-biometric-card tm-att-anim-bio ${card.tone}`}
-              style={{ '--att-index': index }}
-            >
-              <div className="tm-att-biometric-head">
-                <div className="tm-att-biometric-title">
-                  <span><Icon size={19} /></span>
-                  <div>
-                    <h3>{card.title}</h3>
-                    <p>{card.subtitle}</p>
+      {selectedToneFilter ? (
+        <section ref={filterResultsRef} className={`tm-att-filter-results tm-att-anim-panel ${selectedToneFilter}`}>
+          <div className="tm-att-filter-head">
+            <h3>{toneToStatus[selectedToneFilter]} Employees</h3>
+            <p>{filteredRows.length} match(es)</p>
+          </div>
+          <div className="tm-att-filter-list">
+            {filteredRows.length > 0 ? (
+              filteredRows.map((row) => (
+                <article key={`filter-${row.code}`} className="tm-att-filter-item">
+                  <div className="tm-att-filter-item-left">
+                    <span className="tm-att-filter-avatar">{row.initials}</span>
+                    <div className="tm-att-filter-copy">
+                      <strong>{row.name}</strong>
+                      <small>{row.code} • {row.department}</small>
+                      <div className="tm-att-filter-meta">
+                        <span>In {row.checkIn}</span>
+                        <span>Out {row.checkOut}</span>
+                        <span>{row.hours}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <em>Active</em>
-              </div>
-
-              <div className="tm-att-biometric-metrics">
-                <div><strong>{card.enrolled}</strong><small>Enrolled</small></div>
-                <div><strong>{card.scannedToday}</strong><small>Scanned Today</small></div>
-                <div><strong>{card.accuracy}</strong><small>Accuracy</small></div>
-              </div>
-
-              <div className="tm-att-progress-wrap">
-                <div className="tm-att-progress-track">
-                  <span style={{ width: `${card.scannedPercent}%` }} />
-                </div>
-                <small>{card.scannedPercent}% scanned</small>
-              </div>
-
-              <p className="tm-att-device-line">{card.devices}</p>
-            </article>
-          );
-        })}
-      </section>
+                  <span className={`tm-att-status ${statusTone[row.status] || statusToTone[row.status] || 'present'}`}>
+                    {row.status}
+                  </span>
+                </article>
+              ))
+            ) : (
+              <p className="tm-empty">No employees found for this status.</p>
+            )}
+          </div>
+        </section>
+      ) : null}
 
       <section className="tm-att-trend-grid">
         <article className="tm-att-panel tm-att-anim-panel">
           <div className="tm-att-panel-head">
             <div>
               <h3>Weekly Attendance Trend</h3>
-              <p>Present vs late vs absent this week</p>
+              <p>Present vs late vs absent ({weekSeries.label})</p>
             </div>
-            <button type="button">This Week <ChevronDown size={14} /></button>
+            <select
+              value={selectedWeek}
+              onChange={(event) => setSelectedWeek(event.target.value)}
+              aria-label="Select attendance week"
+            >
+              {Object.entries(weeklyAttendanceSeries).map(([value, week]) => (
+                <option key={value} value={value}>{week.label}</option>
+              ))}
+            </select>
           </div>
 
           <svg viewBox="0 0 690 230" className="tm-att-trend-chart" aria-label="Attendance trend">
@@ -129,47 +218,94 @@ const AttendanceTab = () => {
                 </g>
               );
             })}
-            <polygon className="present-area" points={attendanceAreaPoints()} />
-            <polyline className="present-line" points={attendancePoints(attendanceSeries.present)} />
-            <polyline className="late-line" points={attendancePoints(attendanceSeries.late)} />
-            <polyline className="absent-line" points={attendancePoints(attendanceSeries.absent)} />
+            <polygon className="present-area" points={attendanceAreaPoints(weekSeries.present)} />
+            <polyline className="present-line" points={attendancePoints(weekSeries.present)} />
+            <polyline className="late-line" points={attendancePoints(weekSeries.late)} />
+            <polyline className="absent-line" points={attendancePoints(weekSeries.absent)} />
+
+            {attendanceDays.map((day, index) => (
+              <rect
+                key={`${day}-hit`}
+                x={44 + index * 90 - 35}
+                y={24}
+                width={70}
+                height={178}
+                fill="transparent"
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              />
+            ))}
+
+            {hoveredIndex !== null ? (
+              <g>
+                <line
+                  className="tm-att-hover-line"
+                  x1={44 + hoveredIndex * 90}
+                  y1={36}
+                  x2={44 + hoveredIndex * 90}
+                  y2={192}
+                />
+
+                <circle
+                  className="tm-att-hover-dot present"
+                  cx={44 + hoveredIndex * 90}
+                  cy={pointY(weekSeries.present[hoveredIndex])}
+                  r="4"
+                />
+                <circle
+                  className="tm-att-hover-dot late"
+                  cx={44 + hoveredIndex * 90}
+                  cy={pointY(weekSeries.late[hoveredIndex])}
+                  r="4"
+                />
+                <circle
+                  className="tm-att-hover-dot absent"
+                  cx={44 + hoveredIndex * 90}
+                  cy={pointY(weekSeries.absent[hoveredIndex])}
+                  r="4"
+                />
+
+                <g
+                  className="tm-att-tooltip"
+                  transform={`translate(${Math.min(470, Math.max(70, 44 + hoveredIndex * 90 - 70))}, 16)`}
+                >
+                  <rect x="0" y="0" width="140" height="70" rx="10" ry="10" />
+                  <text x="10" y="18" className="tm-att-tooltip-day">{attendanceDays[hoveredIndex]}</text>
+                  <text x="10" y="36" className="tm-att-tooltip-present">Present: {weekSeries.present[hoveredIndex]}</text>
+                  <text x="10" y="52" className="tm-att-tooltip-late">Late: {weekSeries.late[hoveredIndex]}</text>
+                  <text x="10" y="66" className="tm-att-tooltip-absent">Absent: {weekSeries.absent[hoveredIndex]}</text>
+                </g>
+              </g>
+            ) : null}
+
             {attendanceDays.map((day, index) => (
               <text key={day} x={44 + index * 90 - 12} y="218">{day}</text>
             ))}
           </svg>
         </article>
 
-        <article className="tm-att-panel tm-att-donut-panel tm-att-anim-panel">
-          <h3>Biometric Method Split</h3>
-          <p>Today's check-ins by type</p>
-          <div className="tm-att-donut" />
-          <div className="tm-att-donut-legend">
-            <span><i className="face" /> Facial Recognition</span>
-            <span><i className="print" /> Fingerprint</span>
-          </div>
-        </article>
-      </section>
-
-      <section className="tm-att-simulator tm-att-anim-panel">
-        <div>
-          <h3>Biometric Check-in Simulator</h3>
-          <p>Simulate facial or fingerprint check-in</p>
-        </div>
-        <button type="button">Open Simulator</button>
       </section>
 
       <section className="tm-att-log-panel tm-att-anim-panel">
         <div className="tm-att-log-head">
           <div>
             <h3>Today's Attendance Log</h3>
-            <p>Real-time biometric check-in/out records</p>
+            <p>
+              {selectedToneFilter
+                ? `${toneToStatus[selectedToneFilter]} employees (${filteredRows.length})`
+                : 'Real-time employee check-in/out records'}
+            </p>
           </div>
           <div className="tm-att-log-actions">
-            <select>
-              <option>All</option>
-            </select>
-            <select>
-              <option>All Methods</option>
+            <select
+              value={selectedToneFilter || 'all'}
+              onChange={(event) => setSelectedToneFilter(event.target.value === 'all' ? null : event.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="present">Present</option>
+              <option value="absent">Absent</option>
+              <option value="late">Late</option>
+              <option value="leave">On Leave</option>
             </select>
             <button type="button"><Download size={14} /> Export</button>
           </div>
@@ -184,13 +320,11 @@ const AttendanceTab = () => {
                 <th>Check-in</th>
                 <th>Check-out</th>
                 <th>Hours</th>
-                <th>Method</th>
-                <th>Device</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {attendanceLog.map((row, index) => (
+              {filteredRows.map((row, index) => (
                 <tr key={row.code} className="tm-att-log-row" style={{ '--att-row-index': index }}>
                   <td>
                     <div className="tm-att-employee-cell">
@@ -206,16 +340,17 @@ const AttendanceTab = () => {
                   <td>{row.checkOut}</td>
                   <td>{row.hours}</td>
                   <td>
-                    <span className={`tm-att-method ${row.method === 'Facial' ? 'facial' : 'fingerprint'}`}>
-                      {row.method === 'Facial' ? <ScanFace size={14} /> : <Fingerprint size={14} />} {row.method}
+                    <span className={`tm-att-status ${statusTone[row.status] || statusToTone[row.status] || 'present'}`}>
+                      {row.status}
                     </span>
-                  </td>
-                  <td>{row.device}</td>
-                  <td>
-                    <span className={`tm-att-status ${row.status === 'Present' ? 'present' : 'late'}`}>{row.status}</span>
                   </td>
                 </tr>
               ))}
+              {!filteredRows.length ? (
+                <tr>
+                  <td colSpan="6"><p className="tm-empty">No employees match the selected attendance filter.</p></td>
+                </tr>
+              ) : null}
             </tbody>
           </table>
         </div>
