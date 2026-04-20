@@ -2,23 +2,22 @@
   display: flex;
   gap: 20px;
   padding: 20px;
-  background:
-    radial-gradient(circle at top left, rgba(75, 143, 231, 0.16), transparent 28%),
-    radial-gradient(circle at top right, rgba(47, 199, 166, 0.12), transparent 24%),
-    linear-gradient(180deg, #eef5fb 0%, #f7fbff 100%);
+  background: #ffffff;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
+  border-radius: 16px;
 }
 
 .work-calendar-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.96);
+  background: #ffffff;
   border: 1px solid #d9e6f4;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 16px 36px rgba(16, 40, 70, 0.09);
+  box-shadow: none;
+  width: 100%;
 }
 
 /* Header Section */
@@ -28,7 +27,7 @@
   align-items: center;
   padding: 16px 20px;
   border-bottom: 1px solid #dbe8f5;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  background: #ffffff;
 }
 
 .calendar-header .header-left {
@@ -112,12 +111,14 @@
   display: grid;
   grid-template-columns: 60px repeat(7, 1fr);
   border-bottom: 1px solid #dbe8f5;
-  background: #f6fbff;
+  background: #ffffff;
 }
 
 .week-time-spacer {
   border-right: 1px solid #e1edf7;
-  background: #f7fbff;
+  background: #ffffff;
+  width: 60px;
+  flex-shrink: 0;
 }
 
 .day-column-header {
@@ -126,10 +127,12 @@
   padding: 12px;
   background: transparent;
   border: 0;
+  border-radius: 0px;
   text-align: center;
   border-right: 1px solid #e1edf7;
   cursor: pointer;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
 }
 
 .day-column-header:hover {
@@ -178,12 +181,15 @@
   flex: 1;
   position: relative;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .time-column {
   background: #f7fbff;
   border-right: 1px solid #e1edf7;
   overflow: hidden;
+  width: 60px;
+  flex-shrink: 0;
 }
 
 .time-slot-header {
@@ -208,12 +214,14 @@
   width: 100%;
   background: transparent;
   border: 0;
+  border-radius: 0px;
   position: relative;
   border-right: 1px solid #e1edf7;
   cursor: pointer;
   padding: 0;
   text-align: left;
   transition: background-color 0.2s ease;
+  overflow: hidden;
 }
 
 .day-column:hover {
@@ -323,15 +331,16 @@
 /* Sidebar */
 .calendar-sidebar {
   width: 300px;
-  background: rgba(255, 255, 255, 0.96);
+  background: #ffffff;
   border: 1px solid #d9e6f4;
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 18px;
-  box-shadow: 0 16px 36px rgba(16, 40, 70, 0.09);
+  box-shadow: none;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 18px;
+  flex-shrink: 0;
 }
 
 .small-calendar-section {
@@ -357,26 +366,29 @@
 .small-calendar-arrows {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #7b91ac;
+  gap: 4px;
+  color: #1f3d60;
 }
 
 .small-calendar-arrow-button {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dbe8f5;
-  border-radius: 8px;
-  background: #fff;
-  color: #7b91ac;
+  border: 1px solid #d9e6f4;
+  border-radius: 6px;
+  background: #f5f8fb;
+  color: #1f3d60;
   cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
 }
 
 .small-calendar-arrow-button:hover {
-  background: #edf5ff;
-  color: #446b94;
+  background: #e6f0ff;
+  color: #1f3d60;
+  border-color: #a8c5e8;
 }
 
 .sidebar-section {
@@ -924,19 +936,23 @@
 .schedule-modal-close {
   width: 32px;
   height: 32px;
-  border-radius: 9px;
+  border-radius: 6px;
   border: 1px solid #d7e3f1;
-  background: #fff;
-  color: #5f7690;
+  background: #f5f8fb;
+  color: #1f3d60;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .schedule-modal-close:hover {
-  background: #edf5ff;
-  color: #305a87;
+  background: #e6f0ff;
+  color: #1f3d60;
+  border-color: #a8c5e8;
 }
 
 .schedule-modal-form {
