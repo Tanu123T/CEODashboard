@@ -720,7 +720,6 @@
 }
 
 .ph-progress-list,
-.ph-alert-list,
 .ph-simple-list {
   list-style: none;
   margin: 0;
@@ -729,9 +728,20 @@
   gap: 10px;
 }
 
+.ph-alert-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(16, 40, 70, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
 .ph-progress-list li,
-.ph-simple-list li,
-.ph-alert-list li {
+.ph-simple-list li {
   border: 1px solid #e2eaf4;
   border-radius: 12px;
   padding: 12px 14px;
@@ -739,11 +749,76 @@
   transition: all 0.2s ease;
 }
 
+.ph-alert-list li {
+  border: none;
+  border-radius: 0;
+  padding: 16px 24px;
+  background: transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 1px solid rgba(226, 232, 244, 0.6);
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.ph-alert-list li > span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.ph-alert-list li > span::before {
+  content: '!';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  background:#ffd700;
+  box-shadow: 0 2px 6px rgba(255, 183, 71, 0.3);
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ph-alert-list li.high > span::before {
+  background: #ffd700;
+  box-shadow: 0 2px 6px rgba(255, 183, 71, 0.3);
+}
+
+.ph-alert-list li.medium > span::before {
+  background: #ffd700;
+  box-shadow: 0 2px 6px rgba(255, 183, 71, 0.3);
+}
+
+.ph-alert-list li.low > span::before {
+  background: #ffd700;
+  box-shadow: 0 2px 6px rgba(255, 183, 71, 0.3);
+}
+
+.ph-alert-list li.positive > span::before {
+  background: #ffd700;
+  box-shadow: 0 2px 6px rgba(255, 183, 71, 0.3);
+}
+
+
 .ph-progress-list li:hover,
-.ph-simple-list li:hover,
-.ph-alert-list li:hover {
+.ph-simple-list li:hover {
   border-color: #d5dff0;
   box-shadow: 0 2px 8px rgba(16, 40, 70, 0.06);
+}
+
+
+.ph-alert-list li:last-child {
+  border-bottom: none;
 }
 
 .ph-progress-list li > div,
@@ -767,6 +842,26 @@
 .ph-alert-list span {
   color: #1a3a57;
   font-weight: 700;
+}
+
+.ph-alert-list span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.ph-alert-list small {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
 }
 
 .ph-workload-list li {
@@ -1100,11 +1195,7 @@
 }
 
 .ph-attendance-table-wrap {
-  border: 1px solid #dce8f4;
-  border-radius: 14px;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
   overflow-x: auto;
-  box-shadow: 0 2px 10px rgba(16, 40, 70, 0.04);
 }
 
 .ph-attendance-table {
@@ -2176,18 +2267,23 @@
   background: linear-gradient(95deg, #4b8fe7 0%, #2fc7a6 100%);
 }
 
-.ph-alert-list li.high { border-color: #f4cccc; background: #fff6f6; }
-.ph-alert-list li.medium { border-color: #ffe7bd; background: #fffaf0; }
-.ph-alert-list li.low { border-color: #d6e6f7; background: #f6fbff; }
-.ph-alert-list li.positive { border-color: #cbeedc; background: #f4fdf8; }
-.ph-alert-list.tall { max-height: 320px; overflow: auto; }
 
-.ph-alert-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items: center;
+.ph-alert-list li.high { 
+  background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
 }
+
+.ph-alert-list li.medium { 
+  background: linear-gradient(135deg, #fffbf0 0%, #fff 100%);
+}
+
+.ph-alert-list li.low { 
+  background: linear-gradient(135deg, #f3fdf7 0%, #fff 100%);
+}
+
+.ph-alert-list li.positive { 
+  background: linear-gradient(135deg, #f0f9ff 0%, #fff 100%);
+}
+.ph-alert-list.tall { max-height: 320px; overflow: auto; }
 
 .ph-glance-grid {
   display: grid;

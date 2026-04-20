@@ -774,7 +774,6 @@ const WorkCalendarTab = () => {
         >
           {/* Time column */}
           <div className="time-column">
-            <div className="time-slot-header" />
             {timeSlots.map((time, idx) => (
               <div key={idx} className="time-label">
                 {formatTimeLabel(time)}
@@ -849,7 +848,6 @@ const WorkCalendarTab = () => {
 
         {/* Morning indicator */}
         <div className="morning-indicator">
-          <span className="morning-badge">9:45 AM</span>
         </div>
       </div>
 
@@ -985,7 +983,6 @@ const WorkCalendarTab = () => {
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
-                <button type="button" className="schedule-cancel-button" onClick={handleCloseScheduleModal}>Cancel</button>
                 <button type="submit" className="schedule-submit-button" disabled={!canAddEvent}>
                   {editingEventId ? 'Update event' : 'Add event'}
                 </button>

@@ -444,10 +444,6 @@
   box-shadow: 0 2px 8px rgba(57, 124, 246, 0.06);
 }
 
-.project-detail-hero-top {
-  height: 6px;
-  background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 52%, #10b981 100%);
-}
 
 .project-detail-hero-content {
   padding: 14px 14px 0;
