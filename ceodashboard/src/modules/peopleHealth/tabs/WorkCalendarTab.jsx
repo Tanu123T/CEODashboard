@@ -774,7 +774,6 @@ const WorkCalendarTab = () => {
         >
           {/* Time column */}
           <div className="time-column">
-            <div className="time-slot-header" />
             {timeSlots.map((time, idx) => (
               <div key={idx} className="time-label">
                 {formatTimeLabel(time)}
