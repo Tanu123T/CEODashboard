@@ -621,7 +621,6 @@
 .project-overview-card {
     padding: 14px 16px;
     background: linear-gradient(135deg, #ffffff 0%, #fbfdff 100%);
-    box-shadow: 0 1px 2px rgba(15, 31, 61, 0.04);
     transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     border-bottom: 1px solid #edf1f6;
     display: flex;

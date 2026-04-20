@@ -41,7 +41,7 @@ export const getEmployeeDetailData = (employee) => {
         id: 3,
         name: 'Multi-Tenant Auth System',
         status: 'Completed',
-        techStack: ['Node.js', 'PostgreSQL', 'OAuth2', 'Express'],
+        techStack: ['Node.js', 'PostgreSQL', 'OAuth2'],
         links: {
           github: false,
           demo: false
@@ -51,14 +51,14 @@ export const getEmployeeDetailData = (employee) => {
     
     workExperience: [
       {
-        title: 'Senior Software Engineer',
+        title: 'Senior Software Engineer & Tech Lead',
         company: 'Tech Corporation',
         duration: `${2020 + (seed % 3)} – Present`,
         status: 'Current',
         description: 'Leading development of enterprise applications and mentoring junior developers'
       },
       {
-        title: 'Full Stack Developer',
+        title: 'Full Stack Developer & Architect',
         company: 'Digital Solutions Inc',
         duration: `${2018 + (seed % 2)} – ${2020 + (seed % 3)}`,
         status: 'Completed',
