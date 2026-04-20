@@ -396,66 +396,62 @@ const SprintMemberDetail = () => {
               />
             </div>
           </div>
-          <div>
+          <div className="sprint-member-v2-profile-info">
             <strong>{decodedMemberName}</strong>
             <span>Sprint Contributor</span>
           </div>
         </div>
-      </header>
 
-      <div className="sprint-member-project-filter-wrapper">
-        <label htmlFor="project-filter" className="sprint-member-filter-label">Project:</label>
-        <select 
-          id="project-filter"
-          value={selectedProjectId}
-          onChange={(e) => setSelectedProjectId(e.target.value)}
-          className="sprint-member-project-select"
-        >
-          {organizedProjects.currentlyWorking.length > 0 && (
-            <optgroup label="Currently Working On">
-              {organizedProjects.currentlyWorking.map((project) => (
-                <option key={project.projectId} value={project.projectId}>
-                  {project.projectName}
-                </option>
-              ))}
-            </optgroup>
-          )}
-          {organizedProjects.previouslyWorked.length > 0 && (
-            <optgroup label="Previously Worked On">
-              {organizedProjects.previouslyWorked.map((project) => (
-                <option key={project.projectId} value={project.projectId}>
-                  {project.projectName}
-                </option>
-              ))}
-            </optgroup>
-          )}
-        </select>
-      </div>
+        <div className="sprint-member-v2-project-corner">
+          <select 
+            id="project-filter"
+            value={selectedProjectId}
+            onChange={(e) => setSelectedProjectId(e.target.value)}
+            className="sprint-member-project-select-inline"
+          >
+            {organizedProjects.currentlyWorking.length > 0 && (
+              <optgroup label="Currently Working On">
+                {organizedProjects.currentlyWorking.map((project) => (
+                  <option key={project.projectId} value={project.projectId}>
+                    {project.projectName}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {organizedProjects.previouslyWorked.length > 0 && (
+              <optgroup label="Previously Worked On">
+                {organizedProjects.previouslyWorked.map((project) => (
+                  <option key={project.projectId} value={project.projectId}>
+                    {project.projectName}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+          </select>
+        </div>
+      </header>
 
       <section className="sprint-member-v2-badges">
         <article className="sprint-member-v2-badge-item">
-          <span className="sprint-member-v2-badge-label"><Target size={14} /> Total Stories</span>
-          <strong>{selectedSprintMetrics?.storyPoints ?? 0}</strong>
+          <div className="sprint-badge-icon stories"><Target size={20} /></div>
+          <div className="sprint-badge-content">
+            <span className="sprint-badge-label">Total Stories</span>
+            <strong>{selectedSprintMetrics?.storyPoints ?? 0}</strong>
+          </div>
         </article>
         <article className="sprint-member-v2-badge-item">
-          <span className="sprint-member-v2-badge-label"><Bug size={14} /> Bugs Resolved</span>
-          <strong>{selectedSprintMetrics?.bugsFixed ?? 0}</strong>
+          <div className="sprint-badge-icon bugs"><Bug size={20} /></div>
+          <div className="sprint-badge-content">
+            <span className="sprint-badge-label">Bugs Resolved</span>
+            <strong>{selectedSprintMetrics?.bugsFixed ?? 0}</strong>
+          </div>
         </article>
         <article className="sprint-member-v2-badge-item">
-          <span className="sprint-member-v2-badge-label"><Clock3 size={14} /> Hours Worked</span>
-          <strong>{selectedSprintMetrics?.hours ?? 0}h</strong>
-        </article>
-        <article className="sprint-member-v2-badge-item">
-          <span className="sprint-member-v2-badge-label"><Star size={14} /> Sprint Rating</span>
-          <strong>{sprintRating}</strong>
-        </article>
-        <article className="sprint-member-v2-badge-item">
-          <span className="sprint-member-v2-badge-label"><Star size={14} /> Quality Score</span>
-          <strong>{selectedSprintMetrics?.qualityRate ?? 0}%</strong>
-        </article>
-        <article className="sprint-member-v2-badge-item">
-          <span className="sprint-member-v2-badge-label"><Users size={14} /> Progress</span>
-          <strong>{selectedSprintMetrics?.completionRate ?? 0}%</strong>
+          <div className="sprint-badge-icon hours"><Clock3 size={20} /></div>
+          <div className="sprint-badge-content">
+            <span className="sprint-badge-label">Hours Worked</span>
+            <strong>{selectedSprintMetrics?.hours ?? 0}h</strong>
+          </div>
         </article>
       </section>
 
@@ -465,28 +461,19 @@ const SprintMemberDetail = () => {
             <h2>Sprint-wise Deep Dive</h2>
             <p className="sprint-panel-copy">Detailed sprint-level contribution and delivery quality trends</p>
           </div>
-          <div className="sprint-member-deep-nav">
-            <button
-              type="button"
-              className="sprint-member-deep-nav-btn"
-              onClick={() => scrollDeepDive('prev')}
-              aria-label="Previous sprint"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button
-              type="button"
-              className="sprint-member-deep-nav-btn"
-              onClick={() => scrollDeepDive('next')}
-              aria-label="Next sprint"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
         </div>
 
+        <button
+          type="button"
+          className="sprint-member-deep-nav-btn sprint-member-deep-nav-left"
+          onClick={() => scrollDeepDive('prev')}
+          aria-label="Previous sprint"
+        >
+          <ChevronLeft size={20} />
+        </button>
+
         <div className="sprint-member-deep-dive-list" ref={deepDiveRef}>
-          {deepDiveRows.map((row) => {
+          {deepDiveRows.slice(0, 3).map((row) => {
             const isActive = row.id === selectedSprintData?.id;
 
             return (
@@ -506,7 +493,6 @@ const SprintMemberDetail = () => {
                 <div className="sprint-member-deep-head">
                   <div>
                     <div className="sprint-member-deep-badges">
-                      <span className="sprint-member-deep-sprint-id">{row.id.toUpperCase()}</span>
                       <span className={`sprint-member-deep-status ${row.status}`}>{row.status}</span>
                     </div>
                     <h3>{row.id}</h3>
@@ -538,21 +524,20 @@ const SprintMemberDetail = () => {
                     <div className="sprint-member-deep-bar-track"><span style={{ width: `${row.completionRate}%` }} /></div>
                     <strong>{row.completionRate}%</strong>
                   </div>
-                  <div className="sprint-member-deep-bar-row">
-                    <span>On-Time Delivery</span>
-                    <div className="sprint-member-deep-bar-track"><span className="delivery" style={{ width: `${row.onTimeDelivery}%` }} /></div>
-                    <strong>{row.onTimeDelivery}%</strong>
-                  </div>
-                  <div className="sprint-member-deep-bar-row">
-                    <span>Quality Score</span>
-                    <div className="sprint-member-deep-bar-track"><span className="quality" style={{ width: `${row.qualityRate}%` }} /></div>
-                    <strong>{row.qualityRate}%</strong>
-                  </div>
                 </div>
               </article>
             );
           })}
         </div>
+
+        <button
+          type="button"
+          className="sprint-member-deep-nav-btn sprint-member-deep-nav-right"
+          onClick={() => scrollDeepDive('next')}
+          aria-label="Next sprint"
+        >
+          <ChevronRight size={20} />
+        </button>
       </section>
     </div>
   );
