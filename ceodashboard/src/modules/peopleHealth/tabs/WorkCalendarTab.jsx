@@ -849,7 +849,6 @@ const WorkCalendarTab = () => {
 
         {/* Morning indicator */}
         <div className="morning-indicator">
-          <span className="morning-badge">9:45 AM</span>
         </div>
       </div>
 
