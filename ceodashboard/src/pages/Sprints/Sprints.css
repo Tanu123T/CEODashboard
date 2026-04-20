@@ -427,6 +427,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .sprint-member-deep-dive-shell .sprint-panel-heading {
@@ -436,22 +437,28 @@
 .sprint-member-deep-nav-left,
 .sprint-member-deep-nav-right {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
+  top: 24px;
+  z-index: 20;
   width: 40px;
   height: 40px;
   border-radius: 50%;
   background: #ffffff;
   box-shadow: 0 2px 8px rgba(15, 31, 61, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid #e7edf3;
+  color: #1f3d60;
+  transition: all 0.2s ease;
 }
 
 .sprint-member-deep-nav-left {
-  left: 8px;
+  right: 100px;
 }
 
 .sprint-member-deep-nav-right {
-  right: 8px;
+  right: 50px;
 }
 
 .sprint-member-deep-nav-left:hover,
@@ -1488,8 +1495,8 @@
 }
 
 .sprint-member-deep-nav-btn {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   border: 1px solid var(--sprint-border);
   background: var(--sprint-bg);
@@ -1507,13 +1514,14 @@
 .sprint-member-deep-dive-list {
   display: flex;
   gap: 16px;
-  overflow-x: hidden;
+  overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 0 48px 16px;
+  padding: 16px 8px 0 8px;
   scrollbar-width: none;
   width: 100%;
   box-sizing: border-box;
-  justify-content: center;
+  justify-content: flex-start;
+  position: relative;
 }
 
 .sprint-member-deep-dive-list::-webkit-scrollbar {
@@ -1529,6 +1537,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(15, 31, 61, 0.04);
+  position: relative;
 }
 
 .sprint-member-deep-card:hover {
@@ -1538,18 +1547,28 @@
 }
 
 .sprint-member-deep-card.active {
-  border: 2px solid var(--sprint-primary);
-  box-shadow: 0 8px 24px rgba(93, 159, 255, 0.15);
+  border: 1px solid var(--sprint-border);
+  box-shadow: 0 2px 8px rgba(15, 31, 61, 0.04);
+}
+
+.sprint-member-deep-card.active:hover {
+  border-color: var(--sprint-primary);
+  box-shadow: 0 8px 24px rgba(15, 31, 61, 0.1);
+  transform: translateY(-2px);
 }
 
 .sprint-member-deep-head {
   margin-bottom: 16px;
+  padding-top: 4px;
 }
 
 .sprint-member-deep-badges {
   display: flex;
   gap: 8px;
   margin-bottom: 8px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
 }
 
 .sprint-member-deep-sprint-id,

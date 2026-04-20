@@ -469,11 +469,11 @@ const SprintMemberDetail = () => {
           onClick={() => scrollDeepDive('prev')}
           aria-label="Previous sprint"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={24} />
         </button>
 
         <div className="sprint-member-deep-dive-list" ref={deepDiveRef}>
-          {deepDiveRows.slice(0, 3).map((row) => {
+          {deepDiveRows.map((row) => {
             const isActive = row.id === selectedSprintData?.id;
 
             return (
@@ -536,7 +536,7 @@ const SprintMemberDetail = () => {
           onClick={() => scrollDeepDive('next')}
           aria-label="Next sprint"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={24} />
         </button>
       </section>
     </div>
