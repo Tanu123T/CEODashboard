@@ -255,10 +255,10 @@
 .ph-org-scroll-wrap.ph-org-full-view .ph-org-chart {
   --org-card-width: 180px;
   --org-card-height: 70px;
-  --org-card-gap: 8px;
+  --org-card-gap: 20px;
   min-width: auto;
   width: 100%;
-  gap: 20px;
+  gap: 30px;
   display: grid;
   grid-template-columns: 1fr;
 }
@@ -272,13 +272,15 @@
 .ph-org-scroll-wrap.ph-org-full-view .ph-org-grid {
   width: 100%;
   max-width: 100%;
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
+  align-items: center;
+  gap: 20px;
 }
 
 .ph-org-scroll-wrap.ph-org-full-view .ph-org-grid-root {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .ph-org-scroll-wrap.ph-org-full-view {
@@ -461,10 +463,11 @@
 
 .ph-org-grid {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: var(--org-card-gap);
-  width: max-content;
+  gap: 20px;
+  width: 100%;
+  align-items: center;
 }
 
 .ph-org-grid-root {
@@ -512,10 +515,12 @@
 }
 
 .ph-org-scroll-wrap.ph-org-full-view .ph-org-node {
-  width: var(--org-card-width);
-  height: var(--org-card-height);
-  min-width: 160px;
+  width: 180px;
+  height: 70px;
+  min-width: 180px;
+  max-width: 180px;
   padding: 8px 10px;
+  flex-shrink: 0;
 }
 
 .ph-org-grid-linked .ph-org-node::before {
@@ -597,12 +602,15 @@
   }
 
   .ph-org-scroll-wrap.ph-org-full-view .ph-org-grid {
-    gap: 10px;
+    gap: 20px;
+    justify-content: center;
   }
 
   .ph-org-scroll-wrap.ph-org-full-view .ph-org-node {
-    min-width: 140px;
-    width: 100%;
+    min-width: 180px;
+    max-width: 180px;
+    width: 180px;
+    flex-shrink: 0;
   }
 }
 
