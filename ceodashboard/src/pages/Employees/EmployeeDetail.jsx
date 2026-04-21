@@ -159,6 +159,37 @@ const EmployeeDetail = () => {
               </div>
             </div>
           </div>
+
+          {/* Education Card */}
+          <div className="ed-education-card">
+            <h4 className="ed-card-section-title">Education</h4>
+            <div className="ed-sidebar-education">
+              {detailData.education.map((edu, idx) => (
+                <div key={idx} className="ed-sidebar-education-card">
+                  <div className="ed-edu-header">
+                    <Award size={16} className="ed-edu-icon-small" />
+                    <h5 className="ed-edu-degree-small">{edu.degree}</h5>
+                  </div>
+                  <p className="ed-edu-institution-small">{edu.institution}</p>
+                  <p className="ed-edu-meta-small">{edu.year}</p>
+                  {edu.gpa && <p className="ed-gpa-small">GPA: {edu.gpa}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Achievements Card */}
+          <div className="ed-achievements-card">
+            <h4 className="ed-card-section-title">Achievements</h4>
+            <div className="ed-sidebar-achievements">
+              {detailData.achievements.map((achievement, idx) => (
+                <div key={idx} className="ed-sidebar-achievement-card">
+                  <Trophy size={16} className="ed-achievement-icon-small" />
+                  <p className="ed-achievement-title-small">{achievement.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </aside>
 
         {/* RIGHT MAIN CONTENT */}
@@ -171,12 +202,12 @@ const EmployeeDetail = () => {
               <svg className="ed-chart-performance ed-chart-interactive" viewBox="0 0 500 240" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <linearGradient id="trendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="rgba(59, 130, 246, 0.1)" />
+                    <stop offset="0%" stopColor="#38bdf8" />
+                    <stop offset="100%" stopColor="rgba(56, 189, 248, 0.1)" />
                   </linearGradient>
                   <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="#1e40af" />
+                    <stop offset="0%" stopColor="#38bdf8" />
+                    <stop offset="100%" stopColor="#22c55e" />
                   </linearGradient>
                   <filter id="shadowGlow">
                     <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
@@ -184,20 +215,20 @@ const EmployeeDetail = () => {
                 </defs>
 
                 {/* Grid Lines */}
-                <line x1="40" y1="30" x2="40" y2="180" stroke="#e2e8f0" strokeWidth="1"/>
-                <line x1="40" y1="180" x2="480" y2="180" stroke="#e2e8f0" strokeWidth="1"/>
+                <line x1="40" y1="30" x2="40" y2="180" stroke="#d4e6f1" strokeWidth="1"/>
+                <line x1="40" y1="180" x2="480" y2="180" stroke="#d4e6f1" strokeWidth="1"/>
 
                 {/* Y-axis labels */}
-                <text x="25" y="35" fontSize="10" fill="#64748b" textAnchor="end">100</text>
-                <text x="25" y="85" fontSize="10" fill="#64748b" textAnchor="end">75</text>
-                <text x="25" y="135" fontSize="10" fill="#64748b" textAnchor="end">50</text>
-                <text x="25" y="185" fontSize="10" fill="#64748b" textAnchor="end">25</text>
+                <text x="25" y="35" fontSize="10" fill="#5a7a8f" textAnchor="end">100</text>
+                <text x="25" y="85" fontSize="10" fill="#5a7a8f" textAnchor="end">75</text>
+                <text x="25" y="135" fontSize="10" fill="#5a7a8f" textAnchor="end">50</text>
+                <text x="25" y="185" fontSize="10" fill="#5a7a8f" textAnchor="end">25</text>
 
                 {/* Grid horizontal lines */}
-                <line x1="40" y1="60" x2="480" y2="60" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="2,2" opacity="0.5"/>
-                <line x1="40" y1="90" x2="480" y2="90" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="2,2" opacity="0.5"/>
-                <line x1="40" y1="120" x2="480" y2="120" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="2,2" opacity="0.5"/>
-                <line x1="40" y1="150" x2="480" y2="150" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="2,2" opacity="0.5"/>
+                <line x1="40" y1="60" x2="480" y2="60" stroke="#e8f4f8" strokeWidth="1" strokeDasharray="2,2" opacity="0.5"/>
+                <line x1="40" y1="90" x2="480" y2="90" stroke="#e8f4f8" strokeWidth="1" strokeDasharray="2,2" opacity="0.5"/>
+                <line x1="40" y1="120" x2="480" y2="120" stroke="#e8f4f8" strokeWidth="1" strokeDasharray="2,2" opacity="0.5"/>
+                <line x1="40" y1="150" x2="480" y2="150" stroke="#e8f4f8" strokeWidth="1" strokeDasharray="2,2" opacity="0.5"/>
 
                 {/* Area fill under the curve */}
                 <path className="ed-chart-area" d="M 50,125 Q 90,110 130,85 T 210,45 T 290,35 T 370,32 T 450,28 L 450,180 L 50,180 Z" 
@@ -212,117 +243,117 @@ const EmployeeDetail = () => {
                   {/* Jan - 40% */}
                   <g className="ed-data-point-group ed-data-point-group-1">
                     <circle cx="50" cy="125" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="50" cy="125" r="3.5" className="ed-data-point" fill="#3b82f6" stroke="white" strokeWidth="2"/>
-                    <circle cx="50" cy="125" r="6" className="ed-data-point-ring" fill="none" stroke="#3b82f6" strokeWidth="1.5" opacity="0"/>
-                    <text x="50" y="105" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">40%</text>
+                    <circle cx="50" cy="125" r="3.5" className="ed-data-point" fill="#38bdf8" stroke="white" strokeWidth="2"/>
+                    <circle cx="50" cy="125" r="6" className="ed-data-point-ring" fill="none" stroke="#38bdf8" strokeWidth="1.5" opacity="0"/>
+                    <text x="50" y="105" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">40%</text>
                   </g>
                   
                   {/* Feb - 48% */}
                   <g className="ed-data-point-group ed-data-point-group-2">
                     <circle cx="90" cy="110" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="90" cy="110" r="3.5" className="ed-data-point" fill="#3b82f6" stroke="white" strokeWidth="2"/>
-                    <circle cx="90" cy="110" r="6" className="ed-data-point-ring" fill="none" stroke="#3b82f6" strokeWidth="1.5" opacity="0"/>
-                    <text x="90" y="90" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">48%</text>
+                    <circle cx="90" cy="110" r="3.5" className="ed-data-point" fill="#38bdf8" stroke="white" strokeWidth="2"/>
+                    <circle cx="90" cy="110" r="6" className="ed-data-point-ring" fill="none" stroke="#38bdf8" strokeWidth="1.5" opacity="0"/>
+                    <text x="90" y="90" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">48%</text>
                   </g>
                   
                   {/* Mar - 62% */}
                   <g className="ed-data-point-group ed-data-point-group-3">
                     <circle cx="130" cy="85" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="130" cy="85" r="3.5" className="ed-data-point" fill="#3b82f6" stroke="white" strokeWidth="2"/>
-                    <circle cx="130" cy="85" r="6" className="ed-data-point-ring" fill="none" stroke="#3b82f6" strokeWidth="1.5" opacity="0"/>
-                    <text x="130" y="65" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">62%</text>
+                    <circle cx="130" cy="85" r="3.5" className="ed-data-point" fill="#38bdf8" stroke="white" strokeWidth="2"/>
+                    <circle cx="130" cy="85" r="6" className="ed-data-point-ring" fill="none" stroke="#38bdf8" strokeWidth="1.5" opacity="0"/>
+                    <text x="130" y="65" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">62%</text>
                   </g>
                   
                   {/* Apr - 74% */}
                   <g className="ed-data-point-group ed-data-point-group-4">
                     <circle cx="170" cy="65" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="170" cy="65" r="3.5" className="ed-data-point" fill="#3b82f6" stroke="white" strokeWidth="2"/>
-                    <circle cx="170" cy="65" r="6" className="ed-data-point-ring" fill="none" stroke="#3b82f6" strokeWidth="1.5" opacity="0"/>
-                    <text x="170" y="45" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">74%</text>
+                    <circle cx="170" cy="65" r="3.5" className="ed-data-point" fill="#38bdf8" stroke="white" strokeWidth="2"/>
+                    <circle cx="170" cy="65" r="6" className="ed-data-point-ring" fill="none" stroke="#38bdf8" strokeWidth="1.5" opacity="0"/>
+                    <text x="170" y="45" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">74%</text>
                   </g>
                   
                   {/* May - 83% */}
                   <g className="ed-data-point-group ed-data-point-group-5">
                     <circle cx="210" cy="45" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="210" cy="45" r="3.5" className="ed-data-point" fill="#3b82f6" stroke="white" strokeWidth="2"/>
-                    <circle cx="210" cy="45" r="6" className="ed-data-point-ring" fill="none" stroke="#3b82f6" strokeWidth="1.5" opacity="0"/>
-                    <text x="210" y="25" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">83%</text>
+                    <circle cx="210" cy="45" r="3.5" className="ed-data-point" fill="#38bdf8" stroke="white" strokeWidth="2"/>
+                    <circle cx="210" cy="45" r="6" className="ed-data-point-ring" fill="none" stroke="#38bdf8" strokeWidth="1.5" opacity="0"/>
+                    <text x="210" y="25" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">83%</text>
                   </g>
                   
                   {/* Jun - 88% */}
                   <g className="ed-data-point-group ed-data-point-group-6">
                     <circle cx="250" cy="40" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="250" cy="40" r="3.5" className="ed-data-point" fill="#1e40af" stroke="white" strokeWidth="2"/>
-                    <circle cx="250" cy="40" r="6" className="ed-data-point-ring" fill="none" stroke="#1e40af" strokeWidth="1.5" opacity="0"/>
-                    <text x="250" y="20" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">88%</text>
+                    <circle cx="250" cy="40" r="3.5" className="ed-data-point" fill="#18b7a6" stroke="white" strokeWidth="2"/>
+                    <circle cx="250" cy="40" r="6" className="ed-data-point-ring" fill="none" stroke="#18b7a6" strokeWidth="1.5" opacity="0"/>
+                    <text x="250" y="20" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">88%</text>
                   </g>
                   
                   {/* Jul - 92% */}
                   <g className="ed-data-point-group ed-data-point-group-7">
                     <circle cx="290" cy="35" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="290" cy="35" r="3.5" className="ed-data-point" fill="#1e40af" stroke="white" strokeWidth="2"/>
-                    <circle cx="290" cy="35" r="6" className="ed-data-point-ring" fill="none" stroke="#1e40af" strokeWidth="1.5" opacity="0"/>
-                    <text x="290" y="15" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">92%</text>
+                    <circle cx="290" cy="35" r="3.5" className="ed-data-point" fill="#22c55e" stroke="white" strokeWidth="2"/>
+                    <circle cx="290" cy="35" r="6" className="ed-data-point-ring" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0"/>
+                    <text x="290" y="15" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">92%</text>
                   </g>
                   
                   {/* Aug - 94% */}
                   <g className="ed-data-point-group ed-data-point-group-8">
                     <circle cx="330" cy="32" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="330" cy="32" r="3.5" className="ed-data-point" fill="#1e40af" stroke="white" strokeWidth="2"/>
-                    <circle cx="330" cy="32" r="6" className="ed-data-point-ring" fill="none" stroke="#1e40af" strokeWidth="1.5" opacity="0"/>
-                    <text x="330" y="12" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">94%</text>
+                    <circle cx="330" cy="32" r="3.5" className="ed-data-point" fill="#22c55e" stroke="white" strokeWidth="2"/>
+                    <circle cx="330" cy="32" r="6" className="ed-data-point-ring" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0"/>
+                    <text x="330" y="12" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">94%</text>
                   </g>
                   
                   {/* Sep - 94% */}
                   <g className="ed-data-point-group ed-data-point-group-9">
                     <circle cx="370" cy="32" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="370" cy="32" r="3.5" className="ed-data-point" fill="#1e40af" stroke="white" strokeWidth="2"/>
-                    <circle cx="370" cy="32" r="6" className="ed-data-point-ring" fill="none" stroke="#1e40af" strokeWidth="1.5" opacity="0"/>
-                    <text x="370" y="12" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">94%</text>
+                    <circle cx="370" cy="32" r="3.5" className="ed-data-point" fill="#22c55e" stroke="white" strokeWidth="2"/>
+                    <circle cx="370" cy="32" r="6" className="ed-data-point-ring" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0"/>
+                    <text x="370" y="12" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">94%</text>
                   </g>
                   
                   {/* Oct - 95% */}
                   <g className="ed-data-point-group ed-data-point-group-10">
                     <circle cx="410" cy="30" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="410" cy="30" r="3.5" className="ed-data-point" fill="#1e40af" stroke="white" strokeWidth="2"/>
-                    <circle cx="410" cy="30" r="6" className="ed-data-point-ring" fill="none" stroke="#1e40af" strokeWidth="1.5" opacity="0"/>
-                    <text x="410" y="10" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">95%</text>
+                    <circle cx="410" cy="30" r="3.5" className="ed-data-point" fill="#22c55e" stroke="white" strokeWidth="2"/>
+                    <circle cx="410" cy="30" r="6" className="ed-data-point-ring" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0"/>
+                    <text x="410" y="10" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">95%</text>
                   </g>
                   
                   {/* Nov - 97% */}
                   <g className="ed-data-point-group ed-data-point-group-11">
                     <circle cx="450" cy="28" r="10" fill="transparent" style={{pointerEvents: 'auto', cursor: 'pointer'}}/>
-                    <circle cx="450" cy="28" r="3.5" className="ed-data-point" fill="#1e40af" stroke="white" strokeWidth="2"/>
-                    <circle cx="450" cy="28" r="6" className="ed-data-point-ring" fill="none" stroke="#1e40af" strokeWidth="1.5" opacity="0"/>
-                    <text x="450" y="8" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#1e40af" textAnchor="middle" opacity="0">97%</text>
+                    <circle cx="450" cy="28" r="3.5" className="ed-data-point" fill="#22c55e" stroke="white" strokeWidth="2"/>
+                    <circle cx="450" cy="28" r="6" className="ed-data-point-ring" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0"/>
+                    <text x="450" y="8" className="ed-data-tooltip" fontSize="12" fontWeight="700" fill="#0a3a52" textAnchor="middle" opacity="0">97%</text>
                   </g>
 
                   {/* Vertical guide lines - appear on hover */}
-                  <line x1="50" y1="125" x2="50" y2="180" className="ed-data-line-vertical ed-data-line-1" stroke="#3b82f6" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="90" y1="110" x2="90" y2="180" className="ed-data-line-vertical ed-data-line-2" stroke="#3b82f6" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="130" y1="85" x2="130" y2="180" className="ed-data-line-vertical ed-data-line-3" stroke="#3b82f6" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="170" y1="65" x2="170" y2="180" className="ed-data-line-vertical ed-data-line-4" stroke="#3b82f6" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="210" y1="45" x2="210" y2="180" className="ed-data-line-vertical ed-data-line-5" stroke="#3b82f6" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="250" y1="40" x2="250" y2="180" className="ed-data-line-vertical ed-data-line-6" stroke="#1e40af" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="290" y1="35" x2="290" y2="180" className="ed-data-line-vertical ed-data-line-7" stroke="#1e40af" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="330" y1="32" x2="330" y2="180" className="ed-data-line-vertical ed-data-line-8" stroke="#1e40af" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="370" y1="32" x2="370" y2="180" className="ed-data-line-vertical ed-data-line-9" stroke="#1e40af" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="410" y1="30" x2="410" y2="180" className="ed-data-line-vertical ed-data-line-10" stroke="#1e40af" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
-                  <line x1="450" y1="28" x2="450" y2="180" className="ed-data-line-vertical ed-data-line-11" stroke="#1e40af" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="50" y1="125" x2="50" y2="180" className="ed-data-line-vertical ed-data-line-1" stroke="#38bdf8" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="90" y1="110" x2="90" y2="180" className="ed-data-line-vertical ed-data-line-2" stroke="#38bdf8" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="130" y1="85" x2="130" y2="180" className="ed-data-line-vertical ed-data-line-3" stroke="#38bdf8" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="170" y1="65" x2="170" y2="180" className="ed-data-line-vertical ed-data-line-4" stroke="#38bdf8" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="210" y1="45" x2="210" y2="180" className="ed-data-line-vertical ed-data-line-5" stroke="#38bdf8" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="250" y1="40" x2="250" y2="180" className="ed-data-line-vertical ed-data-line-6" stroke="#18b7a6" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="290" y1="35" x2="290" y2="180" className="ed-data-line-vertical ed-data-line-7" stroke="#22c55e" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="330" y1="32" x2="330" y2="180" className="ed-data-line-vertical ed-data-line-8" stroke="#22c55e" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="370" y1="32" x2="370" y2="180" className="ed-data-line-vertical ed-data-line-9" stroke="#22c55e" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="410" y1="30" x2="410" y2="180" className="ed-data-line-vertical ed-data-line-10" stroke="#22c55e" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
+                  <line x1="450" y1="28" x2="450" y2="180" className="ed-data-line-vertical ed-data-line-11" stroke="#22c55e" strokeWidth="2" opacity="0" strokeDasharray="4,4"/>
                 </g>
 
                 {/* X-axis Month labels */}
-                <text x="50" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Jan</text>
-                <text x="90" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Feb</text>
-                <text x="130" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Mar</text>
-                <text x="170" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Apr</text>
-                <text x="210" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">May</text>
-                <text x="250" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Jun</text>
-                <text x="290" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Jul</text>
-                <text x="330" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Aug</text>
-                <text x="370" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Sep</text>
-                <text x="410" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Oct</text>
-                <text x="450" y="200" fontSize="11" fill="#64748b" textAnchor="middle" fontWeight="500">Nov</text>
+                <text x="50" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Jan</text>
+                <text x="90" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Feb</text>
+                <text x="130" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Mar</text>
+                <text x="170" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Apr</text>
+                <text x="210" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">May</text>
+                <text x="250" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Jun</text>
+                <text x="290" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Jul</text>
+                <text x="330" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Aug</text>
+                <text x="370" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Sep</text>
+                <text x="410" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Oct</text>
+                <text x="450" y="200" fontSize="11" fill="#5a7a8f" textAnchor="middle" fontWeight="500">Nov</text>
               </svg>
             </div>
 
@@ -345,8 +376,8 @@ const EmployeeDetail = () => {
                 <svg className="ed-metrics-viz" viewBox="0 0 240 220" preserveAspectRatio="xMidYMid meet">
                   <defs>
                     <linearGradient id="attendanceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#3b82f6" />
-                      <stop offset="100%" stopColor="#1e40af" />
+                      <stop offset="0%" stopColor="#38bdf8" />
+                      <stop offset="100%" stopColor="#22c55e" />
                     </linearGradient>
                     <filter id="glow">
                       <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -357,10 +388,10 @@ const EmployeeDetail = () => {
                     </filter>
                   </defs>
                   <g>
-                    <circle cx="120" cy="85" r="65" fill="none" stroke="#dbeafe" strokeWidth="8"/>
+                    <circle cx="120" cy="85" r="65" fill="none" stroke="#e8f4f8" strokeWidth="8"/>
                     <circle cx="120" cy="85" r="65" fill="none" stroke="url(#attendanceGrad)" strokeWidth="8" 
                             strokeDasharray={`${attendanceDash} ${attendanceCircumference}`} strokeLinecap="round" filter="url(#glow)" transform="rotate(-90 120 85)"/>
-                    <text x="120" y="95" fontSize="42" fontWeight="900" fill="#1e40af" textAnchor="middle">{selectedAttendance?.attendanceRate || 0}%</text>
+                    <text x="120" y="95" fontSize="42" fontWeight="900" fill="#18b7a6" textAnchor="middle">{selectedAttendance?.attendanceRate || 0}%</text>
                   </g>
                 </svg>
               </div>
@@ -488,39 +519,6 @@ const EmployeeDetail = () => {
                   </article>
                 );
               })}
-            </div>
-          </section>
-
-          {/* Education Section */}
-          <section className="ed-card">
-            <h3 className="ed-card-title">Education</h3>
-            <div className="ed-education-list">
-              {detailData.education.map((edu, idx) => (
-                <div key={idx} className="ed-education-item">
-                  <Award size={18} className="ed-edu-icon" />
-                  <div className="ed-edu-content">
-                    <h4 className="ed-edu-degree">{edu.degree}</h4>
-                    <p className="ed-edu-institution">{edu.institution}</p>
-                    <p className="ed-edu-meta"><span className="ed-year">{edu.year}</span></p>
-                    {edu.gpa && <p className="ed-gpa">GPA: {edu.gpa}</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Achievements Section */}
-          <section className="ed-card">
-            <h3 className="ed-card-title">Achievements</h3>
-            <div className="ed-achievements-list">
-              {detailData.achievements.map((achievement, idx) => (
-                <div key={idx} className="ed-achievement-item">
-                  <Trophy size={18} className="ed-achievement-icon" />
-                  <div className="ed-achievement-content">
-                    <h4 className="ed-achievement-title">{achievement.title}</h4>
-                  </div>
-                </div>
-              ))}
             </div>
           </section>
         </main>

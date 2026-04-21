@@ -206,7 +206,11 @@ const Sprints = () => {
         </div>
 
         <div className="sprint-activity-list">
-          {filteredActivityByTab.map((item) => (
+          {[...filteredActivityByTab].sort((a, b) => {
+            const sprintNumA = parseInt(a.title.split(' ')[1]);
+            const sprintNumB = parseInt(b.title.split(' ')[1]);
+            return sprintNumB - sprintNumA;
+          }).map((item) => (
             <button
               key={item.id}
               type="button"

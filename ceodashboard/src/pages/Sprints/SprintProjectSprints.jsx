@@ -118,9 +118,12 @@ const SprintProjectSprints = () => {
 
     }
 
-
-
-    return filtered;
+    // Sort by sprint number in descending order (7, 6, 5, 4, 3, 2, 1)
+    return filtered.sort((a, b) => {
+      const numA = parseInt(a.id.split(' ')[1]);
+      const numB = parseInt(b.id.split(' ')[1]);
+      return numB - numA;
+    });
 
   }, [details, project, selectedTab]);
 
